@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Chatrabash.Client/chatrabash.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Chatrabash/Chatrabash.Server.csproj" />
+</Solution>
