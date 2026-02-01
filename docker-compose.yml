@@ -1,0 +1,12 @@
+services:
+  chatrabash.server:
+    image: ${DOCKER_REGISTRY-}chatrabashserver
+    build:
+      context: .
+      dockerfile: Chatrabash/Dockerfile
+
+  chatrabash.client:
+    image: ${DOCKER_REGISTRY-}chatrabashclient
+    build:
+      context: ./Chatrabash.Client
+      dockerfile: Dockerfile
