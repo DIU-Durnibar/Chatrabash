@@ -12,10 +12,8 @@ const LandingPage = () => {
         className="w-full h-full object-cover"
       />
 
-      {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-900/70 via-blue-800/40 to-transparent"></div>
 
-      {/* Centered Content */}
       <div className="absolute inset-0 flex flex-col justify-center items-center text-white px-6 text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-3">Welcome to Chatrabash-ছাত্রাবাস </h1>
         <p className="text-lg md:text-2xl mb-5">
@@ -23,7 +21,7 @@ const LandingPage = () => {
         </p>
         <div className="flex flex-col md:flex-row gap-4">
           <Link
-          to="/signup"
+          to="/home"
           className="relative inline-block px-8 py-4 rounded-full text-lg font-semibold text-white
                      bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700
                      shadow-lg shadow-blue-500/50
@@ -31,7 +29,6 @@ const LandingPage = () => {
                      active:scale-95"
         >
           Get Started
-          {/* Optional small glow effect */}
           <span className="absolute inset-0 rounded-full bg-white/10 opacity-0 hover:opacity-20 transition duration-300"></span>
         </Link>
           
