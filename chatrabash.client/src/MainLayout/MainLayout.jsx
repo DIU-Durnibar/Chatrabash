@@ -1,9 +1,14 @@
 import React from 'react'
+import HomePage from '../Home/HomePage'
+import LandingPage from '../Home/LandingPage'
 
 const MainLayout = () => {
   return (
-    <div>
-      bor
+    <div className=''>
+
+        <LandingPage></LandingPage>
+
+        <HomePage></HomePage>
     </div>
   )
 }
