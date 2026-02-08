@@ -43,7 +43,7 @@ const HomePage = () => {
         <div className="grid md:grid-cols-3 gap-8 text-center">
           <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-xl transition">
             <h4 className="text-xl font-semibold text-blue-600 mb-2">স্টুডেন্ট ম্যানেজমেন্ট</h4>
-            <p className="text-gray-600">
+            <p className="text-gray-700">
               ছাত্রদের রেকর্ড, মাসিক পেমেন্ট এবং মিল রেকর্ড সহজে ট্র্যাক করো।
             </p>
           </div>

@@ -1,5 +1,4 @@
 // HomePage.jsx
-import React from "react";
 import { Link } from "react-router-dom";
 
 const LandingPage = () => {
@@ -16,7 +15,7 @@ const LandingPage = () => {
 
       <div className="absolute inset-0 flex flex-col justify-center items-center text-white px-6 text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-3">Welcome to Chatrabash-ছাত্রাবাস </h1>
-        <p className="text-lg md:text-2xl mb-5">
+        <p className="text-xl md:text-2xl mb-5">
           Manage your hostels, students, and staff seamlessly.
         </p>
         <div className="flex flex-col md:flex-row gap-4">
