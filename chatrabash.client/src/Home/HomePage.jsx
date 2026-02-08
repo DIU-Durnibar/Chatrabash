@@ -5,19 +5,6 @@ import { Link } from "react-router-dom";
 const HomePage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
-        <div className="container mx-auto flex justify-between items-center py-4 px-6">
-          <h1 className="text-2xl font-bold text-blue-700">Chatrabash-ছাত্রাবাস</h1>
-          <nav className="space-x-4">
-            <Link to="/home" className="text-gray-700 hover:text-blue-600">Home</Link>
-            <Link to="/hostels" className="text-gray-700 hover:text-blue-600">Hostels</Link>
-            <Link to="/students" className="text-gray-700 hover:text-blue-600">Students</Link>
-            <Link to="/staff" className="text-gray-700 hover:text-blue-600">Staff</Link>
-            <Link to="/pricing" className="text-gray-700 hover:text-blue-600">Pricing</Link>
-          </nav>
-        </div>
-      </header>
 
       {/* Hero Section */}
       <section className="bg-blue-100 py-20">
@@ -84,17 +71,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-100 text-gray-700 py-6 mt-12">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-          <p>© 2026 Chatrabash-ছাত্রাবাস. All rights reserved.</p>
-          <div className="space-x-4 mt-2 md:mt-0">
-            <Link to="/privacy" className="hover:text-blue-600">Privacy</Link>
-            <Link to="/terms" className="hover:text-blue-600">Terms</Link>
-            <Link to="/contact" className="hover:text-blue-600">Contact</Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

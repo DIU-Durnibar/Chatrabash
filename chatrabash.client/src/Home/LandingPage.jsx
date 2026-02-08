@@ -19,7 +19,8 @@ const LandingPage = () => {
           Manage your hostels, students, and staff seamlessly.
         </p>
         <div className="flex flex-col md:flex-row gap-4">
-          <Link
+
+        <Link
           to="/home"
           className="relative inline-block px-8 py-4 rounded-full text-lg font-semibold text-white
                      bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700

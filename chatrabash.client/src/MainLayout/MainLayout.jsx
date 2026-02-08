@@ -1,5 +1,3 @@
-import React from 'react'
-import HomePage from '../Home/HomePage'
 import LandingPage from '../Home/LandingPage'
 
 const MainLayout = () => {
@@ -8,7 +6,6 @@ const MainLayout = () => {
 
         <LandingPage></LandingPage>
 
-        <HomePage></HomePage>
     </div>
   )
 }
