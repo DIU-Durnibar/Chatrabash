@@ -36,7 +36,7 @@ public class DbInitializer
         new Room { RoomNumber = "401", FloorNo = 4, SeatCapacity = 4, SeatAvailable = 3, IsAttachedBathroomAvailable = 0, IsBalconyAvailable = 1, IsAcAvailable = false, IsActive = true }
     };
 
-    public static async Task Seed(AppDbContext context)
+    public static async Task SeedData(AppDbContext context)
     {
         if(context.Rooms.Any()) return;
         await context.Rooms.AddRangeAsync(_rooms);
