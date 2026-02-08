@@ -4,7 +4,7 @@ const SignIn = () => {
   const [role, setRole] = useState("Student");
 
   const hostels = [
-    "A.H. Girls Hostel",
+    "A.H. Hostel",
     "Younic Home",
     "Afroza Girls Hostel",
     "Rahat Villa",
@@ -74,7 +74,7 @@ const SignIn = () => {
             হোস্টেলের নাম নির্বাচন করুন
           </label>
 
-          <select className="w-full border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none transition text-sm">
+          <select className="w-full border text-gray-600 border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none transition text-sm">
             <option value="">হোস্টেল নির্বাচন করুন</option>
             {hostels.map((hostel, index) => (
               <option className="text-sm" key={index}>{hostel}</option>
