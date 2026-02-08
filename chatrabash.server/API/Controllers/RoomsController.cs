@@ -35,7 +35,7 @@ public class RoomsController (AppDbContext context) : BaseController
 
 
     [HttpDelete]
-    public async Task<ActionResult> DeleteRoomById([FromRoute] string id)
+    public async Task<ActionResult> DeleteRoomById([FromQuery]string id)
     {
         var room = await context.Rooms.FindAsync(id);
         if(room == null) return NotFound();
