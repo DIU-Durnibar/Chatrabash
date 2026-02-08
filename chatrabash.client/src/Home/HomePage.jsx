@@ -15,12 +15,12 @@ const HomePage = () => {
           <p className="text-lg md:text-xl text-gray-700 mb-6">
             Chatrabash দিয়ে তুমি তোমার ছাত্রাবাসের সমস্ত কাজ করতে পারবে—স্টুডেন্টের পেমেন্ট, স্টাফের সেলারি, মিল রেকর্ড এবং আরও অনেক কিছু।
           </p>
-          <Link
+          {/* <Link
             to="/signup"
             className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-blue-700 transition"
           >
             শুরু করো এখন
-          </Link>
+          </Link> */}
         </div>
       </section>
 
@@ -28,12 +28,15 @@ const HomePage = () => {
       <section className="container mx-auto py-20 px-6">
         <h3 className="text-3xl font-bold text-center text-blue-900 mb-12">মূল সুবিধাসমূহ</h3>
         <div className="grid md:grid-cols-3 gap-8 text-center">
-          <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-xl transition">
+
+          <Link to={`/home/studentDashboard`} className="bg-white shadow-md rounded-lg p-6 hover:shadow-xl transition">
             <h4 className="text-xl font-semibold text-blue-600 mb-2">স্টুডেন্ট ম্যানেজমেন্ট</h4>
             <p className="text-gray-700">
               ছাত্রদের রেকর্ড, মাসিক পেমেন্ট এবং মিল রেকর্ড সহজে ট্র্যাক করো।
             </p>
-          </div>
+          </Link>
+
+
           <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-xl transition">
             <h4 className="text-xl font-semibold text-blue-600 mb-2">স্টাফ ম্যানেজমেন্ট</h4>
             <p className="text-gray-600">
