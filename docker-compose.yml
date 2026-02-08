@@ -3,10 +3,10 @@ services:
     image: ${DOCKER_REGISTRY-}chatrabashserver
     build:
       context: .
-      dockerfile: Chatrabash/Dockerfile
+      dockerfile: chatrabash.server/API/Dockerfile
 
   chatrabash.client:
     image: ${DOCKER_REGISTRY-}chatrabashclient
     build:
-      context: ./Chatrabash.Client
+      context: ./chatrabash.client
       dockerfile: Dockerfile

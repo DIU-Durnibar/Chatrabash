@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="chatrabash.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>

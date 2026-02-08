@@ -1,9 +1,9 @@
 <Solution>
-  <Project Path="Chatrabash.Client/chatrabash.client.esproj">
-    <Build />
-    <Deploy />
-  </Project>
-  <Project Path="docker-compose.dcproj">
-    <Build />
-  </Project>
+  <Folder Name="/chatrabash.server/">
+    <Project Path="chatrabash.server/API/API.csproj" />
+    <Project Path="chatrabash.server/Application/Application.csproj" />
+    <Project Path="chatrabash.server/Domain/Domain.csproj" />
+    <Project Path="chatrabash.server/Persistence/Persistence.csproj" />
+  </Folder>
+  <Project Path="chatrabash.client/chatrabash.client.esproj" />
 </Solution>
