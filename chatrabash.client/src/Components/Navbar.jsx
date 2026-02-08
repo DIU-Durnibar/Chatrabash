@@ -17,7 +17,7 @@ const Navbar = () => {
             <Link to="/pricing" className="text-gray-700 hover:text-blue-600">Pricing</Link>
           </nav>
 
-          <div>
+          <Link to={`/signIn`}>
          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold 
   hover:bg-blue-700 
   active:scale-95 
@@ -25,7 +25,7 @@ const Navbar = () => {
   transition-all duration-150">
     সাইন ইন
   </button>
-</div>
+</Link>
 
 
         </div>
