@@ -12,7 +12,7 @@ public class Room
 
     public int SeatCapacity { get; set; } 
 
-    public int SeatAvailable { get; set}
+    public int SeatAvailable { get; set; }
 
     public int IsAttachedBathroomAvailable {get; set;}
 
