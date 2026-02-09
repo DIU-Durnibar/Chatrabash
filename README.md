@@ -4,7 +4,7 @@
 ### The Modern SaaS Platform for Smart Hostel Management
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-.NET%208%20%7C%20React-lightgrey.svg?style=flat-square)]()
+[![Platform](https://img.shields.io/badge/platform-.NET%210%20%7C%20React-orange.svg?style=flat-square)]()
 [![Status](https://img.shields.io/badge/status-Active%20Development-success.svg?style=flat-square)]()
 
 ---
@@ -96,9 +96,7 @@ This project adheres strictly to **Clean Architecture** principles combined with
 
 <div align="center">
 
-*(Please replace this text with a screenshot of your Clean Architecture Diagram for maximum aesthetic points!)*
-<br/>
-`[ Domain ]` ⬅️ `[ Application (CQRS) ]` ⬅️ `[ Persistence ]` ⬅️ `[ API ]`
+<img src="designs\diagrams\clean_architecture.png" width="60%" alt="Clean Architecture Diagram">
 
 </div>
 
@@ -115,7 +113,7 @@ The project is organized into two main parts: **Backend** (ASP.NET Core) and **C
 
 ```bash
 Chatrabash/
-├── Backend/                        # ASP.NET Core Solution
+├── Server/                        # ASP.NET Core Solution
 │   ├── API/                        # Presentation Layer
 │   │   ├── Controllers/            # API Endpoints
 │   │   ├── Extensions/             # Service Extensions
