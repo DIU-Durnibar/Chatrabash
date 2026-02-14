@@ -23,5 +23,14 @@ public class Room
     public bool IsActive { get; set; } = true; 
         
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? LastModifiedAt { get; set; } 
+
+    public class Commands
+    {
+        public class Create
+        {
+            public class Command
+            {
+            }
+        }
+    }
 }

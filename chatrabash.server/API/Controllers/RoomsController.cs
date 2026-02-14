@@ -3,16 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 using Persistence;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Application.Rooms.Queries;
+using Application.Rooms.Dtos;
+using Application.Rooms.Commands;
 
 namespace API.Controllers;
 
 public class RoomsController (AppDbContext context) : BaseController
 {
     [HttpGet]
-    public async Task<ActionResult<List<Room>>> GetAllRoom()
+    public async Task<ActionResult<List<GetAllRoomsDto>>> GetAllRoom()
     {
-        var rooms = await context.Rooms.ToListAsync();
-        return Ok(rooms);
+        return Ok(await Mediator.Send(new GetAllRooms.Query()));
     }
 
     [HttpGet("{id}")]
@@ -25,12 +27,9 @@ public class RoomsController (AppDbContext context) : BaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateRoom([FromBody] Room room)
+    public async Task<ActionResult<string>> CreateNewRoom([FromBody]Create.Command command) 
     {
-        if(room == null) return BadRequest();
-        context.Add(room);
-        await context.SaveChangesAsync();
-        return Ok(room.Id); 
+        return Ok(await Mediator.Send(command));
     }
 
 

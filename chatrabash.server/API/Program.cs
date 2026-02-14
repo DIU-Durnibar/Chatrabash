@@ -1,3 +1,6 @@
+using Application.Core;
+using Application.Rooms.Queries;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -8,6 +11,16 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 {
    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddMediatR(x => {
+    x.RegisterServicesFromAssemblyContaining<GetAllRooms.Handler>();
+    x.AddOpenBehavior(typeof(ValidatorBehavior<,>));
+});
+
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfiles).Assembly));
+
+builder.Services.AddValidatorsFromAssemblyContaining<Application.Rooms.Validators.Create>();
+
 
 var app = builder.Build();
 
