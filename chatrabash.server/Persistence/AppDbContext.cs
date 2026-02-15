@@ -9,4 +9,5 @@ namespace Persistence;
 public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(options)
 {
     public required DbSet<Room> Rooms { get; set; } 
+    public required DbSet<Hostel> Hostels { get; set; }
 }

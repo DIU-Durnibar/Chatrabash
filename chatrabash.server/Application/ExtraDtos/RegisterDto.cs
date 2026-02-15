@@ -6,6 +6,12 @@ namespace Application.ExtraDtos;
 public class RegisterDto
 {
     [Required]
+    public string Username { get; set; } = string.Empty;
+    
+    [Required]
+    public string HostelId { get; set; } = string.Empty;
+    
+    [Required]
     public string DisplayName { get; set; } = string.Empty;
 
     [Required]

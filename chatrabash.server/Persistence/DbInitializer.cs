@@ -37,15 +37,69 @@ public class DbInitializer
         new Room { RoomNumber = "401", FloorNo = 4, SeatCapacity = 4, SeatAvailable = 3, IsAttachedBathroomAvailable = 0, IsBalconyAvailable = 1, IsAcAvailable = false, IsActive = true }
     };
 
-    public static async Task SeedData(AppDbContext context, UserManager<User>userManager)
+    public static async Task SeedData(AppDbContext context, UserManager<User> userManager)
     {
-        if(!userManager.Users.Any())
+        var hostel1Id = Guid.NewGuid().ToString();
+        var hostel2Id = Guid.NewGuid().ToString();
+        var hostel3Id = Guid.NewGuid().ToString();
+
+        if (!context.Hostels.Any())
+        {
+            var hostels = new List<Hostel>
+            {
+                new Hostel
+                {
+                    Id = hostel1Id, 
+                    Name = "Chatrabash Super Hostel"
+                },
+                new Hostel
+                {
+                    Id = hostel2Id,
+                    Name = "Padma Student Home"
+                },
+                new Hostel
+                {
+                    Id = hostel3Id,
+                    Name = "Rajshahi Model Mess"
+                }
+            };
+
+            await context.Hostels.AddRangeAsync(hostels);
+            await context.SaveChangesAsync();
+        }
+        else 
+        {
+            var firstHostel = await context.Hostels.FirstOrDefaultAsync();
+            hostel1Id = firstHostel?.Id ?? hostel1Id;
+        }
+
+
+        if (!userManager.Users.Any())
         {
             var users = new List<User>
             {
-                new() {DisplayName = "Khaled", UserName = "khaled@test.com", Email = "khaled@test.com"},
-                new() {DisplayName = "Tufan", UserName = "tufan@test.com", Email = "tufan@test.com"},
-                new() {DisplayName = "Mojid", UserName = "mojid@test.com", Email = "mojid@test.com"}
+            
+                new() {
+                    DisplayName = "Khaled", 
+                    UserName = "khaled@test.com", 
+                    Email = "khaled@test.com",
+                    HostelId = hostel1Id, 
+                    IsApproved = true
+                },
+                new() {
+                    DisplayName = "Tufan", 
+                    UserName = "tufan@test.com", 
+                    Email = "tufan@test.com",
+                    HostelId = hostel1Id,
+                    IsApproved = true
+                },
+                new() {
+                    DisplayName = "Mojid", 
+                    UserName = "mojid@test.com", 
+                    Email = "mojid@test.com",
+                    HostelId = hostel2Id, 
+                    IsApproved = false 
+                }
             };
 
             foreach (var user in users)
@@ -59,19 +113,13 @@ public class DbInitializer
                         Console.WriteLine($"Error creating user {user.UserName}: {error.Description}");
                     }
                 }
-                else 
-                {
-                    Console.WriteLine($"User created: {user.UserName}");
-                }
             }
         }
 
-        if(context.Rooms.Any()) return;
-        await context.Rooms.AddRangeAsync(_rooms);
-        await context.SaveChangesAsync();
-    
+        if (!context.Rooms.Any())
+        {
+            await context.Rooms.AddRangeAsync(_rooms);
+            await context.SaveChangesAsync();
+        }
     }
 }
-
-    
-
