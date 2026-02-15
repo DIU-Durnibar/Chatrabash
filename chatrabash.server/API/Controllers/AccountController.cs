@@ -1,5 +1,5 @@
 using System;
-using API.ExtraDtos;
+using Application.ExtraDtos;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -40,5 +40,28 @@ public class AccountController : BaseController
         }
 
         return ValidationProblem();
-}
+    }
+
+    [AllowAnonymous]
+    [HttpPost("login")]
+    public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+    {
+        var user = await _signInManager.UserManager.FindByEmailAsync(loginDto.Email);
+
+        if (user == null) return Unauthorized("Invalid email");
+
+        var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, isPersistent: true, lockoutOnFailure: false);
+
+        if (result.Succeeded)
+        {
+            return new UserDto
+            {
+                DisplayName = user.DisplayName ?? "",
+                Email = user.Email ?? "",
+                UserName = user.UserName ?? ""
+            };
+        }
+
+        return Unauthorized("Invalid password");
+    }
 }
