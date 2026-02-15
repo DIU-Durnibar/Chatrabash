@@ -45,7 +45,7 @@ const SignUp = () => {
       .then((res) => {
         // Update profile with full name and username as photoURL (optional)
         handleUpdateProfile(formData.fullName, formData.username)
-          .then(() => navigate("/"))
+          .then(() => navigate("/signIn"))
           .catch((err) => setError(err.message));
       })
       .catch((err) => setError(err.message));

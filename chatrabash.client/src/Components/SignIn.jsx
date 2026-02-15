@@ -28,7 +28,7 @@ const SignIn = () => {
 
     handleLogin(email, password)
       .then(() => {
-        location.state === null ? navigate("/") : navigate(location.state);
+        location.state === null ? navigate("/home") : navigate(location.state);
       })
       .catch((err) => setError(err.message));
   };
