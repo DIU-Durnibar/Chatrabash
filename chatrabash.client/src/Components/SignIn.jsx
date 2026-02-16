@@ -116,10 +116,6 @@ const SignIn = () => {
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 প্রদত্ত কোড
-                <br />
-                <span className="text-[13px] font-medium text-gray-600">
-                  (অ্যাডমিন হলে স্কিপ করুন)
-                </span>
               </label>
               <input
                 type="text"

@@ -32,6 +32,7 @@ const SignUp = () => {
       currentAddress: e.target.currentAddress?.value || "",
       university: e.target.university?.value || "",
       workplace: e.target.workplace?.value || "",
+      photoURL: e.target.photoURL?.value || ""
     };
 
     // Password validation
@@ -42,15 +43,13 @@ const SignUp = () => {
 
     // Firebase registration
     handleRegister(formData.email, formData.password)
-      .then((res) => {
-        // Update profile with full name and username as photoURL (optional)
-        handleUpdateProfile(formData.fullName, formData.username)
+      .then(() => {
+        handleUpdateProfile(formData.fullName, formData.photoURL)
           .then(() => navigate("/signIn"))
           .catch((err) => setError(err.message));
       })
       .catch((err) => setError(err.message));
   };
-
 
   return (
     <div className="py-4 bg-gradient-to-br from-blue-100 via-blue-50 to-white flex items-center justify-center px-4 min-h-screen">
@@ -110,6 +109,19 @@ const SignUp = () => {
             />
           </div>
 
+          {/* Photo URL */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              প্রোফাইল ছবির লিংক
+            </label>
+            <input
+              name="photoURL"
+              type="text"
+              placeholder="আপনার ছবির URL দিন"
+              className="w-full border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none transition text-sm"
+            />
+          </div>
+
           {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">পাসওয়ার্ড</label>
@@ -122,7 +134,7 @@ const SignUp = () => {
             />
           </div>
 
-          {/* Mobile Number */}
+          {/* Mobile */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">মোবাইল নম্বর</label>
             <input
@@ -134,7 +146,7 @@ const SignUp = () => {
             />
           </div>
 
-          {/* Hostel Dropdown */}
+          {/* Hostel */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">হোস্টেল নির্বাচন করুন</label>
             <select
@@ -149,7 +161,7 @@ const SignUp = () => {
             </select>
           </div>
 
-          {/* Optional Details */}
+          {/* Optional Fields */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">প্রদত্ত কোড</label>
             <input
@@ -199,7 +211,6 @@ const SignUp = () => {
               className="w-full border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none transition text-sm"
             />
           </div>
-
 
           {/* Error */}
           {error && <p className="text-sm text-red-500">{error}</p>}
