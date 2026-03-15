@@ -69,30 +69,27 @@ public class AccountController : BaseController
     {
         var user = await _signInManager.UserManager.FindByEmailAsync(loginDto.Email);
 
-        if (user == null) return ErrorResponse("Invalid email", StatusCodes.Status401Unauthorized);
+        if (user == null) 
+            return ErrorResponse("Invalid email", StatusCodes.Status401Unauthorized);
+
+        var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, lockoutOnFailure: false);
+
+        if (!result.Succeeded)
+            return ErrorResponse("Invalid password", StatusCodes.Status401Unauthorized);
 
         if (!user.IsApproved) 
-        {
             return ErrorResponse("Account not approved yet. Contact your Hostel Manager.", StatusCodes.Status401Unauthorized);
-        }
 
-        var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, isPersistent: true, lockoutOnFailure: false);
-
-        if (result.Succeeded)
+        var userDto = new UserDto
         {
-            var userDto = new UserDto
-            {
-                DisplayName = user.DisplayName ?? "",
-                Email = user.Email ?? "",
-                UserName = user.UserName ?? "",
-                HostelId = user.HostelId ?? "",
-                Token = await _tokenService.CreateToken(user) 
-            };
-            
-            return SuccessResponse("Login successful", userDto);
-        }
-
-        return ErrorResponse("Invalid password", StatusCodes.Status401Unauthorized);
+            DisplayName = user.DisplayName ?? "",
+            Email = user.Email ?? "",
+            UserName = user.UserName ?? "",
+            HostelId = user.HostelId ?? "",
+            Token = await _tokenService.CreateToken(user) 
+        };
+        
+        return SuccessResponse("Login successful", userDto);
     }
 
     [AllowAnonymous]
