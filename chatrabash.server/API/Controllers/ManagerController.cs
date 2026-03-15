@@ -74,4 +74,32 @@ public class ManagerController : ControllerBase
 
         return BadRequest("Failed to approve user.");
     }
+
+    [HttpGet("rooms")]
+    public async Task<IActionResult> GetHostelRooms()
+    {
+        var managerHostelId = User.FindFirstValue("HostelId"); 
+        
+        if (string.IsNullOrEmpty(managerHostelId)) 
+            return BadRequest("Hostel ID missing in token.");
+        var rooms = await _context.Rooms
+            .Where(r => r.HostelId == managerHostelId)
+            .OrderBy(r => r.FloorNo)      
+            .ThenBy(r => r.RoomNumber)    
+            .Select(r => new 
+            {
+                r.Id,
+                r.RoomNumber,
+                r.FloorNo,
+                r.SeatCapacity,
+                r.SeatAvailable,
+                r.IsAcAvailable,
+                r.IsAttachedBathroomAvailable,
+                r.IsBalconyAvailable,
+                r.IsActive
+            })
+            .ToListAsync();
+
+        return Ok(rooms);
+    }
 }

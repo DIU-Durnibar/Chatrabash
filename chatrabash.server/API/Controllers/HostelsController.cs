@@ -1,23 +1,39 @@
-using System;
-using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Persistence;
 using Microsoft.EntityFrameworkCore;
+using Domain;
+using Persistence;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace API.Controllers;
 
-public class HostelsController(AppDbContext context) : BaseController
+[AllowAnonymous] // যে কেউ রেজিস্ট্রেশনের আগে এই লিস্ট দেখতে পারবে
+[Route("api/[controller]")]
+[ApiController]
+public class HostelsController : ControllerBase
 {
-    [AllowAnonymous] 
-    [HttpGet]
-    public async Task<ActionResult<List<Hostel>>> GetHostels()
+    private readonly AppDbContext _context;
+
+    public HostelsController(AppDbContext context)
     {
-        var hostels = await context.Hostels
-            .Select(h => new { h.Id, h.Name, ManagerName = h.Manager!.DisplayName, ManagerPhone = h.Manager.PhoneNumber})
+        _context = context;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetHostels()
+    {
+        var hostels = await _context.Hostels
+            .Include(h => h.Manager) 
+            .Select(h => new 
+            {
+                Id = h.Id,
+                Name = h.Name,
+                ManagerName = h.Manager != null ? h.Manager.DisplayName : "N/A",
+                ManagerPhone = h.Manager != null ? h.Manager.PhoneNumber : "N/A"
+            })
             .ToListAsync();
 
         return Ok(hostels);
     }
-
 }
