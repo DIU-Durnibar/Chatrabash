@@ -5,6 +5,6 @@ public class RoomSearchDto
     public string? HostelId { get; set; } 
     public int? SeatCapacity { get; set; }
     public bool? IsAcAvailable { get; set; }
-    public int? IsAttachedBathroomAvailable { get; set; }
-    public int? IsBalconyAvailable { get; set; }
+    public bool? IsAttachedBathroomAvailable { get; set; }
+    public bool? IsBalconyAvailable { get; set; }
 }

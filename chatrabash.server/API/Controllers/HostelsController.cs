@@ -54,10 +54,10 @@ public class HostelsController : BaseController
             query = query.Where(r => r.IsAcAvailable == searchParams.IsAcAvailable.Value);
 
         if (searchParams.IsAttachedBathroomAvailable.HasValue)
-            query = query.Where(r => r.IsAttachedBathroomAvailable == searchParams.IsAttachedBathroomAvailable.Value);
+            query = query.Where(r => r.IsAttachedBathroomAvailable == searchParams.IsAttachedBathroomAvailable);
 
         if (searchParams.IsBalconyAvailable.HasValue)
-            query = query.Where(r => r.IsBalconyAvailable == searchParams.IsBalconyAvailable.Value);
+            query = query.Where(r => r.IsBalconyAvailable == searchParams.IsBalconyAvailable);
 
         var result = await query.Select(r => new 
         {

@@ -12,10 +12,10 @@ public class DbInitializer
 {
     private static List<Room> _rooms = new List<Room>
     {
-        new Room { RoomNumber = "G-101", FloorNo = 0, SeatCapacity = 4, SeatAvailable = 0, IsAttachedBathroomAvailable = 0, IsBalconyAvailable = 0, IsAcAvailable = false, IsActive = true },
-        new Room { RoomNumber = "101", FloorNo = 1, SeatCapacity = 2, SeatAvailable = 1, IsAttachedBathroomAvailable = 1, IsBalconyAvailable = 1, IsAcAvailable = false, IsActive = true },
-        new Room { RoomNumber = "301", FloorNo = 3, SeatCapacity = 1, SeatAvailable = 1, IsAttachedBathroomAvailable = 1, IsBalconyAvailable = 1, IsAcAvailable = true, IsActive = true }, 
-        new Room { RoomNumber = "302", FloorNo = 3, SeatCapacity = 2, SeatAvailable = 0, IsAttachedBathroomAvailable = 1, IsBalconyAvailable = 1, IsAcAvailable = true, IsActive = true }
+        new Room { RoomNumber = "G-101", FloorNo = 0, SeatCapacity = 4, SeatAvailable = 0, IsAttachedBathroomAvailable = false, IsBalconyAvailable = true, IsAcAvailable = false, IsActive = true },
+        new Room { RoomNumber = "101", FloorNo = 1, SeatCapacity = 2, SeatAvailable = 1, IsAttachedBathroomAvailable = true, IsBalconyAvailable = true, IsAcAvailable = false, IsActive = true },
+        new Room { RoomNumber = "301", FloorNo = 3, SeatCapacity = 1, SeatAvailable = 1, IsAttachedBathroomAvailable = true, IsBalconyAvailable = true, IsAcAvailable = true, IsActive = true }, 
+        new Room { RoomNumber = "302", FloorNo = 3, SeatCapacity = 2, SeatAvailable = 0, IsAttachedBathroomAvailable = true, IsBalconyAvailable = true, IsAcAvailable = true, IsActive = true }
     };
 
     public static async Task SeedData(AppDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)

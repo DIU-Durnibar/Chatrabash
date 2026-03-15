@@ -10,4 +10,6 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 {
     public required DbSet<Room> Rooms { get; set; } 
     public required DbSet<Hostel> Hostels { get; set; }
+    public DbSet<MonthlyBill> MonthlyBills { get; set; }
+    public DbSet<PaymentRecord> PaymentRecords { get; set; }
 }

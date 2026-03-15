@@ -17,9 +17,9 @@ public class Room
 
     public int SeatAvailable { get; set; }
 
-    public int IsAttachedBathroomAvailable {get; set;}
+    public bool IsAttachedBathroomAvailable {get; set;}
 
-    public int IsBalconyAvailable {get; set;}
+    public bool IsBalconyAvailable {get; set;}
 
     public bool IsAcAvailable { get; set; } 
 
@@ -27,14 +27,5 @@ public class Room
         
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-
-    public class Commands
-    {
-        public class Create
-        {
-            public class Command
-            {
-            }
-        }
-    }
+    public decimal MonthlyRent { get; set; }
 }

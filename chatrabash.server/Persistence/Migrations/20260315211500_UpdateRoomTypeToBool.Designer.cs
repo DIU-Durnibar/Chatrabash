@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -10,9 +11,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260315211500_UpdateRoomTypeToBool")]
+    partial class UpdateRoomTypeToBool
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
@@ -35,101 +38,6 @@ namespace Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Hostels");
-                });
-
-            modelBuilder.Entity("Domain.MonthlyBill", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("AdditionalCharge")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("HostelId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("MealCharge")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("PaidAmount")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("PaidAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("SeatRent")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("UtilityCharge")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HostelId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("MonthlyBills");
-                });
-
-            modelBuilder.Entity("Domain.PaymentRecord", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("AmountPaid")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("MonthlyBillId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ReceivedByManagerId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TransactionId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MonthlyBillId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PaymentRecords");
                 });
 
             modelBuilder.Entity("Domain.Room", b =>
@@ -157,9 +65,6 @@ namespace Persistence.Migrations
 
                     b.Property<bool>("IsBalconyAvailable")
                         .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("MonthlyRent")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("RoomNumber")
                         .IsRequired()
@@ -404,44 +309,6 @@ namespace Persistence.Migrations
                     b.Navigation("Manager");
                 });
 
-            modelBuilder.Entity("Domain.MonthlyBill", b =>
-                {
-                    b.HasOne("Domain.Hostel", "Hostel")
-                        .WithMany()
-                        .HasForeignKey("HostelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Hostel");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Domain.PaymentRecord", b =>
-                {
-                    b.HasOne("Domain.MonthlyBill", "MonthlyBill")
-                        .WithMany("PaymentRecords")
-                        .HasForeignKey("MonthlyBillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MonthlyBill");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Domain.Room", b =>
                 {
                     b.HasOne("Domain.Hostel", "Hostel")
@@ -500,11 +367,6 @@ namespace Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.MonthlyBill", b =>
-                {
-                    b.Navigation("PaymentRecords");
                 });
 
             modelBuilder.Entity("Domain.User", b =>

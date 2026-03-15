@@ -73,7 +73,7 @@ public class BoarderController : BaseController
                 RoomNo = allocatedRoom.RoomNumber,
                 Floor = allocatedRoom.FloorNo,
                 AcAvailable = allocatedRoom.IsAcAvailable,
-                AttachedBath = allocatedRoom.IsAttachedBathroomAvailable == 1,
+                AttachedBath = allocatedRoom.IsAttachedBathroomAvailable == true,
                 RoomMates = roomMates
             }
         };

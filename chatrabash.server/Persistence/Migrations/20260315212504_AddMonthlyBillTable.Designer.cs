@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -10,9 +11,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260315212504_AddMonthlyBillTable")]
+    partial class AddMonthlyBillTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
@@ -93,45 +96,6 @@ namespace Persistence.Migrations
                     b.ToTable("MonthlyBills");
                 });
 
-            modelBuilder.Entity("Domain.PaymentRecord", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("AmountPaid")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("MonthlyBillId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ReceivedByManagerId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TransactionId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MonthlyBillId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PaymentRecords");
-                });
-
             modelBuilder.Entity("Domain.Room", b =>
                 {
                     b.Property<string>("Id")
@@ -157,9 +121,6 @@ namespace Persistence.Migrations
 
                     b.Property<bool>("IsBalconyAvailable")
                         .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("MonthlyRent")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("RoomNumber")
                         .IsRequired()
@@ -423,25 +384,6 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.PaymentRecord", b =>
-                {
-                    b.HasOne("Domain.MonthlyBill", "MonthlyBill")
-                        .WithMany("PaymentRecords")
-                        .HasForeignKey("MonthlyBillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MonthlyBill");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Domain.Room", b =>
                 {
                     b.HasOne("Domain.Hostel", "Hostel")
@@ -500,11 +442,6 @@ namespace Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.MonthlyBill", b =>
-                {
-                    b.Navigation("PaymentRecords");
                 });
 
             modelBuilder.Entity("Domain.User", b =>
