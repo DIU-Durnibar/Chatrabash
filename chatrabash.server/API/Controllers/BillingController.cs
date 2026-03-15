@@ -204,4 +204,51 @@ public class BillingController : BaseController
 
         return SuccessResponse("Billing analytics fetched successfully.", analyticsData);
     }
+
+    [HttpGet("user-history/{userId}")]
+    public async Task<IActionResult> GetUserBillingHistory(string userId)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId && u.HostelId == managerHostelId);
+        if (!userExists)
+            return ErrorResponse("User not found in your hostel.", StatusCodes.Status404NotFound);
+
+        var bills = await _context.MonthlyBills
+            .Where(b => b.UserId == userId)
+            .OrderByDescending(b => b.Year).ThenByDescending(b => b.Month)
+            .Select(b => new {
+                b.Id, 
+                b.Month, 
+                b.Year, 
+                b.TotalAmount, 
+                b.PaidAmount, 
+                DueAmount = b.TotalAmount - b.PaidAmount, 
+                b.Status
+            }).ToListAsync();
+
+        var payments = await _context.PaymentRecords
+            .Where(p => p.UserId == userId)
+            .OrderByDescending(p => p.PaymentDate)
+            .Select(p => new {
+                p.AmountPaid, 
+                PaymentDate = p.PaymentDate.ToString("dd MMM, yyyy"), 
+                p.PaymentMethod, 
+                p.TransactionId
+            }).ToListAsync();
+
+        var totalDue = bills.Sum(b => b.DueAmount);
+
+        var historyData = new 
+        {
+            TotalDue = totalDue,
+            Bills = bills,
+            PaymentHistory = payments
+        };
+
+        return SuccessResponse("User billing history fetched successfully.", historyData);
+    }
+
 }

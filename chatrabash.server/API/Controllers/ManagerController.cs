@@ -128,6 +128,7 @@ public class ManagerController : BaseController
             FloorNo = roomDto.FloorNo,
             SeatCapacity = roomDto.SeatCapacity,
             SeatAvailable = roomDto.SeatCapacity, 
+            MonthlyRent = roomDto.MonthlyRent,
             IsAttachedBathroomAvailable = roomDto.IsAttachedBathroomAvailable,
             IsBalconyAvailable = roomDto.IsBalconyAvailable,
             IsAcAvailable = roomDto.IsAcAvailable,
@@ -157,6 +158,7 @@ public class ManagerController : BaseController
 
         room.RoomNumber = roomDto.RoomNumber!;
         room.FloorNo = roomDto.FloorNo;
+        room.MonthlyRent = roomDto.MonthlyRent;
         room.IsAttachedBathroomAvailable = roomDto.IsAttachedBathroomAvailable;
         room.IsBalconyAvailable = roomDto.IsBalconyAvailable;
         room.IsAcAvailable = roomDto.IsAcAvailable;

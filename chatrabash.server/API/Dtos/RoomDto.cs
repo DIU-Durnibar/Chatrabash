@@ -9,4 +9,5 @@ public class RoomDto
     public bool IsBalconyAvailable { get; set; }
     public bool IsAcAvailable { get; set; }
     public bool IsActive { get; set; }
+    public decimal MonthlyRent { get; set; }
 }
