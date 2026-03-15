@@ -50,6 +50,8 @@ public class AccountController : BaseController
 
         if (result.Succeeded)
         {
+            await _signInManager.UserManager.AddToRoleAsync(user, "Boarder");
+            
             return Ok("Registration successful! Please wait for Hostel Manager's approval.");
         }
 

@@ -18,5 +18,15 @@ namespace API.Controllers
             if (result.IsSuccess && result.Value != null) return Ok(result.Value);
             return BadRequest(result.Error);
         }
+
+        protected ActionResult SuccessResponse(string message, object data = null)
+        {
+            return Ok(new { success = true, message, data });
+        }
+
+        protected ActionResult ErrorResponse(string message, int statusCode = StatusCodes.Status400BadRequest)
+        {
+            return StatusCode(statusCode, new { success = false, message });
+        }
     }
 }

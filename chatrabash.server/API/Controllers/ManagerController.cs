@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using Persistence; 
+using Persistence;
+using API.DTOs;
 
 namespace API.Controllers;
 
@@ -101,5 +102,60 @@ public class ManagerController : ControllerBase
             .ToListAsync();
 
         return Ok(rooms);
+    }
+
+    [HttpPost("rooms")]
+    public async Task<IActionResult> AddRoom([FromBody] RoomDto roomDto)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId)) return BadRequest("Hostel ID missing in token.");
+
+        var newRoom = new Room
+        {
+            RoomNumber = roomDto.RoomNumber,
+            FloorNo = roomDto.FloorNo,
+            SeatCapacity = roomDto.SeatCapacity,
+            SeatAvailable = roomDto.SeatCapacity, // নতুন রুমে ক্যাপাসিটি আর ফাঁকা সিট সমান হবে
+            IsAttachedBathroomAvailable = roomDto.IsAttachedBathroomAvailable,
+            IsBalconyAvailable = roomDto.IsBalconyAvailable,
+            IsAcAvailable = roomDto.IsAcAvailable,
+            IsActive = roomDto.IsActive,
+            HostelId = managerHostelId // ম্যাজিক! রুমটা অটোমেটিক ম্যানেজারের হোস্টেলে অ্যাসাইন হয়ে গেলো
+        };
+
+        _context.Rooms.Add(newRoom);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { Message = $"Room {newRoom.RoomNumber} added successfully." });
+    }
+
+    [HttpPut("rooms/{roomId}")]
+    public async Task<IActionResult> UpdateRoom(string roomId, [FromBody] RoomDto roomDto)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        
+        var room = await _context.Rooms.FindAsync(roomId);
+        if (room == null) return NotFound("Room not found.");
+
+        if (room.HostelId != managerHostelId) 
+            return StatusCode(403, "You can only update rooms in your own hostel.");
+
+        room.RoomNumber = roomDto.RoomNumber!;
+        room.FloorNo = roomDto.FloorNo;
+        room.IsAttachedBathroomAvailable = roomDto.IsAttachedBathroomAvailable;
+        room.IsBalconyAvailable = roomDto.IsBalconyAvailable;
+        room.IsAcAvailable = roomDto.IsAcAvailable;
+        room.IsActive = roomDto.IsActive;
+
+        if (roomDto.SeatCapacity != room.SeatCapacity)
+        {
+            var difference = roomDto.SeatCapacity - room.SeatCapacity;
+            room.SeatAvailable += difference; 
+            room.SeatCapacity = roomDto.SeatCapacity;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { Message = $"Room {room.RoomNumber} updated successfully." });
     }
 }
