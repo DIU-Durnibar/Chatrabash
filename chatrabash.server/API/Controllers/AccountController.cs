@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Persistence; 
+using Persistence;
+using API.Services; 
 
 namespace API.Controllers;
 
@@ -13,11 +14,13 @@ public class AccountController : BaseController
 {
     private readonly SignInManager<User> _signInManager;
     private readonly AppDbContext _context;
+    private readonly TokenService _tokenService; 
 
-    public AccountController(SignInManager<User> signInManager, AppDbContext context)
+    public AccountController(SignInManager<User> signInManager, AppDbContext context, TokenService tokenService)
     {
         _signInManager = signInManager;
         _context = context;
+        _tokenService = tokenService; 
     }
 
     [AllowAnonymous] 
@@ -38,7 +41,7 @@ public class AccountController : BaseController
             Email = registerDto.Email,
             UserName = registerDto.Username, 
             HostelId = registerDto.HostelId, 
-            IsApproved = false //
+            IsApproved = false 
         };
 
         var result = await _signInManager.UserManager.CreateAsync(user, registerDto.Password);
@@ -78,7 +81,8 @@ public class AccountController : BaseController
                 DisplayName = user.DisplayName ?? "",
                 Email = user.Email ?? "",
                 UserName = user.UserName ?? "",
-                HostelId = user.HostelId ?? ""
+                HostelId = user.HostelId ?? "",
+                Token = _tokenService.CreateToken(user) 
             };
         }
 
@@ -90,7 +94,6 @@ public class AccountController : BaseController
     public async Task<ActionResult<bool>> CheckUsername([FromQuery] string username)
     {
         var user = await _signInManager.UserManager.FindByNameAsync(username);
-        
         return Ok(user == null); 
     }
 }
