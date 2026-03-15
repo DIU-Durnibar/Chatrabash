@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 
 namespace API.Controllers;
 
-[AllowAnonymous] // যে কেউ রেজিস্ট্রেশনের আগে এই লিস্ট দেখতে পারবে
-[Route("api/[controller]")]
-[ApiController]
-public class HostelsController : ControllerBase
+[AllowAnonymous] 
+public class HostelsController : BaseController
 {
     private readonly AppDbContext _context;
 
@@ -34,6 +32,6 @@ public class HostelsController : ControllerBase
             })
             .ToListAsync();
 
-        return Ok(hostels);
+        return SuccessResponse("Hostels loaded successfully", hostels);
     }
 }

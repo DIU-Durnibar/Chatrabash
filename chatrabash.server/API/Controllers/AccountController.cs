@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using API.Services; 
+using Microsoft.AspNetCore.Http; 
 
 namespace API.Controllers;
 
@@ -28,11 +29,11 @@ public class AccountController : BaseController
     public async Task<ActionResult> Register(RegisterDto registerDto)
     {
         var hostel = await _context.Hostels.FindAsync(registerDto.HostelId);
-        if (hostel == null) return BadRequest("Invalid Hostel Selected");
+        if (hostel == null) return ErrorResponse("Invalid Hostel Selected");
 
         if (await _signInManager.UserManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
         {
-             return BadRequest("Username is already taken");
+             return ErrorResponse("Username is already taken");
         }
 
         var user = new User
@@ -51,8 +52,7 @@ public class AccountController : BaseController
         if (result.Succeeded)
         {
             await _signInManager.UserManager.AddToRoleAsync(user, "Boarder");
-            
-            return Ok("Registration successful! Please wait for Hostel Manager's approval.");
+            return SuccessResponse("Registration successful! Please wait for Hostel Manager's approval.");
         }
 
         foreach (var error in result.Errors)
@@ -65,22 +65,22 @@ public class AccountController : BaseController
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+    public async Task<ActionResult> Login(LoginDto loginDto)
     {
         var user = await _signInManager.UserManager.FindByEmailAsync(loginDto.Email);
 
-        if (user == null) return Unauthorized("Invalid email");
+        if (user == null) return ErrorResponse("Invalid email", StatusCodes.Status401Unauthorized);
 
         if (!user.IsApproved) 
         {
-            return Unauthorized("Account not approved yet. Contact your Hostel Manager.");
+            return ErrorResponse("Account not approved yet. Contact your Hostel Manager.", StatusCodes.Status401Unauthorized);
         }
 
         var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, isPersistent: true, lockoutOnFailure: false);
 
         if (result.Succeeded)
         {
-            return new UserDto
+            var userDto = new UserDto
             {
                 DisplayName = user.DisplayName ?? "",
                 Email = user.Email ?? "",
@@ -88,16 +88,18 @@ public class AccountController : BaseController
                 HostelId = user.HostelId ?? "",
                 Token = await _tokenService.CreateToken(user) 
             };
+            
+            return SuccessResponse("Login successful", userDto);
         }
 
-        return Unauthorized("Invalid password");
+        return ErrorResponse("Invalid password", StatusCodes.Status401Unauthorized);
     }
 
     [AllowAnonymous]
     [HttpGet("check-username")]
-    public async Task<ActionResult<bool>> CheckUsername([FromQuery] string username)
+    public async Task<ActionResult> CheckUsername([FromQuery] string username)
     {
         var user = await _signInManager.UserManager.FindByNameAsync(username);
-        return Ok(user == null); 
+        return SuccessResponse("Username check completed", new { isAvailable = user == null }); 
     }
 }

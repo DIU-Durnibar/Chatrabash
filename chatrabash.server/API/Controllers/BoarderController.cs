@@ -7,13 +7,12 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http; 
 
-namespace API.Dtos;
+namespace API.Controllers; 
 
 [Authorize(Roles = "Boarder")] 
-[Route("api/[controller]")]
-[ApiController]
-public class BoarderController : ControllerBase
+public class BoarderController : BaseController 
 {
     private readonly UserManager<User> _userManager;
     private readonly AppDbContext _context;
@@ -28,10 +27,12 @@ public class BoarderController : ControllerBase
     public async Task<IActionResult> GetDashboard()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+        if (string.IsNullOrEmpty(userId)) 
+            return ErrorResponse("Unauthorized access.", StatusCodes.Status401Unauthorized);
 
         var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return NotFound("User not found.");
+        if (user == null) 
+            return ErrorResponse("User not found.", StatusCodes.Status404NotFound);
 
         var hostel = await _context.Hostels
             .Include(h => h.Manager)
@@ -77,6 +78,6 @@ public class BoarderController : ControllerBase
             }
         };
 
-        return Ok(dashboardData);
+        return SuccessResponse("Dashboard data fetched successfully.", dashboardData);
     }
 }
