@@ -11,7 +11,11 @@ public class User : IdentityUser
     public string? ImageUrl { get; set; }
 
     public string HostelId { get; set; } = string.Empty;
+    public Hostel? Hostel { get; set; }
     public bool IsApproved { get; set; } = false;
+    public string? PreferredRoomId { get; set; } 
+    public string? PreferenceNote { get; set; }  
+    public string? AllocatedRoomId { get; set; } 
 
 }
 

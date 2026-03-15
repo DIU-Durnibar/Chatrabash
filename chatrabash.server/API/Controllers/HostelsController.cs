@@ -14,7 +14,7 @@ public class HostelsController(AppDbContext context) : BaseController
     public async Task<ActionResult<List<Hostel>>> GetHostels()
     {
         var hostels = await context.Hostels
-            .Select(h => new { h.Id, h.Name })
+            .Select(h => new { h.Id, h.Name, ManagerName = h.Manager!.DisplayName, ManagerPhone = h.Manager.PhoneNumber})
             .ToListAsync();
 
         return Ok(hostels);

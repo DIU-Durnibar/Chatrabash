@@ -8,6 +8,9 @@ public class Room
 
     public string RoomNumber { get; set; } = "Unknown"; 
 
+    public string? HostelId { get; set; } 
+    public Hostel? Hostel { get; set; }
+
     public int FloorNo { get; set; }
 
     public int SeatCapacity { get; set; } 
@@ -23,6 +26,7 @@ public class Room
     public bool IsActive { get; set; } = true; 
         
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
 
     public class Commands
     {

@@ -20,4 +20,6 @@ public class RegisterDto
 
     [Required]
     public string Password { get; set; } = string.Empty;
+    public string? PreferredRoomId { get; set; }
+    public string? PreferenceNote { get; set; }
 }

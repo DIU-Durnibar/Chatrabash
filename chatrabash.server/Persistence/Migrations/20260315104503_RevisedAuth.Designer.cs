@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -10,9 +11,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260315104503_RevisedAuth")]
+    partial class RevisedAuth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
@@ -22,17 +25,11 @@ namespace Persistence.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ManagerId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ManagerId")
-                        .IsUnique();
 
                     b.ToTable("Hostels");
                 });
@@ -47,9 +44,6 @@ namespace Persistence.Migrations
 
                     b.Property<int>("FloorNo")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("HostelId")
-                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsAcAvailable")
                         .HasColumnType("INTEGER");
@@ -74,8 +68,6 @@ namespace Persistence.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("HostelId");
 
                     b.ToTable("Rooms");
                 });
@@ -297,24 +289,6 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Hostel", b =>
-                {
-                    b.HasOne("Domain.User", "Manager")
-                        .WithOne("Hostel")
-                        .HasForeignKey("Domain.Hostel", "ManagerId");
-
-                    b.Navigation("Manager");
-                });
-
-            modelBuilder.Entity("Domain.Room", b =>
-                {
-                    b.HasOne("Domain.Hostel", "Hostel")
-                        .WithMany()
-                        .HasForeignKey("HostelId");
-
-                    b.Navigation("Hostel");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -364,11 +338,6 @@ namespace Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.User", b =>
-                {
-                    b.Navigation("Hostel");
                 });
 #pragma warning restore 612, 618
         }

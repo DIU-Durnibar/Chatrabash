@@ -41,7 +41,9 @@ public class AccountController : BaseController
             Email = registerDto.Email,
             UserName = registerDto.Username, 
             HostelId = registerDto.HostelId, 
-            IsApproved = false 
+            IsApproved = false,
+            PreferredRoomId = registerDto.PreferredRoomId,
+            PreferenceNote = registerDto.PreferenceNote
         };
 
         var result = await _signInManager.UserManager.CreateAsync(user, registerDto.Password);
