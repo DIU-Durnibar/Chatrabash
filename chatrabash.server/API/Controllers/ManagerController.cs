@@ -5,10 +5,11 @@ using Domain;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace API.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Manager")] 
 [Route("api/[controller]")]
 [ApiController]
 public class ManagerController : ControllerBase
@@ -20,12 +21,16 @@ public class ManagerController : ControllerBase
         _userManager = userManager;
     }
 
-
-    [HttpGet("pending-users/{hostelId}")]
-    public async Task<IActionResult> GetPendingUsers(string hostelId)
+    [HttpGet("pending-users")]
+    public async Task<IActionResult> GetPendingUsers()
     {
+        var managerHostelId = User.FindFirstValue("HostelId"); 
+
+        if (string.IsNullOrEmpty(managerHostelId)) 
+            return BadRequest("Hostel ID missing in token.");
+
         var pendingUsers = await _userManager.Users
-            .Where(u => u.HostelId == hostelId && !u.IsApproved)
+            .Where(u => u.HostelId == managerHostelId && !u.IsApproved)
             .Select(u => new 
             { 
                 u.Id, 
@@ -41,9 +46,15 @@ public class ManagerController : ControllerBase
     [HttpPost("approve-user/{userId}")]
     public async Task<IActionResult> ApproveUser(string userId)
     {
+        var managerHostelId = User.FindFirstValue("HostelId"); 
+
         var user = await _userManager.FindByIdAsync(userId);
         
         if (user == null) return NotFound("User not found.");
+        
+        if (user.HostelId != managerHostelId) 
+            return StatusCode(403, "You can only approve users of your own hostel.");
+
         if (user.IsApproved) return BadRequest("User is already approved.");
 
         user.IsApproved = true;

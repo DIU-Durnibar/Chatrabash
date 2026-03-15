@@ -37,8 +37,14 @@ public class DbInitializer
         new Room { RoomNumber = "401", FloorNo = 4, SeatCapacity = 4, SeatAvailable = 3, IsAttachedBathroomAvailable = 0, IsBalconyAvailable = 1, IsAcAvailable = false, IsActive = true }
     };
 
-    public static async Task SeedData(AppDbContext context, UserManager<User> userManager)
+    public static async Task SeedData(AppDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
     {
+        if (!roleManager.Roles.Any())
+        {
+            await roleManager.CreateAsync(new IdentityRole("Manager"));
+            await roleManager.CreateAsync(new IdentityRole("Boarder"));
+        }
+
         var hostel1Id = Guid.NewGuid().ToString();
         var hostel2Id = Guid.NewGuid().ToString();
         var hostel3Id = Guid.NewGuid().ToString();
@@ -73,12 +79,10 @@ public class DbInitializer
             hostel1Id = firstHostel?.Id ?? hostel1Id;
         }
 
-
         if (!userManager.Users.Any())
         {
             var users = new List<User>
             {
-            
                 new() {
                     DisplayName = "Khaled", 
                     UserName = "khaled@test.com", 
@@ -106,7 +110,18 @@ public class DbInitializer
             {
                 var result = await userManager.CreateAsync(user, "Pa$$w0rd");
                 
-                if (!result.Succeeded)
+                if (result.Succeeded)
+                {
+                    if (user.Email == "mojid@test.com")
+                    {
+                        await userManager.AddToRoleAsync(user, "Boarder");
+                    }
+                    else
+                    {
+                        await userManager.AddToRoleAsync(user, "Manager");
+                    }
+                }
+                else
                 {
                     foreach (var error in result.Errors)
                     {

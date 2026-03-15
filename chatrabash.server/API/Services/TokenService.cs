@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Domain;
+using Microsoft.AspNetCore.Identity; 
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,13 +13,15 @@ namespace API.Services;
 public class TokenService
 {
     private readonly IConfiguration _config;
+    private readonly UserManager<User> _userManager; 
 
-    public TokenService(IConfiguration config)
+    public TokenService(IConfiguration config, UserManager<User> userManager)
     {
         _config = config;
+        _userManager = userManager;
     }
 
-    public string CreateToken(User user)
+    public async Task<string> CreateToken(User user)
     {
         var claims = new List<Claim>
         {
@@ -28,6 +31,11 @@ public class TokenService
             new Claim("HostelId", user.HostelId) 
         };
 
+        var roles = await _userManager.GetRolesAsync(user);
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"] ?? "super_secret_key_which_is_at_least_64_characters_long_for_security"));
         

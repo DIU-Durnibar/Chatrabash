@@ -82,7 +82,7 @@ public class AccountController : BaseController
                 Email = user.Email ?? "",
                 UserName = user.UserName ?? "",
                 HostelId = user.HostelId ?? "",
-                Token = _tokenService.CreateToken(user) 
+                Token = await _tokenService.CreateToken(user) 
             };
         }
 

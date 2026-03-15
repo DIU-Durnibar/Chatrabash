@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-   opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddMediatR(x => {
@@ -28,32 +28,38 @@ builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfiles).Assemb
 builder.Services.AddValidatorsFromAssemblyContaining<Application.Rooms.Validators.Create>();
 
 builder.Services.AddTransient<API.Middleware.ExceptionMiddleware>();
+
 builder.Services.AddIdentityApiEndpoints<User>(opt =>
 {
     opt.User.RequireUniqueEmail = true;
 })
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<AppDbContext>();
+
 builder.Services.AddControllers(opt => 
 {
     var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
     opt.Filters.Add(new AuthorizeFilter(policy));
 });
+
 builder.Services.AddScoped<API.Services.TokenService>();
 var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"] ?? "super_secret_key_which_is_at_least_64_characters_long_for_security"));
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opt =>
+builder.Services.AddAuthentication(opt => 
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(opt =>
+{
+    opt.TokenValidationParameters = new TokenValidationParameters
     {
-        opt.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = key,
-            ValidateIssuer = false,
-            ValidateAudience = false
-        };
-    });
-
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = key,
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 
 var app = builder.Build();
 
@@ -73,8 +79,12 @@ try
 {
     var context = services.GetRequiredService<AppDbContext>();
     var userManager = services.GetRequiredService<UserManager<User>>();
+    
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>(); 
+    
     await context.Database.MigrateAsync();
-    await DbInitializer.SeedData(context, userManager);
+    
+    await DbInitializer.SeedData(context, userManager, roleManager); 
 }
 catch (Exception ex)
 {
