@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace API.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class ManagerController : ControllerBase
