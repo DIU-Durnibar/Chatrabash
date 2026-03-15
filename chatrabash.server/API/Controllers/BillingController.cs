@@ -167,4 +167,41 @@ public class BillingController : BaseController
 
         return SuccessResponse($"Successfully generated {newBills.Count} new bills. {existingBillUserIds.Count} bills were skipped as they already existed.");
     }
+
+    [HttpGet("analytics")]
+    public async Task<IActionResult> GetBillingAnalytics([FromQuery] int month, [FromQuery] int year)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+
+        var bills = await _context.MonthlyBills
+            .Where(b => b.HostelId == managerHostelId && b.Month == month && b.Year == year)
+            .ToListAsync();
+
+        if (!bills.Any())
+            return SuccessResponse("No bills generated for this month yet.", new { 
+                TotalBilled = 0, TotalCollected = 0, TotalDue = 0, FullyPaidCount = 0, PendingCount = 0 
+            });
+
+        var totalBilled = bills.Sum(b => b.TotalAmount);
+        var totalCollected = bills.Sum(b => b.PaidAmount);
+        var totalDue = totalBilled - totalCollected;
+
+        var fullyPaidCount = bills.Count(b => b.Status == "Paid");
+        var pendingCount = bills.Count(b => b.Status != "Paid"); 
+
+        var analyticsData = new 
+        {
+            Month = month,
+            Year = year,
+            TotalBilled = totalBilled,
+            TotalCollected = totalCollected,
+            TotalDue = totalDue,
+            FullyPaidCount = fullyPaidCount,
+            PendingCount = pendingCount
+        };
+
+        return SuccessResponse("Billing analytics fetched successfully.", analyticsData);
+    }
 }
