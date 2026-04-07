@@ -6,6 +6,7 @@ import StudentDashboard from "../Dashboards/StudentDashboard";
 import SignUp from "../Components/SignUp";
 import AvailableHostels from "../Pages/AvailableHostels";
 import HomePage from "../Home/HomePage";
+import Staff from "../Components/Staff";
 
 const Routes = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const Routes = createBrowserRouter([
       {
         path: "availablehostels", 
         Component: AvailableHostels
+      },
+      {
+        path: "staff", 
+        Component: Staff
       },
     ]
   },
