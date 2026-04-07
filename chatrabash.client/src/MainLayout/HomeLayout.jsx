@@ -3,6 +3,7 @@ import Footer from '../Components/Footer';
 import HomePage from '../Home/HomePage';
 import Navbar from '../Components/Navbar';
 import Sidebar from '../Components/Sidebar';
+import { Outlet } from 'react-router-dom';
 
 const HomeLayout = () => {
     return (
@@ -13,8 +14,8 @@ const HomeLayout = () => {
         <Sidebar />
 
         <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-          <HomePage></HomePage>
-
+          {/* <HomePage></HomePage> */}
+          <Outlet></Outlet>
           <Footer></Footer>
         </main>
       </div>

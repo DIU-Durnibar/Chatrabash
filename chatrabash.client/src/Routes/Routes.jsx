@@ -4,6 +4,8 @@ import HomeLayout from "../MainLayout/HomeLayout";
 import SignIn from "../Components/SignIn";
 import StudentDashboard from "../Dashboards/StudentDashboard";
 import SignUp from "../Components/SignUp";
+import AvailableHostels from "../Pages/AvailableHostels";
+import HomePage from "../Home/HomePage";
 
 const Routes = createBrowserRouter([
   {
@@ -15,8 +17,14 @@ const Routes = createBrowserRouter([
     Component:HomeLayout,
     children:[
       {
-        
-      }
+        index: true,
+        Component: HomePage
+      },
+      {
+        path: "availablehostels", 
+        Component: AvailableHostels
+      },
+
     ]
   },
   {
