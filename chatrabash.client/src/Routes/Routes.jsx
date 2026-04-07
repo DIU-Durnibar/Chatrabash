@@ -24,7 +24,6 @@ const Routes = createBrowserRouter([
         path: "availablehostels", 
         Component: AvailableHostels
       },
-
     ]
   },
   {

@@ -2,25 +2,25 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 
 const HomePage = () => {
-  const heroImageUrl = "https://images.pexels.com/photos/36448275/pexels-photo-36448275.jpeg?_gl=1*aggni9*_ga*NDIzNjc2NDE1LjE3NTkyNDU1NzE.*_ga_8JE65Q40S6*czE3NzU1Nzk1NzckbzIkZzEkdDE3NzU1Nzk3OTIkajU5JGwwJGgw";
+  const heroImageUrl = "https://images.pexels.com/photos/36086367/pexels-photo-36086367.jpeg?_gl=1*gsxssx*_ga*NDIzNjc2NDE1LjE3NTkyNDU1NzE.*_ga_8JE65Q40S6*czE3NzU1ODM4MzAkbzMkZzEkdDE3NzU1ODM5MDMkajU0JGwwJGgw";
 
   return (
     <div className="bg-gray-50 min-h-screen">
 
       {/* Hero Section with Background Image */}
       <section 
-        className="relative py-10 bg-contain bg-center bg-no-repeat"
+        className="relative py-10 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroImageUrl})` }}
       >
         {/* Overlay - টেক্সটকে ফুটিয়ে তোলার জন্য */}
-        <div className="absolute inset-0 bg-blue-900/40 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-blue-900/35 backdrop-blur-[1px]"></div>
 
         <div className="container mx-auto text-center px-6 relative z-10">
           <h2 className="text-4xl md:text-[54px] font-extrabold text-white mb-6 drop-shadow-lg">
             তোমার ছাত্রাবাস এখন সহজ এবং ডিজিটাল
           </h2>
-          <p className="text-lg md:text-2xl text-blue-50 mb-8 max-w-3xl mx-auto drop-shadow-md">
-            Chatrabash দিয়ে তুমি তোমার ছাত্রাবাসের সমস্ত কাজ করতে পারবে—স্টুডেন্টের পেমেন্ট, স্টাফের সেলারি, মিল রেকর্ড এবং আরও অনেক কিছু।
+          <p className="text-lg text-blue-50 mb-8 max-w-3xl mx-auto drop-shadow-md">
+            ছাত্রাবাস দিয়ে তুমি তোমার ছাত্রাবাসের সমস্ত কাজ করতে পারবে—স্টুডেন্টের পেমেন্ট, স্টাফের সেলারি, মিল রেকর্ড এবং আরও অনেক কিছু।
           </p>
           <div className="flex justify-center gap-4">
              <NavLink 
