@@ -17,6 +17,17 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        // ১. CORS Policy 
+        builder.Services.AddCors(opt =>
+        {
+            opt.AddPolicy("CorsPolicy", policy =>
+            {
+                policy.AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .WithOrigins("http://localhost:5173");
+            });
+        });
+
         builder.Services.AddControllers();
         builder.Services.AddDbContext<AppDbContext>(opt =>
         {
@@ -49,6 +60,7 @@ public partial class Program
         });
 
         builder.Services.AddScoped<API.Services.TokenService>();
+        
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"] ?? "super_secret_key_which_is_at_least_64_characters_long_for_security"));
 
         builder.Services.AddAuthentication(opt =>
@@ -72,11 +84,10 @@ public partial class Program
 
         var app = builder.Build();
 
+        // মিডলওয়্যার কনফিগারেশন
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-
-
             app.MapScalarApiReference(options =>
             {
                 options.WithTitle("Chatrabash API")
@@ -85,14 +96,18 @@ public partial class Program
         }
 
         app.UseMiddleware<API.Middleware.ExceptionMiddleware>();
-        app.UseCors("CorsPolicy");
+
+        // ২. ইউজ করার আগে অবশ্যই CORS থাকতে হবে
+        app.UseCors("CorsPolicy"); 
+
         app.UseAuthentication();
         app.UseAuthorization();
-        app.MapIdentityApi<User>();
 
+        app.MapIdentityApi<User>();
         app.MapControllers();
         app.MapGroup("api").MapIdentityApi<User>();
 
+        // ডাটাবেস মাইগ্রেশন ও সিডিং
         using var scope = app.Services.CreateScope();
         var services = scope.ServiceProvider;
 
@@ -100,11 +115,9 @@ public partial class Program
         {
             var context = services.GetRequiredService<AppDbContext>();
             var userManager = services.GetRequiredService<UserManager<User>>();
-
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
             await context.Database.MigrateAsync();
-
             await DbInitializer.SeedData(context, userManager, roleManager);
         }
         catch (Exception ex)
