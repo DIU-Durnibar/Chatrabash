@@ -6,15 +6,19 @@ import Sidebar from '../Components/Sidebar';
 
 const HomeLayout = () => {
     return (
-        <div>
-            <Navbar></Navbar>
-            <Sidebar></Sidebar>
-            <HomePage></HomePage>
+       <div className="flex flex-col h-screen overflow-hidden">
+      <Navbar />
 
-            <Footer></Footer>
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
 
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+          <HomePage></HomePage>
 
-        </div>
+          <Footer></Footer>
+        </main>
+      </div>
+    </div>
     );
 };
 
