@@ -1,6 +1,7 @@
 // HomePage.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import AvailableHostels from "../Pages/AvailableHostels";
 
 const HomePage = () => {
   return (
@@ -15,12 +16,7 @@ const HomePage = () => {
           <p className="text-lg md:text-xl text-gray-700 mb-6">
             Chatrabash দিয়ে তুমি তোমার ছাত্রাবাসের সমস্ত কাজ করতে পারবে—স্টুডেন্টের পেমেন্ট, স্টাফের সেলারি, মিল রেকর্ড এবং আরও অনেক কিছু।
           </p>
-          {/* <Link
-            to="/signup"
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-blue-700 transition"
-          >
-            শুরু করো এখন
-          </Link> */}
+          
         </div>
       </section>
 
@@ -51,6 +47,9 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+
+      <AvailableHostels></AvailableHostels>
 
       {/* About / Bangladeshi Perception Section */}
       <section className="bg-blue-50 py-20 px-6">

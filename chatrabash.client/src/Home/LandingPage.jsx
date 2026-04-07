@@ -11,7 +11,7 @@ const LandingPage = () => {
         className="w-full h-full object-cover"
       />
 
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-900/70 via-blue-800/40 to-transparent"></div>
+      <div className="absolute inset-0 bg-linear-to-b from-blue-900/70 via-blue-800/40 to-transparent"></div>
 
       <div className="absolute inset-0 flex flex-col justify-center items-center text-white px-6 text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-3">Welcome to Chatrabash-ছাত্রাবাস </h1>
@@ -23,7 +23,7 @@ const LandingPage = () => {
         <Link
           to="/home"
           className="relative inline-block px-8 py-4 rounded-full text-lg font-semibold text-white
-                     bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700
+                     bg-linear-to-r from-blue-500 via-blue-600 to-blue-700
                      shadow-lg shadow-blue-500/50
                      transform transition duration-300 hover:scale-105 hover:shadow-xl
                      active:scale-95"

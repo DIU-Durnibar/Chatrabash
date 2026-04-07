@@ -1,19 +1,24 @@
-import React, { useContext } from "react";
+import React from "react";
 import { NavLink, Link } from "react-router-dom";
-import { AuthContext } from "../AuthProvider/AuthProvider";
 import "./Navbar.css";
+import { HiOutlineOfficeBuilding } from "react-icons/hi";
+
 
 const Navbar = () => {
-  const { user, handleSignOut } = useContext(AuthContext);
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
+    <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
 
         {/* Brand */}
+        <div className="flex gap-3">
+          <div className="bg-blue-700 text-white p-1.5 rounded-lg">
+            <HiOutlineOfficeBuilding size={24} />
+        </div>
         <Link to="/home" className="text-2xl font-bold text-blue-700">
           Chatrabash-ছাত্রাবাস
         </Link>
+        </div>
 
         {/* Nav Links */}
         <nav className="hidden md:flex space-x-6 text-sm font-medium">
@@ -25,45 +30,12 @@ const Navbar = () => {
         </nav>
 
         {/* User Section */}
-        {user?.email ? (
-          <div className="flex items-center gap-4">
-
-            {/* Profile Info */}
-            <div className="flex items-center gap-3">
-
-              <img
-                src={user?.photoURL || "https://i.ibb.co/4pDNDk1/avatar.png"}
-                alt="User"
-                className="w-10 h-10 rounded-full border-2 border-blue-600"
-              />
-
-              <div className="flex flex-col leading-tight">
-                <span className="text-sm font-semibold text-gray-800">
-                  {user?.displayName || "User"}
-                </span>
-                <span className="text-xs text-gray-500">
-                  {user?.email}
-                </span>
-              </div>
-
-            </div>
-
-            {/* Logout */}
-            <button
-              onClick={handleSignOut}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-150"
-            >
-              Logout
-            </button>
-
-          </div>
-        ) : (
+        
           <Link to="/signIn">
             <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-150">
               সাইন ইন
             </button>
           </Link>
-        )}
       </div>
     </header>
   );
