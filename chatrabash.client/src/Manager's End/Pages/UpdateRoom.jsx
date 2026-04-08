@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { HiOutlineRefresh } from "react-icons/hi";
 
 const UpdateRoom = () => {
-  const { id } = useParams(); // রাউটার থেকে রুম আইডি
+  const { id } = useParams(); 
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -28,10 +28,28 @@ const UpdateRoom = () => {
         });
         const result = await response.json();
         if (result.success) {
-          // ডাটাবেস থেকে পাওয়া তথ্য ফর্মে সেট করা
-          setFormData(result.data);
+          // এখানে ডাটা Destructure করা হয়েছে যাতে ফর্মে ঠিকমতো বসে
+          const { 
+            roomNumber, 
+            floorNo, 
+            seatCapacity, 
+            isAttachedBathroomAvailable, 
+            isBalconyAvailable, 
+            isAcAvailable, 
+            isActive 
+          } = result.data;
+
+          setFormData({
+            roomNumber: roomNumber || "",
+            floorNo: floorNo || "",
+            seatCapacity: seatCapacity || "",
+            isAttachedBathroomAvailable: isAttachedBathroomAvailable ?? false,
+            isBalconyAvailable: isBalconyAvailable ?? false,
+            isAcAvailable: isAcAvailable ?? false,
+            isActive: isActive ?? true,
+          });
         } else {
-          alert("রুমের তথ্য পাওয়া যায়নি!");
+          alert("রুমের তথ্য পাওয়া যায়নি!");
         }
       } catch (error) {
         console.error("Error fetching room details:", error);
@@ -42,12 +60,10 @@ const UpdateRoom = () => {
     fetchRoomDetails();
   }, [id, token]);
 
-  // ২. আপডেট সাবমিট করা (PUT Request)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // ডাটাবেস অনুযায়ী সংখ্যায় রূপান্তর (তোমার database image অনুযায়ী)
     const payload = {
       roomNumber: formData.roomNumber,
       floorNo: parseInt(formData.floorNo),
@@ -71,10 +87,10 @@ const UpdateRoom = () => {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        alert("রুম সফলভাবে আপডেট হয়েছে!");
-        navigate("/home/rooms"); // আপডেট শেষে লিস্ট পেজে ফিরে যাওয়া
+        alert("রুম সফলভাবে আপডেট হয়েছে!");
+        navigate("/home/rooms"); 
       } else {
-        alert(result.message || "আপডেট করা সম্ভব হয়নি।");
+        alert(result.message || "আপডেট করা সম্ভব হয়নি।");
       }
     } catch (error) {
       alert("সার্ভার কানেকশন এরর!");
@@ -86,7 +102,7 @@ const UpdateRoom = () => {
   if (fetching) return <div className="p-10 text-center font-bold">ডাটা লোড হচ্ছে...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center font-medium">
+    <div className="min-h-screen bg-gray-50 p-6 flex justify-center items-start font-medium font-sans">
       <div className="w-full max-w-2xl bg-white shadow-xl rounded-sm overflow-hidden border border-gray-200">
         
         {/* হেডার */}
@@ -103,7 +119,7 @@ const UpdateRoom = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <div className="form-control">
-              <label className="label text-xs font-bold text-gray-500 uppercase">রুম নম্বর</label>
+              <label className="label text-xs font-bold text-gray-500 uppercase mr-3">রুম নম্বর</label>
               <input
                 type="text"
                 required
@@ -114,7 +130,7 @@ const UpdateRoom = () => {
             </div>
 
             <div className="form-control">
-              <label className="label text-xs font-bold text-gray-500 uppercase">ফ্লোর নম্বর</label>
+              <label className="label text-xs font-bold text-gray-500 uppercase mr-3">ফ্লোর নম্বর</label>
               <input
                 type="number"
                 required
@@ -125,7 +141,7 @@ const UpdateRoom = () => {
             </div>
 
             <div className="form-control">
-              <label className="label text-xs font-bold text-gray-500 uppercase">সিট ক্ষমতা</label>
+              <label className="label text-xs font-bold text-gray-500 uppercase mr-3">সিট ক্ষমতা</label>
               <input
                 type="number"
                 required
@@ -136,7 +152,7 @@ const UpdateRoom = () => {
             </div>
 
             <div className="form-control">
-              <label className="label text-xs font-bold text-gray-500 uppercase">অ্যাটাচড বাথরুম?</label>
+              <label className="label text-xs font-bold text-gray-500 uppercase mr-3">অ্যাটাচড বাথরুম?</label>
               <select
                  className="select select-bordered h-10 min-h-0 rounded-sm border border-gray-300 px-3"
                  value={formData.isAttachedBathroomAvailable}
@@ -148,7 +164,7 @@ const UpdateRoom = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-6 bg-slate-50 p-4 rounded-sm border border-slate-100">
+          <div className="flex flex-wrap gap-6 bg-slate-100 p-4 rounded-sm border border-slate-200">
             <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -159,14 +175,14 @@ const UpdateRoom = () => {
               <span className="text-sm font-semibold">এসি (AC) সুবিধা</span>
             </label>
 
-            <label className="flex items-center space-x-2 cursor-pointer">
+            <label className="flex items-center space-x-2 cursor-pointer">   
               <input
                 type="checkbox"
                 className="checkbox checkbox-sm"
                 checked={formData.isActive}
                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
               />
-              <span className="text-sm font-semibold text-green-700 font-bold">রুমটি অ্যাক্টিভ রাখুন</span>
+              <span className="text-sm font-bold text-green-700">রুমটি অ্যাক্টিভ রাখুন</span>
             </label>
           </div>
 
