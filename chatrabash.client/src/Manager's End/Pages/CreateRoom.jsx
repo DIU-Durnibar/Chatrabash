@@ -26,15 +26,14 @@ const CreateRoom = () => {
 
     setLoading(true);
 
-    // এপিআই রিকোয়েস্ট পেলোড তৈরি
     const payload = {
   roomNumber: formData.roomNumber,
   floorNo: parseInt(formData.floorNo),
   seatCapacity: parseInt(formData.seatCapacity),
-  isAttachedBathroomAvailable: formData.isAttachedBathroomAvailable == 1,  // 👈 fix
-  isBalconyAvailable: formData.isBalconyAvailable == 1,                    // 👈 fix
-  isAcAvailable: formData.isAcAvailable,                                   // already boolean
-  isActive: formData.isActive,                                             // already boolean
+  isAttachedBathroomAvailable: formData.isAttachedBathroomAvailable == 1,
+  isBalconyAvailable: formData.isBalconyAvailable == 1,
+  isAcAvailable: formData.isAcAvailable, 
+  isActive: formData.isActive,  
 };
 
 
@@ -63,7 +62,6 @@ const CreateRoom = () => {
           isActive: true,
         });
       } else {
-        // সার্ভারের নির্দিষ্ট এরর মেসেজ দেখাচ্ছি
         alert(result.message || "রুম তৈরি করা যায়নি। রুম নম্বরটি আগে থেকেই আছে কি না চেক করুন।");
       }
     } catch (error) {
@@ -135,17 +133,13 @@ const CreateRoom = () => {
               <label className="label text-xs font-bold text-gray-500 uppercase mr-3">অ্যাটাচড বাথরুম?</label>
 
               <select
-  value={formData.isAttachedBathroomAvailable}
-  onChange={(e) =>
-    setFormData({
-      ...formData,
-      isAttachedBathroomAvailable: e.target.value === "true",
-    })
-  }
->
-  <option value="false">না</option>
-  <option value="true">হ্যাঁ</option>
-</select>
+                 value={formData.isAttachedBathroomAvailable}
+                 onChange={(e) =>
+                 setFormData({ ...formData,isAttachedBathroomAvailable: e.target.value === "true",})
+                 }>
+                   <option value="false">না</option>
+                   <option value="true">হ্যাঁ</option>
+              </select>
 
 
 
@@ -181,7 +175,6 @@ const CreateRoom = () => {
 
 
 
-          {/* সাবমিট বাটন */}
           <div className="pt-4">
             <button
               type="submit"
