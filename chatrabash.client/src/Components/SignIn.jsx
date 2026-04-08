@@ -11,7 +11,6 @@ const SignIn = () => {
 
     const email = e.target.email.value;
     const password = e.target.password.value;
-
     const loginData = { email, password };
 
     try {
@@ -28,9 +27,7 @@ const SignIn = () => {
       if (result.success) {
         localStorage.setItem("token", result.data.token);
         localStorage.setItem("user", JSON.stringify(result.data));
-
-        alert("লগইন সফল হয়েছে!");
-        
+        alert("লগইন সফল হয়েছে!");
         navigate("/"); 
       } else {
         alert(result.message || "ইমেইল বা পাসওয়ার্ড ভুল!");
@@ -44,48 +41,74 @@ const SignIn = () => {
   };
 
   return (
-    <div className="py-4 bg-linear-to-br from-blue-100 via-blue-50 to-white flex items-center justify-center px-4 min-h-screen">
-      <div className="bg-white/80 backdrop-blur-md shadow-xl rounded-sm p-8 w-full max-w-md border border-blue-100">
-        <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">সাইন ইন করুন</h2>
-
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600 mb-1">ইমেইল</label>
-            <input
-              name="email"
-              type="email"
-              placeholder="আপনার ইমেইল লিখুন"
-              required
-              className="w-full border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none transition text-sm"
-            />
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-black">
+      <div className="w-full max-w-4xl bg-white shadow-lg rounded-sm overflow-hidden flex flex-col md:flex-row border border-gray-200">
+        
+        {/* Left Side - Navy Blue Info Panel */}
+        <div className="md:w-1/3 bg-[#001f3f] p-8 text-white flex flex-col justify-center items-center text-center">
+          <div className="mb-6">
+             {/* এখানে তুমি তোমার লোগো বা আইকন দিতে পারো */}
+             <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center text-3xl mb-4 mx-auto">🔑</div>
+             <h2 className="text-2xl font-bold uppercase tracking-tighter">Welcome Back</h2>
           </div>
+          <p className="text-xs text-blue-100 leading-relaxed opacity-80 italic">
+            আপনার অ্যাকাউন্টে লগইন করে হোস্টেলের সকল সুবিধা উপভোগ করুন।
+          </p>
+        </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600 mb-1">পাসওয়ার্ড</label>
-            <input
-              name="password"
-              type="password"
-              placeholder="আপনার পাসওয়ার্ড লিখুন"
-              required
-              className="w-full border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none transition text-sm"
-            />
+        {/* Right Side - Form Body */}
+        <div className="md:w-2/3 p-8 md:p-12">
+          <div className="bg-[#1a8a5a] text-white p-4 mb-8 rounded-t-md">
+             <h3 className="text-xl font-bold uppercase tracking-wide">স্টুডেন্ট সাইন ইন</h3>
           </div>
+          
+          <form onSubmit={handleLogin} className="space-y-5">
+            {/* Email Field */}
+            <div className="form-control">
+              <label className="label text-sm font-bold text-gray-500 uppercase">ইমেইল ঠিকানা</label>
+              <input
+                name="email"
+                type="email"
+                placeholder="example@mail.com"
+                required
+                className="input h-10 mt-1 input-bordered w-full focus:border-[#001f3f] focus:ring-1 focus:ring-[#001f3f] rounded-sm pl-3 bg-gray-50 text-sm transition-all"
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full bg-linear-to-r from-blue-600 to-blue-700 text-white py-2.5 rounded-xl font-semibold shadow-md transition-all duration-150 active:scale-95 ${
-              loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-lg hover:opacity-95"
-            }`}
-          >
-            {loading ? "প্রসেসিং..." : "সাইন ইন করুন"}
-          </button>
-        </form>
+            {/* Password Field */}
+            <div className="form-control">
+              <div className="flex justify-between items-center">
+                <label className="label text-sm font-bold text-gray-500 uppercase">পাসওয়ার্ড</label>
+                <Link to="/forgot-password" size="sm" className="text-[10px] text-blue-600 hover:underline uppercase font-bold">পাসওয়ার্ড ভুলে গেছেন?</Link>
+              </div>
+              <input
+                name="password"
+                type="password"
+                placeholder="********"
+                required
+                className="input h-10 mt-1 input-bordered w-full focus:border-[#001f3f] focus:ring-1 focus:ring-[#001f3f] rounded-sm pl-3 bg-gray-50 text-sm transition-all"
+              />
+            </div>
 
-        <p className="text-sm text-center mt-5 text-gray-600">
-          নতুন ব্যবহারকারী?{" "}
-          <Link to="/signUp" className="text-blue-600 hover:underline font-medium">অ্যাকাউন্ট তৈরি করুন</Link>
-        </p>
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full bg-[#001f3f] hover:bg-[#002d5c] text-white py-3 rounded-sm font-bold uppercase tracking-widest transition-all shadow-md active:scale-[0.98] ${
+                  loading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
+              >
+                {loading ? "প্রসেসিং..." : "লগইন করুন"}
+              </button>
+            </div>
+          </form>
+
+          <p className="mt-8 text-center text-xs text-gray-500 font-semibold uppercase">
+            নতুন ব্যবহারকারী?{" "}
+            <Link to="/signUp" className="text-blue-700 hover:underline ml-1">অ্যাকাউন্ট তৈরি করুন</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
