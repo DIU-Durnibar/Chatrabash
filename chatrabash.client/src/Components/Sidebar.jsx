@@ -15,7 +15,7 @@ const Sidebar = () => {
 
   const handleSignOut = () => {
     localStorage.clear(); 
-    window.location.href = "/signIn";
+    window.location.href = "/home";
   };
 
   const navLinkStyles = ({ isActive }) => {
@@ -33,6 +33,10 @@ const Sidebar = () => {
           <HiOutlineHome size={20} />
           <span>হোম</span>
         </NavLink>
+        <NavLink to="/home/availablehostels" className={navLinkStyles}>
+          <HiOutlineOfficeBuilding size={20} />
+          <span>সব হোস্টেল</span>
+        </NavLink>
 
         {isManager && (
           <>
@@ -49,24 +53,19 @@ const Sidebar = () => {
               <HiOutlinePlusCircle size={20} />
               <span>রুম তৈরি করুন</span>
             </NavLink>
-          </>
-        )}
 
-        <NavLink to="/home/availablehostels" className={navLinkStyles}>
-          <HiOutlineOfficeBuilding size={20} />
-          <span>সব হোস্টেল</span>
-        </NavLink>
-
-
-        <div className="p-4 border-t border-gray-100 mt-auto">
+            <div className=" border-t border-gray-300 pt-4">
           <button 
             onClick={handleSignOut}
-            className="flex items-center space-x-3 px-4 py-3 w-full text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 font-bold"
+            className="flex items-center space-x-3 px-4 py-3 w-full text-red-600 bg-red-50 hover:bg-red-100 rounded-sm transition-all duration-200 font-bold btn"
           >
             <HiOutlineLogout size={20} />
             <span>সাইন আউট</span>
           </button>
         </div>
+          </>
+        )}
+
       </nav>
 
       
