@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react"; // আইকন ইমপোর্ট
 
 const SignIn = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // পাসওয়ার্ড শো স্টেট
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,11 +28,12 @@ const SignIn = () => {
 
       if (result.success) {
         localStorage.setItem("token", result.data.token);
+        localStorage.setItem("userEmail", email); // সাইডবারের জন্য গুরুত্বপূর্ণ
         localStorage.setItem("user", JSON.stringify(result.data));
-        alert("লগইন সফল হয়েছে!");
+        alert("লগইন সফল হয়েছে!");
         navigate("/"); 
       } else {
-        alert(result.message || "ইমেইল বা পাসওয়ার্ড ভুল!");
+        alert(result.message || "ইমেইল বা পাসওয়ার্ড ভুল!");
       }
     } catch (error) {
       console.error("Login Error:", error);
@@ -44,10 +47,9 @@ const SignIn = () => {
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-black">
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-sm overflow-hidden flex flex-col md:flex-row border border-gray-200">
         
-        {/* Left Side - Navy Blue Info Panel */}
+        {/* Left Side Panel */}
         <div className="md:w-1/3 bg-[#001f3f] p-8 text-white flex flex-col justify-center items-center text-center">
           <div className="mb-6">
-             {/* এখানে তুমি তোমার লোগো বা আইকন দিতে পারো */}
              <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center text-3xl mb-4 mx-auto">🔑</div>
              <h2 className="text-2xl font-bold uppercase tracking-tighter">Welcome Back</h2>
           </div>
@@ -63,7 +65,6 @@ const SignIn = () => {
           </div>
           
           <form onSubmit={handleLogin} className="space-y-5">
-            {/* Email Field */}
             <div className="form-control">
               <label className="label text-sm font-bold text-gray-500 uppercase">ইমেইল ঠিকানা</label>
               <input
@@ -75,22 +76,30 @@ const SignIn = () => {
               />
             </div>
 
-            {/* Password Field */}
+            {/* Password Field with Eye Toggle */}
             <div className="form-control">
               <div className="flex justify-between items-center">
-                <label className="label text-sm font-bold text-gray-500 uppercase">পাসওয়ার্ড</label>
-                <Link to="/forgot-password" size="sm" className="text-[10px] text-blue-600 hover:underline uppercase font-bold">পাসওয়ার্ড ভুলে গেছেন?</Link>
+                <label className="label text-sm font-bold text-gray-500 uppercase">পাসওয়ার্ড</label>
+                <Link to="/forgot-password" size="sm" className="text-[10px] text-blue-600 hover:underline uppercase font-bold">পাসওয়ার্ড ভুলে গেছেন?</Link>
               </div>
-              <input
-                name="password"
-                type="password"
-                placeholder="********"
-                required
-                className="input h-10 mt-1 input-bordered w-full focus:border-[#001f3f] focus:ring-1 focus:ring-[#001f3f] rounded-sm pl-3 bg-gray-50 text-sm transition-all"
-              />
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="********"
+                  required
+                  className="input h-10 mt-1 input-bordered w-full focus:border-[#001f3f] focus:ring-1 focus:ring-[#001f3f] rounded-sm pl-3 pr-10 bg-gray-50 text-sm transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
-            {/* Submit Button */}
             <div className="pt-4">
               <button
                 type="submit"

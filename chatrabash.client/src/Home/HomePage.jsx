@@ -3,7 +3,7 @@ import Marquee from "react-fast-marquee";
 import { Link, NavLink } from "react-router-dom";
 
 const HomePage = () => {
-  const heroImageUrl = "https://images.pexels.com/photos/36086367/pexels-photo-36086367.jpeg?_gl=1*gsxssx*_ga*NDIzNjc2NDE1LjE3NTkyNDU1NzE.*_ga_8JE65Q40S6*czE3NzU1ODM4MzAkbzMkZzEkdDE3NzU1ODM5MDMkajU0JGwwJGgw";
+  const heroImageUrl = "https://images.unsplash.com/photo-1709805619372-40de3f158e83?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aG9zdGVsfGVufDB8fDB8fHww";
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -14,23 +14,23 @@ const HomePage = () => {
         style={{ backgroundImage: `url(${heroImageUrl})` }}
       >
         {/* Overlay - টেক্সটকে ফুটিয়ে তোলার জন্য */}
-        <div className="absolute inset-0 bg-blue-900/35 backdrop-blur-[1px]"></div>
+        <div className="absolute inset-0 bg-blue-900/50"></div>
 
         <div className="container mx-auto text-center px-6 relative z-10">
-          <h2 className="text-4xl md:text-[54px] font-extrabold text-white mb-6 drop-shadow-lg">
+          <h2 className="text-4xl md:text-[54px] font-extrabold text-white mb-6 drop-shadow-lg leading-20">
             তোমার ছাত্রাবাস এখন সহজ এবং ডিজিটাল
           </h2>
 
           <Marquee>
-           <p className="text-lg text-blue-50 mb-8 mx-auto drop-shadow-md">
-            — ছাত্রাবাস দিয়ে তুমি তোমার ছাত্রাবাসের সমস্ত কাজ করতে পারবে — স্টুডেন্টের পেমেন্ট, স্টাফের সেলারি, মিল রেকর্ড এবং আরও অনেক কিছু —
+           <p className="text-lg text-blue-50 mb-8 mx-auto drop-shadow-md ml-24">
+             ছাত্রাবাস দিয়ে তুমি তোমার ছাত্রাবাসের সমস্ত কাজ করতে পারবে —  পেমেন্ট, স্টাফের সেলারি, মিল রেকর্ড এবং আরও অনেক কিছু !
           </p>
           </Marquee>
 
           <div className="flex justify-center gap-4">
              <NavLink 
                 to="/home/availablehostels" 
-                className="bg-white text-blue-700 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition shadow-lg">
+                className="bg-white text-blue-700 px-8 py-2 rounded-md w-1/5 font-bold hover:bg-blue-50 transition shadow-lg">
                    রুম খুঁজুন
              </NavLink>
           </div>
