@@ -10,6 +10,7 @@ import PendingUsers from "../Manager's End/Pages/PendingUsers";
 import AllHostel from "../Manager's End/Pages/AllHostel";
 import CreateRoom from "../Manager's End/Pages/CreateRoom";
 import HostelRooms from "../Manager's End/Pages/HostelRooms";
+import UpdateRoom from "../Manager's End/Pages/UpdateRoom";
 
 const Routes = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const Routes = createBrowserRouter([
       {
         path: "rooms", 
         Component: HostelRooms
+      },
+      {
+        path: "update-rooms/:id",
+        Component: UpdateRoom
       },
     ]
   },
