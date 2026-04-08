@@ -78,7 +78,7 @@ const PendingUsers = () => {
         <header className="mb-8 border-b pb-4 flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold text-[#001f3f]">পেন্ডিং রেজিস্ট্রেশন</h2>
-            <p className="text-sm text-gray-500">নতুন স্টুডেন্টদের আবেদন রিভিউ করুন</p>
+            <p className="text-sm text-gray-500 pt-2">নতুন আবেদন রিভিউ করুন</p>
           </div>
           <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
             মোট: {pendingUsers.length}
