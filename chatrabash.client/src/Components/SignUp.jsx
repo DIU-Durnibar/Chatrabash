@@ -115,13 +115,20 @@ const SignUp = () => {
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-black">
       <div className="w-full max-w-5xl bg-white shadow-lg rounded-sm overflow-hidden flex flex-col md:flex-row border border-gray-200">
         
-        {/* Left Info Panel */}
+       {/* Left Side - Navy Blue Info Panel */}
         <div className="md:w-1/4 bg-[#001f3f] p-8 text-white flex flex-col justify-start">
-          <h2 className="text-2xl font-bold mb-6 border-b border-blue-800 pb-2 uppercase tracking-tighter">Information</h2>
-          <p className="text-xs text-blue-100 leading-relaxed mb-6">
-            সঠিক তথ্য দিয়ে ফর্মটি পূরণ করুন। আপনার আবেদনটি অ্যাডমিন দ্বারা অ্যাপ্রুভ হওয়ার পর আপনি লগইন করতে পারবেন।
+          <h2 className="text-2xl font-bold mb-6 border-b border-blue-800 pb-2">ইনফরমেশন</h2>
+          <p className="text-sm text-blue-100 leading-relaxed mb-6">
+            সঠিক তথ্য দিয়ে ফর্মটি পূরণ করুন। আপনার আবেদনটি হোস্টেল অ্যাডমিন দ্বারা অ্যাপ্রুভ হওয়ার পর আপনি লগইন করতে পারবেন।
           </p>
+          <ul className="space-y-3 text-xs opacity-80">
+            <li>• ইমেইল ভেরিফিকেশন প্রয়োজন হতে পারে</li>
+            <li>• পাসওয়ার্ড গোপন রাখুন</li>
+            <li>• সঠিক হোস্টেল আইডি নির্বাচন করুন</li>
+          </ul>
         </div>
+
+
 
         {/* Right Form Body */}
         <div className="md:w-3/4 p-6 md:p-10">
@@ -176,14 +183,13 @@ const SignUp = () => {
             </div>
 
             <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">পাসওয়ার্ড *</label>
+              <label className="label text-sm font-bold text-gray-500 uppercase">মোবাইল নাম্বার *</label>
               <input 
-                type="number" name="number" value={formData.password} 
-                onChange={handleChange} onBlur={() => validatePassword(formData.password)}
-                placeholder="********" required
-                className={`input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm ${passwordError ? 'border-red-500' : ''}`} 
+                type="number" name="mobile" value={extraInfo.mobile} 
+                onChange={handleChange} 
+                placeholder="017XXXXXXXX" required
+                className="input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm focus:border-[#001f3f] focus:ring-1 focus:ring-[#001f3f]" 
               />
-              {passwordError && <p className="text-[10px] text-red-500 mt-1 font-bold leading-tight">{passwordError}</p>}
             </div>
 
             {/* ৬. এপিআই থেকে আসা হোস্টেল লিস্ট এখানে শো করবে */}
