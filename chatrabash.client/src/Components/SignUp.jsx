@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // ১. এপিআই পেলোড অনুযায়ী মূল স্টেট
   const [formData, setFormData] = useState({
@@ -199,17 +201,34 @@ const SignUp = () => {
               />
             </div>
 
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">পাসওয়ার্ড *</label>
-              <input 
-                type="password" name="password" value={formData.password} 
-                onChange={handleChange} 
-                onBlur={() => validatePassword(formData.password)}
-                placeholder="********" required
-                className={`input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm ${passwordError ? 'border-red-500' : ''}`} 
-              />
-              {passwordError && <p className="text-[10px] text-red-500 mt-1 font-bold leading-tight">{passwordError}</p>}
-            </div>
+            <div className="form-control relative">
+  <label className="label text-sm font-bold text-gray-500 uppercase">পাসওয়ার্ড *</label>
+  <div className="relative">
+    <input 
+      type={showPassword ? "text" : "password"} // স্টেট অনুযায়ী টাইপ চেঞ্জ হবে
+      name="password" 
+      value={formData.password} 
+      onChange={handleChange} 
+      onBlur={() => validatePassword(formData.password)}
+      placeholder="********" 
+      required
+      className={`input h-10 mt-1 input-bordered w-full rounded-sm pl-3 pr-10 bg-gray-50 text-sm ${passwordError ? 'border-red-500' : ''}`} 
+    />
+    {/* আইকন বাটন */}
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5 text-gray-400 hover:text-gray-600 transition-colors"
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </button>
+  </div>
+  {passwordError && (
+    <p className="text-[10px] text-red-500 mt-1 font-bold leading-tight">
+      {passwordError}
+    </p>
+  )}
+</div>
 
             <div className="form-control">
               <label className="label text-sm font-bold text-gray-500 uppercase">মোবাইল নাম্বার *</label>
@@ -252,7 +271,7 @@ const SignUp = () => {
                 name="bloodGroup" value={extraInfo.bloodGroup}
                 onChange={handleChange} 
                 required
-                className="select h-10 min-h-[40px] mt-1 select-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm"
+                className="select h-10 min-h-10 mt-1 select-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm"
               >
                 <option value="">সিলেক্ট করুন</option>
                 <option>A+</option><option>B+</option><option>O+</option><option>AB+</option>
