@@ -20,14 +20,7 @@ const Navbar = () => {
         </Link>
         </div>
 
-        {/* Nav Links */}
-        <nav className="hidden md:flex space-x-6 text-sm font-medium">
-          <NavLink to="/home" className="nav-link">Home</NavLink>
-          <NavLink to="/hostels" className="nav-link">Hostels</NavLink>
-          <NavLink to="/students" className="nav-link">Students</NavLink>
-          <NavLink to="/staff" className="nav-link">Staff</NavLink>
-          <NavLink to="/pricing" className="nav-link">Pricing</NavLink>
-        </nav>
+       
 
         {/* User Section */}
         
