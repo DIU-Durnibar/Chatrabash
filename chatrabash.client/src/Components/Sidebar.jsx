@@ -15,7 +15,7 @@ const Sidebar = () => {
 
   const handleSignOut = () => {
     localStorage.clear(); 
-    window.location.href = "/signIn"; // লগআউটের সময়ও রিফ্রেশ হবে
+    window.location.href = "/signIn";
   };
 
   const navLinkStyles = ({ isActive }) => {
