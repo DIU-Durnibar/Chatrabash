@@ -62,7 +62,7 @@ const SignUp = () => {
         setUsernameStatus({
           isChecking: false,
           isAvailable: result.data.isAvailable,
-          message: result.data.isAvailable ? "ইউজারনেমটি অ্যাভেলেবল!" : "এই ইউজারনেমটি ইতিমধ্যে নেওয়া হয়েছে।"
+          message: result.data.isAvailable ? "ইউজারনেমটি অ্যাভেলেবল! " : "এই ইউজারনেমটি ইতিমধ্যে নেওয়া হয়েছে।"
         });
       }
     } catch (error) {
