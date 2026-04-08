@@ -33,7 +33,6 @@ const SignIn = () => {
         
         navigate("/"); 
       } else {
-        // লগইন ব্যর্থ হলে মেসেজ দেখানো
         alert(result.message || "ইমেইল বা পাসওয়ার্ড ভুল!");
       }
     } catch (error) {
@@ -46,10 +45,9 @@ const SignIn = () => {
 
   return (
     <div className="py-4 bg-linear-to-br from-blue-100 via-blue-50 to-white flex items-center justify-center px-4 min-h-screen">
-      <div className="bg-white/80 backdrop-blur-md shadow-xl rounded-3xl p-8 w-full max-w-md border border-blue-100">
+      <div className="bg-white/80 backdrop-blur-md shadow-xl rounded-sm p-8 w-full max-w-md border border-blue-100">
         <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">সাইন ইন করুন</h2>
 
-        {/* ফর্ম ট্যাগ ঠিক করা হয়েছে: onClick এর বদলে onSubmit */}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-600 mb-1">ইমেইল</label>
