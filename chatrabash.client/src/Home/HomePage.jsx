@@ -1,4 +1,5 @@
 import React from "react";
+import Marquee from "react-fast-marquee";
 import { Link, NavLink } from "react-router-dom";
 
 const HomePage = () => {
@@ -19,9 +20,13 @@ const HomePage = () => {
           <h2 className="text-4xl md:text-[54px] font-extrabold text-white mb-6 drop-shadow-lg">
             তোমার ছাত্রাবাস এখন সহজ এবং ডিজিটাল
           </h2>
-          <p className="text-lg text-blue-50 mb-8 max-w-3xl mx-auto drop-shadow-md">
-            ছাত্রাবাস দিয়ে তুমি তোমার ছাত্রাবাসের সমস্ত কাজ করতে পারবে—স্টুডেন্টের পেমেন্ট, স্টাফের সেলারি, মিল রেকর্ড এবং আরও অনেক কিছু।
+
+          <Marquee>
+           <p className="text-lg text-blue-50 mb-8 mx-auto drop-shadow-md">
+            — ছাত্রাবাস দিয়ে তুমি তোমার ছাত্রাবাসের সমস্ত কাজ করতে পারবে — স্টুডেন্টের পেমেন্ট, স্টাফের সেলারি, মিল রেকর্ড এবং আরও অনেক কিছু —
           </p>
+          </Marquee>
+
           <div className="flex justify-center gap-4">
              <NavLink 
                 to="/home/availablehostels" 
