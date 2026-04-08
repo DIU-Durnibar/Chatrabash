@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react"; // আইকন ইমপোর্ট
+import { Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react"; 
 
 const SignIn = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // পাসওয়ার্ড শো স্টেট
+  const [showPassword, setShowPassword] = useState(false); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -28,10 +27,10 @@ const SignIn = () => {
 
       if (result.success) {
         localStorage.setItem("token", result.data.token);
-        localStorage.setItem("userEmail", email); // সাইডবারের জন্য গুরুত্বপূর্ণ
+        localStorage.setItem("userEmail", email); 
         localStorage.setItem("user", JSON.stringify(result.data));
         alert("লগইন সফল হয়েছে!");
-        navigate("/"); 
+        window.location.href = "/home";
       } else {
         alert(result.message || "ইমেইল বা পাসওয়ার্ড ভুল!");
       }
