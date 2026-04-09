@@ -116,7 +116,7 @@ public class BoarderController : BaseController
         return SuccessResponse("Your bills fetched successfully.", myBills);
     }
 
-[HttpPost("pay-bill-mock")]
+    [HttpPost("pay-bill-mock")]
     public async Task<IActionResult> MockPayBill([FromBody] MakePaymentDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
