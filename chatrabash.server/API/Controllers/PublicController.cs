@@ -34,7 +34,7 @@ public class PublicController : BaseController
     {
         var featured = await _context.Hostels
             .Include(h => h.Upazila)
-            .Include(h => h.Rooms.Where(r => r.IsActive && r.SeatAvailable > 0))
+            .Include(h => h.Rooms.Where(r => r.IsActive))
             .Where(h => h.IsActive && h.IsFeatured) 
             .Take(3) 
             .Select(h => new 
