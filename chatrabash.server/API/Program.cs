@@ -84,7 +84,6 @@ public partial class Program
 
         var app = builder.Build();
 
-        // মিডলওয়্যার কনফিগারেশন
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
@@ -97,9 +96,9 @@ public partial class Program
 
         app.UseMiddleware<API.Middleware.ExceptionMiddleware>();
 
-        // ২. ইউজ করার আগে অবশ্যই CORS থাকতে হবে
         app.UseCors("CorsPolicy"); 
 
+        app.UseStaticFiles();
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -107,7 +106,6 @@ public partial class Program
         app.MapControllers();
         app.MapGroup("api").MapIdentityApi<User>();
 
-        // ডাটাবেস মাইগ্রেশন ও সিডিং
         using var scope = app.Services.CreateScope();
         var services = scope.ServiceProvider;
 
