@@ -20,4 +20,8 @@ public class Hostel
     public Division? Division { get; set; }
     public District? District { get; set; }
     public Upazila? Upazila { get; set; }
+
+    public int? SubscriptionPackageId { get; set; }
+    public SubscriptionPackage? SubscriptionPackage { get; set; }
+    public bool IsActive { get; set; } = true;
 }  

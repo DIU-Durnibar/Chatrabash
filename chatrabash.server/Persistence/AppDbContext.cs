@@ -15,4 +15,5 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public DbSet<Division> Divisions { get; set; }
     public DbSet<District> Districts { get; set; }
     public DbSet<Upazila> Upazilas { get; set; }
+    public DbSet<SubscriptionPackage> SubscriptionPackages { get; set; }
 }
