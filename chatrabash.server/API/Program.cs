@@ -24,7 +24,7 @@ public partial class Program
             {
                 policy.AllowAnyHeader()
                       .AllowAnyMethod()
-                      .WithOrigins("http://localhost:5173");
+                      .AllowAnyOrigin();;
             });
         });
 
