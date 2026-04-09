@@ -24,4 +24,12 @@ public class Hostel
     public int? SubscriptionPackageId { get; set; }
     public SubscriptionPackage? SubscriptionPackage { get; set; }
     public bool IsActive { get; set; } = true;
+
+    public ICollection<HostelPhoto> Photos { get; set; } = new List<HostelPhoto>();
+
+    public ICollection<Room> Rooms { get; set; } = new List<Room>();
+
+    public double Rating { get; set; } = 4.5;
+    public int ReviewCount { get; set; } = 0;
+    public bool IsFeatured { get; set; } = false;
 }  
