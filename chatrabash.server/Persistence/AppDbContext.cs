@@ -12,4 +12,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public required DbSet<Hostel> Hostels { get; set; }
     public DbSet<MonthlyBill> MonthlyBills { get; set; }
     public DbSet<PaymentRecord> PaymentRecords { get; set; }
+    public DbSet<Division> Divisions { get; set; }
+    public DbSet<District> Districts { get; set; }
+    public DbSet<Upazila> Upazilas { get; set; }
 }
