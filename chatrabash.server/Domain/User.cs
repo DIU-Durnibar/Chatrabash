@@ -16,6 +16,7 @@ public class User : IdentityUser
     public string? PreferredRoomId { get; set; } 
     public string? PreferenceNote { get; set; }  
     public string? AllocatedRoomId { get; set; } 
+    public string ProfilePictureUrl { get; set; } = string.Empty;
 
 }
 
