@@ -12,4 +12,12 @@ public class Hostel
 
     [ForeignKey("ManagerId")]
     public User? Manager { get; set; }
+    public int? DivisionId { get; set; }
+    public int? DistrictId { get; set; }
+    public int? UpazilaId { get; set; }
+    public string AreaDescription { get; set; } = string.Empty;
+
+    public Division? Division { get; set; }
+    public District? District { get; set; }
+    public Upazila? Upazila { get; set; }
 }  
