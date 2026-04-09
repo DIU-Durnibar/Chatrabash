@@ -20,9 +20,8 @@ public class HostelsController : BaseController
         _context = context;
     }
 
-    // ১. তোমার পুরনো মেথড: বেসিক হোস্টেল লিস্ট
     [HttpGet]
-    public async Task<IActionResult> GetHostels()
+    public async Task<IActionResult>  GetHostels()
     {
         var hostels = await _context.Hostels
             .Include(h => h.Manager) 
@@ -38,7 +37,6 @@ public class HostelsController : BaseController
         return SuccessResponse("Hostels loaded successfully", hostels);
     }
 
-    // ২. নতুন অ্যাডভান্সড সার্চ এপিআই (সব ফিল্টারসহ)
     [HttpGet("search")]
     public async Task<IActionResult> SearchHostels([FromQuery] HostelSearchDto searchParams)
     {
@@ -83,7 +81,6 @@ public class HostelsController : BaseController
         return SuccessResponse($"{result.Count} hostels found.", result);
     }
 
-    // ৩. নতুন মেথড: সিঙ্গেল হোস্টেল ডিটেইলস
     [HttpGet("{id}")]
     public async Task<IActionResult> GetHostelDetails(string id)
     {
@@ -129,7 +126,6 @@ public class HostelsController : BaseController
         return SuccessResponse("Hostel details fetched successfully.", details);
     }
 
-    // ৪. তোমার পুরনো মেথড: স্পেসিফিক রুম সার্চ
     [HttpGet("search-rooms")]
     public async Task<IActionResult> SearchRooms([FromQuery] RoomSearchDto searchParams)
     {
