@@ -7,7 +7,6 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // ১. এপিআই পেলোড অনুযায়ী মূল স্টেট
   const [formData, setFormData] = useState({
     displayName: "",
     username: "",

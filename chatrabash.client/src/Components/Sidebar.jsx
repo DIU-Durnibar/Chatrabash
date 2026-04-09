@@ -1,18 +1,22 @@
 import React from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { 
   HiOutlineHome, 
   HiOutlineOfficeBuilding, 
   HiOutlineUsers, 
-  HiOutlineUserGroup, 
-  HiOutlineTag, 
-  HiOutlineLogin, 
-  HiOutlinePlusCircle
+  HiOutlinePlusCircle,
+  HiOutlineLogout 
 } from "react-icons/hi"; 
 
 const Sidebar = () => {
+  
   const userEmail = localStorage.getItem("userEmail");
-  const isManager = userEmail === "khaled@test.com"; // হার্ডকোডেড চেক
+  const isManager = userEmail === "khaled@test.com";
+
+  const handleSignOut = () => {
+    localStorage.clear(); 
+    window.location.href = "/home";
+  };
 
   const navLinkStyles = ({ isActive }) => {
     return `flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
@@ -29,8 +33,11 @@ const Sidebar = () => {
           <HiOutlineHome size={20} />
           <span>হোম</span>
         </NavLink>
+        <NavLink to="/home/availablehostels" className={navLinkStyles}>
+          <HiOutlineOfficeBuilding size={20} />
+          <span>সব হোস্টেল</span>
+        </NavLink>
 
-       
         {isManager && (
           <>
             <div className="pt-4 pb-1 px-4 text-[16px] font-bold text-blue-900 uppercase">ম্যানেজমেন্ট</div>
@@ -46,16 +53,22 @@ const Sidebar = () => {
               <HiOutlinePlusCircle size={20} />
               <span>রুম তৈরি করুন</span>
             </NavLink>
+
+            <div className=" border-t border-gray-300 pt-4">
+          <button 
+            onClick={handleSignOut}
+            className="flex items-center space-x-3 px-4 py-3 w-full text-red-600 bg-red-50 hover:bg-red-100 rounded-sm transition-all duration-200 font-bold btn"
+          >
+            <HiOutlineLogout size={20} />
+            <span>সাইন আউট</span>
+          </button>
+        </div>
           </>
         )}
 
-        {/* সবার জন্য কমন মেনু */}
-        <NavLink to="/home/availablehostels" className={navLinkStyles}>
-          <HiOutlineOfficeBuilding size={20} />
-          <span>সব হোস্টেল</span>
-        </NavLink>
-        {/* ...অন্যান্য মেনু */}
       </nav>
+
+      
     </aside>
   );
 };
