@@ -85,19 +85,22 @@ public class DbInitializer
                     DistrictId = dhanmondiLoc?.DistrictId,
                     UpazilaId = dhanmondiLoc?.Id,
                     AreaDescription = "রোড নং ৪, ধানমন্ডি",
-                    IsActive = true
+                    IsActive = true,
+                    IsFeatured = true
                 },
                 new Hostel { 
                     Id = hostel2Id, 
                     Name = "Padma Student Home",
                     SubscriptionPackageId = starterPackage?.Id,
-                    IsActive = true
+                    IsActive = true,
+                    IsFeatured = true
                 },
                 new Hostel { 
                     Id = "h3-guid", 
                     Name = "Rajshahi Model Mess",
                     SubscriptionPackageId = starterPackage?.Id,
-                    IsActive = true
+                    IsActive = true,
+                    IsFeatured = true
                 }
             };
 
