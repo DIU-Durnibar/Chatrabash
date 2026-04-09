@@ -45,7 +45,8 @@ public class AccountController : BaseController
             HostelId = registerDto.HostelId, 
             IsApproved = false,
             PreferredRoomId = registerDto.PreferredRoomId,
-            PreferenceNote = registerDto.PreferenceNote
+            PreferenceNote = registerDto.PreferenceNote,
+            ProfilePictureUrl = registerDto.ProfilePictureUrl
         };
 
         var result = await _signInManager.UserManager.CreateAsync(user, registerDto.Password);
@@ -87,7 +88,8 @@ public class AccountController : BaseController
             Email = user.Email ?? "",
             UserName = user.UserName ?? "",
             HostelId = user.HostelId ?? "",
-            Token = await _tokenService.CreateToken(user) 
+            Token = await _tokenService.CreateToken(user), 
+            ProfilePictureUrl = user.ProfilePictureUrl
         };
         
         return SuccessResponse("Login successful", userDto);

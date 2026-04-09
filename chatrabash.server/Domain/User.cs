@@ -8,8 +8,6 @@ public class User : IdentityUser
     
     public string? DisplayName { get; set; }
     public string? Bio { get; set; }
-    public string? ImageUrl { get; set; }
-
     public string HostelId { get; set; } = string.Empty;
     public Hostel? Hostel { get; set; }
     public bool IsApproved { get; set; } = false;
