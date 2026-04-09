@@ -1,13 +1,12 @@
-using System;
-using Application.ExtraDtos; 
+using Application.ExtraDtos;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using API.Services; 
-using Microsoft.AspNetCore.Http; 
+using API.Services;
+using System.Security.Claims;
 
 namespace API.Controllers;
 
@@ -16,12 +15,14 @@ public class AccountController : BaseController
     private readonly SignInManager<User> _signInManager;
     private readonly AppDbContext _context;
     private readonly TokenService _tokenService; 
+    private readonly UserManager<User> _userManager;
 
-    public AccountController(SignInManager<User> signInManager, AppDbContext context, TokenService tokenService)
+    public AccountController(SignInManager<User> signInManager, AppDbContext context, TokenService tokenService, UserManager<User> userManager)
     {
         _signInManager = signInManager;
         _context = context;
         _tokenService = tokenService; 
+        _userManager = userManager;
     }
 
     [AllowAnonymous] 
@@ -99,4 +100,56 @@ public class AccountController : BaseController
         var user = await _signInManager.UserManager.FindByNameAsync(username);
         return SuccessResponse("Username check completed", new { isAvailable = user == null }); 
     }
+
+    [Authorize] 
+    [HttpPost("upload-photo")]
+    public async Task<IActionResult> UploadProfilePicture(IFormFile file)
+    {
+        if (file == null || file.Length == 0) 
+            return ErrorResponse("কোনো ছবি সিলেক্ট করা হয়নি!");
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+        var extension = Path.GetExtension(file.FileName).ToLower();
+        if (!allowedExtensions.Contains(extension))
+            return ErrorResponse("শুধুমাত্র JPG, JPEG অথবা PNG ফাইল আপলোড করা যাবে।");
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return ErrorResponse("ইউজার খুঁজে পাওয়া যায়নি।");
+
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "users");
+        if (!Directory.Exists(uploadsFolder)) 
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
+
+        var uniqueFileName = $"{userId}_{Guid.NewGuid().ToString().Substring(0, 8)}{extension}";
+        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
+        {
+            var oldFileName = Path.GetFileName(user.ProfilePictureUrl);
+            var oldFilePath = Path.Combine(uploadsFolder, oldFileName);
+            if (System.IO.File.Exists(oldFilePath))
+            {
+                System.IO.File.Delete(oldFilePath);
+            }
+        }
+
+        user.ProfilePictureUrl = $"/uploads/users/{uniqueFileName}";
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded) 
+            return ErrorResponse("ডেটাবেস আপডেট করতে সমস্যা হয়েছে।");
+
+        return SuccessResponse("প্রোফাইল ছবি সফলভাবে আপলোড হয়েছে।", new { 
+            photoUrl = user.ProfilePictureUrl 
+        });
+    }
+
 }
