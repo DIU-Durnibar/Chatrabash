@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Check, ArrowRight, ArrowLeft, User, Home, ShieldCheck, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -12,327 +13,247 @@ const SignUp = () => {
     username: "",
     email: "",
     password: "",
-    hostelId: "",      
-    preferredRoomId: "", 
-    preferenceNote: "",  
+    hostelId: "",
+    preferredRoomId: "",
+    preferenceNote: "",
   });
 
-  // অতিরিক্ত ফিল্ডগুলোর জন্য স্টেট (যাতে ইনপুটে লেখা যায়)
-  const [extraInfo, setExtraInfo] = useState({
-    mobile: "",
-    institution: "",
-    bloodGroup: "",
-    gender: "",
-    religion: "",
-    permanentAddress: ""
+  const [hostels, setHostels] = useState([]);
+  const [usernameStatus, setUsernameStatus] = useState({ 
+    isChecking: false, 
+    message: "", 
+    isAvailable: true 
   });
 
-  const [hostels, setHostels] = useState([]); 
-  const [usernameStatus, setUsernameStatus] = useState({ isChecking: false, message: "", isAvailable: true });
   const [passwordError, setPasswordError] = useState("");
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-  // ২. এপিআই থেকে হোস্টেল লিস্ট নিয়ে আসা
   useEffect(() => {
-    const fetchHostels = async () => {
-      try {
-        const response = await fetch("http://localhost:5091/api/hostels");
-        const result = await response.json();
-        
-        if (Array.isArray(result)) {
-          setHostels(result);
-        } else if (result.success && Array.isArray(result.data)) {
-          setHostels(result.data);
-        }
-      } catch (error) {
-        console.error("Error fetching hostels:", error);
-      }
-    };
-    fetchHostels();
+    fetch("http://localhost:5091/api/hostels")
+      .then((res) => res.json())
+      .then((result) => setHostels(Array.isArray(result) ? result : result.data || []))
+      .catch((err) => console.error("Hostel fetch error:", err));
   }, []);
 
-  // ৩. ইউজারনেম চেক
-  const checkUsername = async (username) => {
-    if (!username) return;
-    setUsernameStatus({ ...usernameStatus, isChecking: true });
-    try {
-      const response = await fetch(`http://localhost:5091/api/account/check-username?username=${username}`);
-      const result = await response.json();
-      if (result.success) {
-        setUsernameStatus({
-          isChecking: false,
-          isAvailable: result.data.isAvailable,
-          message: result.data.isAvailable ? "ইউজারনেমটি অ্যাভেলেবল! " : "এই ইউজারনেমটি ইতিমধ্যে নেওয়া হয়েছে।"
-        });
-      }
-    } catch (error) {
-      console.error("Username check failed", error);
-    }
-  };
-
-  // ৪. পাসওয়ার্ড ভ্যালিডেশন
-  const validatePassword = (pass) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
-    if (pass && !regex.test(pass)) {
-      setPasswordError("পাসওয়ার্ড অন্তত ৮ অক্ষরের হতে হবে (বড়+ছোট হাতের অক্ষর ও স্পেশাল ক্যারেক্টারসহ)");
-    } else {
-      setPasswordError("");
-    }
-  };
-
-  // ৫. হ্যান্ডেল চেঞ্জ ফাংশন (ফিক্সড)
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
     
-    // চেক করা হচ্ছে নাম কি formData-তে আছে নাকি extraInfo-তে
-    if (formData.hasOwnProperty(name)) {
-      setFormData({ ...formData, [name]: value });
-    } else {
-      setExtraInfo({ ...extraInfo, [name]: value });
+    if (name === "username") {
+      setUsernameStatus({ isChecking: false, message: "", isAvailable: true });
     }
-    
-    if (name === "username") setUsernameStatus({ ...usernameStatus, message: "" });
+    if (name === "password") {
+      setPasswordError(""); 
+    }
   };
 
-  // ৬. সাবমিট হ্যান্ডেলার
+  const handleNextStep = async () => {
+    if (step === 1) {
+      if (!formData.username || !formData.email || !formData.displayName || !formData.password) {
+        alert("সবগুলো প্রয়োজনীয় তথ্য পূরণ করুন।");
+        return;
+      }
+
+      if (!passwordRegex.test(formData.password)) {
+        setPasswordError("পাসওয়ার্ডে কমপক্ষে ৮টি অক্ষর, ১টি বড় হাতের অক্ষর এবং ১টি সংখ্যা থাকতে হবে।");
+        return;
+      }
+
+      setUsernameStatus({ ...usernameStatus, isChecking: true });
+      try {
+        const response = await fetch(`http://localhost:5091/api/account/check-username?username=${formData.username}`);
+        const result = await response.json();
+
+        if (result.success && result.data.isAvailable) {
+          setStep(2);
+          setUsernameStatus({ isChecking: false, message: "", isAvailable: true });
+        } else {
+          setUsernameStatus({
+            isChecking: false,
+            isAvailable: false,
+            message: "এই ইউজারনেমটি ইতিমধ্যে নেওয়া হয়েছে। অন্য কিছু ট্রাই করো।"
+          });
+        }
+      } catch (error) {
+        alert("সার্ভারে সমস্যা হচ্ছে, আবার চেষ্টা করো।");
+        setUsernameStatus({ ...usernameStatus, isChecking: false });
+      }
+    } else {
+      setStep(step + 1);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!usernameStatus.isAvailable || passwordError) {
-      alert("দয়া করে ইউজারনেম এবং পাসওয়ার্ড সঠিক করুন।");
-      return;
-    }
-
     setLoading(true);
 
+    // API Payload structure অনুযায়ী ডাটা গুছিয়ে নেওয়া
     const payload = {
       displayName: formData.displayName,
       username: formData.username,
       email: formData.email,
       password: formData.password,
-      hostelId: formData.hostelId,
-      preferredRoomId: formData.preferredRoomId || null,
-      preferenceNote: formData.preferenceNote || null,
+      hostelId: formData.hostelId, // GUID string
+      preferredRoomId: formData.preferredRoomId || null, // Optional
+      preferenceNote: formData.preferenceNote || "" // Optional
     };
 
     try {
       const response = await fetch("http://localhost:5091/api/account/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const result = await response.json();
 
       if (result.success) {
-        alert(result.message);
-        navigate("/signIn"); 
+        alert("অভিনন্দন! রেজিস্ট্রেশন সফল হয়েছে। ম্যানেজারের অনুমোদনের জন্য অপেক্ষা করুন।");
+        navigate("/signIn");
       } else {
-        alert(result.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে।");
+        alert(result.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে। ডাটা চেক করুন।");
       }
     } catch (error) {
-      console.error("Registration Error:", error);
-      alert("সার্ভারে সমস্যা হচ্ছে।");
+      console.error("Submit error:", error);
+      alert("সার্ভার এরর! ব্যাকএন্ড কানেকশন চেক করো।");
     } finally {
       setLoading(false);
     }
   };
 
+  // হোস্টেল লিস্ট থেকে সিলেক্টেড হোস্টেলের নাম খুঁজে বের করা
+  const selectedHostelName = hostels.find(h => h.id === formData.hostelId)?.name || "সিলেক্ট করা হয়নি";
+
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-black">
-      <div className="w-full max-w-5xl bg-white shadow-lg rounded-sm overflow-hidden flex flex-col md:flex-row border border-gray-200">
+    <div className="min-h-screen bg-[#f1f5f9] flex items-center justify-center p-4 md:p-10 font-sans text-slate-900">
+      <div className="w-full max-w-4xl bg-white shadow-xl rounded-[2.5rem] overflow-hidden border border-slate-100 transition-all">
         
-        {/* Left Side Panel */}
-        <div className="md:w-1/4 bg-[#001f3f] p-8 text-white flex flex-col justify-start">
-          <h2 className="text-2xl font-bold mb-6 border-b border-blue-800 pb-2">ইনফরমেশন</h2>
-          <p className="text-sm text-blue-100 leading-relaxed mb-6">
-            সঠিক তথ্য দিয়ে ফর্মটি পূরণ করুন। আপনার আবেদনটি হোস্টেল অ্যাডমিন দ্বারা অ্যাপ্রুভ হওয়ার পর আপনি লগইন করতে পারবেন।
+        {/* Header Section */}
+        <div className="bg-white px-8 md:px-16 pt-12 pb-8 text-center md:text-left">
+          <h2 className="text-4xl font-black text-slate-800 mb-2 tracking-tight">নতুন অ্যাকাউন্ট তৈরি করুন</h2>
+          <p className="text-slate-400 text-sm font-medium">
+            ধাপ {step} / ৩ — {step === 1 ? 'ব্যক্তিগত তথ্য' : step === 2 ? 'হোস্টেল ও রুম বেছে নিন' : 'তথ্য যাচাই করুন'}
           </p>
-          <ul className="space-y-3 text-xs opacity-80">
-            <li>• ইমেইল ভেরিফিকেশন প্রয়োজন হতে পারে</li>
-            <li>• পাসওয়ার্ড গোপন রাখুন</li>
-            <li>• সঠিক হোস্টেল আইডি নির্বাচন করুন</li>
-          </ul>
+          
+          <div className="flex items-center justify-between mt-10 max-w-2xl mx-auto relative px-4">
+            <div className="absolute top-5 left-0 w-full h-0.5 bg-slate-100 z-0"></div>
+            {[1, 2, 3].map((s) => (
+              <div key={s} className="relative z-10 flex flex-col items-center gap-3">
+                <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold transition-all duration-500 ${step >= s ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white border-2 border-slate-200 text-slate-300'}`}>
+                  {step > s ? <Check size={20} strokeWidth={3} /> : s}
+                </div>
+                <span className={`text-[10px] font-bold uppercase tracking-tighter hidden md:block ${step >= s ? 'text-blue-600' : 'text-slate-300'}`}>
+                  {s === 1 ? 'ব্যক্তিগত' : s === 2 ? 'হোস্টেল' : 'নিশ্চিতকরণ'}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Right Form Body */}
-        <div className="md:w-3/4 p-6 md:p-10">
-          <div className="bg-[#1a8a5a] text-white p-4 mb-8 rounded-t-md">
-             <h3 className="text-xl font-bold uppercase tracking-wide">স্টুডেন্ট সাইন আপ</h3>
-          </div>
-          
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4" onSubmit={handleSubmit}>
-            
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">পূর্ণ নাম *</label>
-              <input 
-                type="text" name="displayName" value={formData.displayName} 
-                onChange={handleChange}
-                placeholder="Rahim Student" required
-                className="input h-10 mt-1 input-bordered w-full focus:border-[#001f3f] rounded-sm pl-3 bg-gray-50 text-sm" 
-              />
+        <div className="px-8 md:px-16 pb-12">
+          {step === 1 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500 ml-1 uppercase tracking-wide">ডিসপ্লে নাম *</label>
+                <input type="text" name="displayName" value={formData.displayName} onChange={handleChange} placeholder="আপনার পূর্ণ নাম লিখুন" className="w-full h-14 bg-slate-50 rounded-2xl px-6 text-sm outline-none focus:ring-2 ring-blue-500 transition-all border-none" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500 ml-1 uppercase tracking-wide">ইমেইল *</label>
+                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="example@email.com" className="w-full h-14 bg-slate-50 rounded-2xl px-6 text-sm outline-none focus:ring-2 ring-blue-500 transition-all border-none" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500 ml-1 uppercase tracking-wide">ইউজারনেম *</label>
+                <div className="relative">
+                  <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="username" className={`w-full h-14 bg-slate-50 rounded-2xl px-6 text-sm outline-none focus:ring-2 transition-all border-none ${!usernameStatus.isAvailable ? 'ring-red-500' : 'ring-blue-500'}`} />
+                  {usernameStatus.isChecking && <Loader2 className="absolute right-4 top-4 animate-spin text-blue-500" size={20} />}
+                </div>
+                {usernameStatus.message && <p className="text-[10px] text-red-500 font-bold ml-2 italic">{usernameStatus.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500 ml-1 uppercase tracking-wide">পাসওয়ার্ড *</label>
+                <div className="relative">
+                  <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} placeholder="কমপক্ষে ৮ অক্ষর" className={`w-full h-14 bg-slate-50 rounded-2xl px-6 text-sm outline-none focus:ring-2 transition-all border-none ${passwordError ? 'ring-red-500' : 'ring-blue-500'}`} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-4 text-slate-300 hover:text-slate-500 transition-colors">
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+                {passwordError && <p className="text-[10px] text-red-500 font-bold ml-2 leading-tight">{passwordError}</p>}
+              </div>
             </div>
+          )}
 
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">ইউজারনেম *</label>
-              <input 
-                type="text" name="username" value={formData.username} 
-                onChange={handleChange}
-                onBlur={() => checkUsername(formData.username)}
-                placeholder="rahim123" required
-                className={`input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm ${!usernameStatus.isAvailable ? 'border-red-500' : ''}`} 
-              />
-              {usernameStatus.message && (
-                <p className={`text-[10px] mt-1 font-bold ${usernameStatus.isAvailable ? 'text-green-600' : 'text-red-500'}`}>
-                  {usernameStatus.message}
-                </p>
+          {step === 2 && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500 max-w-2xl mx-auto">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500 ml-1 uppercase tracking-wide">হোস্টেল নির্বাচন করুন *</label>
+                <select name="hostelId" value={formData.hostelId} onChange={handleChange} className="w-full h-14 bg-slate-50 rounded-2xl px-6 text-sm outline-none focus:ring-2 ring-blue-500 border-none cursor-pointer">
+                  <option value="">নির্বাচন করুন</option>
+                  {hostels.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500 ml-1 uppercase tracking-wide">পছন্দের রুম (ঐচ্ছিক)</label>
+                <input type="text" name="preferredRoomId" value={formData.preferredRoomId} onChange={handleChange} placeholder="রুম নম্বর বা আইডি লিখুন" className="w-full h-14 bg-slate-50 rounded-2xl px-6 text-sm outline-none focus:ring-2 ring-blue-500 border-none" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500 ml-1 uppercase tracking-wide">বিশেষ অনুরোধ (ঐচ্ছিক)</label>
+                <textarea name="preferenceNote" value={formData.preferenceNote} onChange={handleChange} placeholder="যেমন: জানালার পাশের সিট চাই..." className="w-full h-28 bg-slate-50 rounded-2xl p-6 text-sm outline-none focus:ring-2 ring-blue-500 border-none resize-none" />
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-5 animate-in zoom-in-95 duration-500 max-w-2xl mx-auto">
+              <div className="bg-blue-50/50 p-6 rounded-[2rem] border border-blue-100/50">
+                <div className="flex items-center gap-2 text-blue-700 font-black text-xs mb-4 uppercase tracking-tighter"><User size={16}/> ব্যক্তিগত প্রোফাইল</div>
+                <div className="grid grid-cols-2 gap-y-3 text-[11px] font-bold">
+                  <span className="text-slate-400 uppercase tracking-widest">নাম:</span> <span className="text-slate-800">{formData.displayName}</span>
+                  <span className="text-slate-400 uppercase tracking-widest">ইউজারনেম:</span> <span className="text-slate-800">@{formData.username}</span>
+                  <span className="text-slate-400 uppercase tracking-widest">ইমেইল:</span> <span className="text-slate-800">{formData.email}</span>
+                </div>
+              </div>
+              <div className="bg-emerald-50/50 p-6 rounded-[2rem] border border-emerald-100/50">
+                <div className="flex items-center gap-2 text-emerald-700 font-black text-xs mb-4 uppercase tracking-tighter"><Home size={16}/> আবাসন তথ্য</div>
+                <div className="grid grid-cols-2 gap-y-3 text-[11px] font-bold">
+                  <span className="text-slate-400 uppercase tracking-widest">হোস্টেল:</span> <span className="text-slate-800">{selectedHostelName}</span>
+                  <span className="text-slate-400 uppercase tracking-widest">রুম:</span> <span className="text-slate-800">{formData.preferredRoomId || 'দেওয়া হয়নি'}</span>
+                  <span className="text-slate-400 uppercase tracking-widest">অনুরোধ:</span> <span className="text-slate-800 italic">{formData.preferenceNote || 'নেই'}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mt-12">
+            {step > 1 ? (
+              <button onClick={() => setStep(step - 1)} className="flex items-center gap-2 text-slate-400 font-black text-xs uppercase hover:text-slate-800 transition-all">
+                <ArrowLeft size={18} /> পেছনে
+              </button>
+            ) : <div />}
+
+            <div className="flex gap-4">
+              {step < 3 ? (
+                <button onClick={handleNextStep} disabled={usernameStatus.isChecking} className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase flex items-center gap-2 shadow-xl shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all">
+                  {usernameStatus.isChecking ? "চেকিং..." : "পরবর্তী ধাপ"} <ArrowRight size={18} />
+                </button>
+              ) : (
+                <button onClick={handleSubmit} disabled={loading} className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase flex items-center gap-3 shadow-xl shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all">
+                  {loading ? <Loader2 className="animate-spin" size={18}/> : <ShieldCheck size={18} />}
+                  {loading ? "প্রসেসিং..." : "রেজিস্ট্রেশন সম্পন্ন করুন"}
+                </button>
               )}
             </div>
+          </div>
 
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">ইমেইল *</label>
-              <input 
-                type="email" name="email" value={formData.email}
-                onChange={handleChange}
-                placeholder="rahim@test.com" required
-                className="input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm" 
-              />
-            </div>
-
-            <div className="form-control relative">
-  <label className="label text-sm font-bold text-gray-500 uppercase">পাসওয়ার্ড *</label>
-  <div className="relative">
-    <input 
-      type={showPassword ? "text" : "password"} // স্টেট অনুযায়ী টাইপ চেঞ্জ হবে
-      name="password" 
-      value={formData.password} 
-      onChange={handleChange} 
-      onBlur={() => validatePassword(formData.password)}
-      placeholder="********" 
-      required
-      className={`input h-10 mt-1 input-bordered w-full rounded-sm pl-3 pr-10 bg-gray-50 text-sm ${passwordError ? 'border-red-500' : ''}`} 
-    />
-    {/* আইকন বাটন */}
-    <button
-      type="button"
-      onClick={() => setShowPassword(!showPassword)}
-      className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5 text-gray-400 hover:text-gray-600 transition-colors"
-    >
-      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-    </button>
-  </div>
-  {passwordError && (
-    <p className="text-[10px] text-red-500 mt-1 font-bold leading-tight">
-      {passwordError}
-    </p>
-  )}
-</div>
-
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">মোবাইল নাম্বার *</label>
-              <input 
-                type="number" name="mobile" value={extraInfo.mobile}
-                onChange={handleChange}
-                placeholder="017XXXXXXXX" required
-                className="input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm focus:border-[#001f3f]" 
-              />
-            </div>
-
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">হোস্টেল নির্বাচন করুন *</label>
-              <select 
-                name="hostelId" value={formData.hostelId} 
-                onChange={handleChange} 
-                required
-                className="select h-10 min-h-[40px] mt-1 select-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm"
-              >
-                <option value="">নির্বাচন করুন</option>
-                {hostels.map((h) => (
-                  <option key={h.id} value={h.id}>{h.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">শিক্ষা প্রতিষ্ঠান *</label>
-              <input 
-                type="text" name="institution" value={extraInfo.institution}
-                onChange={handleChange}
-                placeholder="আপনার শিক্ষা প্রতিষ্ঠান" required
-                className="input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm" 
-              />
-            </div>
-
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">রক্তের গ্রুপ *</label>
-              <select 
-                name="bloodGroup" value={extraInfo.bloodGroup}
-                onChange={handleChange} 
-                required
-                className="select h-10 min-h-10 mt-1 select-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm"
-              >
-                <option value="">সিলেক্ট করুন</option>
-                <option>A+</option><option>B+</option><option>O+</option><option>AB+</option>
-                <option>A-</option><option>B-</option><option>O-</option><option>AB-</option>
-              </select>
-            </div>
-
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">লিঙ্গ *</label>
-              <select 
-                name="gender" value={extraInfo.gender}
-                onChange={handleChange}
-                required
-                className="select h-10 min-h-[40px] mt-1 select-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm"
-              >
-                <option value="">সিলেক্ট করুন</option>
-                <option>পুরুষ</option><option>মহিলা</option>
-              </select>
-            </div>
-
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">ধর্ম *</label>
-              <input type="text" name="religion" value={extraInfo.religion}
-                onChange={handleChange} 
-                required className="input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm" />
-            </div>
-
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">স্থায়ী ঠিকানা *</label>
-              <input type="text" name="permanentAddress" value={extraInfo.permanentAddress}
-                onChange={handleChange}
-                required className="input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm" />
-            </div>
-
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-400 uppercase italic">পছন্দের রুম (ঐচ্ছিক)</label>
-              <input type="text" name="preferredRoomId" value={formData.preferredRoomId} 
-                onChange={handleChange} 
-                placeholder="room-guid" className="input h-10 mt-1 input-bordered w-full rounded-sm pl-3 bg-gray-50 text-sm" />
-            </div>
-
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-400 uppercase italic">নোট (ঐচ্ছিক)</label>
-              <textarea name="preferenceNote" value={formData.preferenceNote}
-                onChange={handleChange} 
-                className="textarea textarea-bordered min-h-10 mt-1 rounded-sm pl-3 bg-gray-50 w-full text-sm" placeholder="Need AC room"></textarea>
-            </div>
-
-            <div className="md:col-span-2 mt-6">
-              <button 
-                type="submit" 
-                disabled={loading}
-                className="w-full bg-[#001f3f] hover:bg-[#002d5c] text-white py-3 rounded-sm font-bold uppercase tracking-widest transition-all shadow-md active:scale-[0.98]"
-              >
-                {loading ? "প্রসেসিং..." : "রেজিস্ট্রেশন সম্পন্ন করুন"}
-              </button>
-            </div>
-          </form>
-
-          <p className="mt-6 text-center text-xs text-gray-500 font-semibold uppercase">
-            ইতিমধ্যে অ্যাকাউন্ট আছে? <Link to="/signIn" className="text-blue-700 hover:underline ml-1">লগইন</Link>
-          </p>
+          <div className="mt-12 flex flex-col items-center gap-5">
+            <p className="text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+              ইতিমধ্যে অ্যাকাউন্ট আছে? <Link to="/signIn" className="text-blue-600 hover:underline ml-1">লগ-ইন করুন</Link>
+            </p>
+            <div className="h-px w-8 bg-slate-200" />
+            <Link to="/" className="flex items-center gap-2 text-slate-400 hover:text-blue-600 font-black text-[10px] uppercase transition-all group">
+              <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+              হোমে ফিরে যান
+            </Link>
+          </div>
         </div>
       </div>
     </div>

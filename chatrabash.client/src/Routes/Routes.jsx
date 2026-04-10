@@ -37,6 +37,14 @@ const Routes = createBrowserRouter([
     path:"help",
     Component: Help
     },
+    {
+    path:"/signIn",
+    Component:SignIn
+  },
+  {
+    path:"/signUp",
+    Component:SignUp
+  },
     ]
   },
   {
@@ -72,14 +80,6 @@ const Routes = createBrowserRouter([
         Component: UpdateRoom
       },
     ]
-  },
-  {
-    path:"/signIn",
-    Component:SignIn
-  },
-  {
-    path:"/signUp",
-    Component:SignUp
   },
   {
    path:"/home/studentDashboard",

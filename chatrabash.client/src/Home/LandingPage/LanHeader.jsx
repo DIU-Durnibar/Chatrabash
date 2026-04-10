@@ -81,28 +81,30 @@ const LanHeader = () => {
 
         {/* Login/Registration Toggle Buttons */}
         <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setActiveTab('login')}
-            className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 border ${
-              activeTab === 'login' 
-                ? 'bg-blue-700 text-white border-blue-700' // Focused State
-                : 'bg-transparent text-blue-700 border-blue-700' // Unfocused State
-            } hover:bg-blue-500 hover:text-white`} // Light blue hover for both
-          >
-            লগ-ইন
-          </button>
+  <NavLink
+    to="/signIn"
+    onClick={() => setActiveTab('login')}
+    className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 border ${
+      activeTab === 'login' 
+        ? 'bg-blue-700 text-white border-blue-700' // Focused State
+        : 'bg-transparent text-blue-700 border-blue-700' // Unfocused State
+    } hover:bg-blue-500 hover:text-white`}
+  >
+    লগ-ইন
+  </NavLink>
 
-          <button 
-            onClick={() => setActiveTab('registration')}
-            className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 border ${
-              activeTab === 'registration'
-                ? 'bg-blue-700 text-white border-blue-700' // Focused State
-                : 'bg-transparent text-blue-700 border-blue-700' // Unfocused State
-            } hover:bg-blue-500 hover:text-white`} // Light blue hover for both
-          >
-            রেজিস্ট্রেশন
-          </button>
-        </div>
+  <NavLink
+    to="/signUp"
+    onClick={() => setActiveTab('registration')}
+    className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 border ${
+      activeTab === 'registration'
+        ? 'bg-blue-700 text-white border-blue-700' // Focused State
+        : 'bg-transparent text-blue-700 border-blue-700' // Unfocused State
+    } hover:bg-blue-500 hover:text-white`}
+  >
+    রেজিস্ট্রেশন
+  </NavLink>
+</div>
 
         
       </nav>
