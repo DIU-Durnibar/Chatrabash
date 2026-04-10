@@ -9,5 +9,8 @@ public class RoomDto
     public bool IsBalconyAvailable { get; set; }
     public bool IsAcAvailable { get; set; }
     public bool IsActive { get; set; }
+    /// <summary>Room hire per seat / মাসিক রুম ভাড়া (বিলিং)</summary>
     public decimal MonthlyRent { get; set; }
+    /// <summary>Estimated total monthly cost for a boarder (optional).</summary>
+    public decimal? EstimatedMonthlyCost { get; set; }
 }
