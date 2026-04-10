@@ -126,6 +126,69 @@ const LandingPage = () => {
         </div>
         </section>
 
+      {/* --- Solution Section --- */}
+      <section className="py-20 bg-white">
+        <div className="text-center mb-16" data-aos="fade-up">
+          <span className="text-blue-700 font-semibold bg-blue-50 px-4 py-1 rounded-full text-sm">দুটি আলাদা সমাধান</span>
+          <h2 className="text-3xl font-bold mt-4 text-slate-800">আপনার প্রয়োজন অনুযায়ী শুরু করুন</h2>
+          <p className="text-slate-500 mt-2">মালিক হোন বা বর্ডার — ছাত্রাবাস আপনার জন্য সঠিক সমাধান নিয়ে এসেছে</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-11/12 mx-auto">
+  {/* Owner Box */}
+  <div className="bg-blue-50/50 p-8 rounded-2xl border border-blue-100 relative overflow-hidden flex flex-col justify-between" data-aos="fade-up">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-200/30 rounded-full -mr-8 -mt-8"></div>
+    
+    <div>
+      <div className="bg-blue-900 w-10 h-10 rounded-lg flex items-center justify-center mb-4">
+        <CheckCircle size={20} className="text-white" />
+      </div>
+      <span className="bg-blue-800 text-white text-[10px] px-2.5 py-0.5 rounded-full font-medium">হোস্টেল মালিক</span>
+      <h3 className="text-xl font-bold mt-3 mb-2">আপনি কি হোস্টেল মালিক?</h3>
+      <p className="text-slate-600 text-sm mb-6 leading-relaxed">আপনার হোস্টেল পরিচালনাকে ডিজিটাল করুন — বিলিং, মিল, বর্ডার ম্যানেজমেন্ট সব এক জায়গায়।</p>
+      
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-8">
+        {['ডিজিটাল বিলিং', 'মিল ম্যানেজমেন্ট', 'বর্ডার রেকর্ড', 'রিপোর্ট ও অ্যানালিটিক্স'].map(list => (
+          <li key={list} className="flex items-center gap-2 text-slate-700 text-xs font-medium">
+            <CheckCircle size={14} className="text-blue-700 shrink-0" /> {list}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <button className="bg-blue-800 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-blue-900 transition font-bold text-sm w-fit">
+      রেজিস্ট্রেশন করুন <ArrowRight size={16} />
+    </button>
+  </div>
+
+  {/* Student Box */}
+  <div className="bg-green-50/50 p-8 rounded-2xl border border-green-100 relative overflow-hidden flex flex-col justify-between" data-aos="fade-up" data-aos-delay="200">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-green-200/30 rounded-full -mr-8 -mt-8"></div>
+    
+    <div>
+      <div className="bg-green-600 w-10 h-10 rounded-lg flex items-center justify-center mb-4">
+        <CheckCircle size={20} className="text-white" />
+      </div>
+      <span className="bg-green-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-medium">স্টুডেন্ট বর্ডার</span>
+      <h3 className="text-xl font-bold mt-3 mb-2">সিট খুঁজছেন?</h3>
+      <p className="text-slate-600 text-sm mb-6 leading-relaxed">ভেরিফাইড হোস্টেল খুঁজুন, অনলাইনে বুক করুন এবং নিরাপদে ভাড়া পরিশোধ করুন।</p>
+      
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-8">
+        {['ভেরিফাইড হোস্টেল', 'ভাড়া পরিশোধ', 'রিভিউ সিস্টেম', 'সরাসরি যোগাযোগ'].map(list => (
+          <li key={list} className="flex items-center gap-2 text-slate-700 text-xs font-medium">
+            <CheckCircle size={14} className="text-green-600 shrink-0" /> {list}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <button className="bg-green-600 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-green-700 transition font-bold text-sm w-fit">
+      সিট খুঁজুন <ArrowRight size={16} />
+    </button>
+  </div>
+</div>
+      </section>
+
       
     </div>
   );
