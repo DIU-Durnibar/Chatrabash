@@ -22,5 +22,11 @@ public class RegisterDto
     public string Password { get; set; } = string.Empty;
     public string? PreferredRoomId { get; set; }
     public string? PreferenceNote { get; set; }
-    public string ProfilePictureUrl { get; set; } = string.Empty; 
+    public string ProfilePictureUrl { get; set; } = string.Empty;
+    public string? Institution { get; set; }
+    public string? BloodGroup { get; set; }
+    public string? EmergencyContact { get; set; }
+    public string? Gender { get; set; }
+
+    public string? PhoneNumber { get; set; }
 }

@@ -28,7 +28,7 @@ public class TokenService
             new Claim(ClaimTypes.Name, user.UserName ?? ""),
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Email, user.Email ?? ""),
-            new Claim("HostelId", user.HostelId) 
+            new Claim("HostelId", user.HostelId ?? "") 
         };
 
         var roles = await _userManager.GetRolesAsync(user);
