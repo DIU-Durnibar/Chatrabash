@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react"; 
+import { Eye, EyeOff, Key, ArrowRight } from "lucide-react";
 
 const SignIn = () => {
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,9 +17,7 @@ const SignIn = () => {
     try {
       const response = await fetch("http://localhost:5091/api/account/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
       });
 
@@ -27,12 +25,12 @@ const SignIn = () => {
 
       if (result.success) {
         localStorage.setItem("token", result.data.token);
-        localStorage.setItem("userEmail", email); 
+        localStorage.setItem("userEmail", email);
         localStorage.setItem("user", JSON.stringify(result.data));
-        alert("লগইন সফল হয়েছে!");
+        alert("লগইন সফল হয়েছে!");
         window.location.href = "/home";
       } else {
-        alert(result.message || "ইমেইল বা পাসওয়ার্ড ভুল!");
+        alert(result.message || "ইমেইল বা পাসওয়ার্ড ভুল!");
       }
     } catch (error) {
       console.error("Login Error:", error);
@@ -43,79 +41,143 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-black">
-      <div className="w-full max-w-4xl bg-white shadow-lg rounded-sm overflow-hidden flex flex-col md:flex-row border border-gray-200">
+    <div className="min-h-screen flex items-center justify-center font-sans p-3 md:p-10">
+      <div className="flex w-11/12 min-h-screen overflow-hidden">
         
-        {/* Left Side Panel */}
-        <div className="md:w-1/3 bg-[#001f3f] p-8 text-white flex flex-col justify-center items-center text-center">
-          <div className="mb-6">
-             <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center text-3xl mb-4 mx-auto">🔑</div>
-             <h2 className="text-2xl font-bold uppercase tracking-tighter">Welcome Back</h2>
-          </div>
-          <p className="text-xs text-blue-100 leading-relaxed opacity-80 italic">
-            আপনার অ্যাকাউন্টে লগইন করে হোস্টেলের সকল সুবিধা উপভোগ করুন।
-          </p>
-        </div>
+        {/* Left Side - Dark Panel (Inspiration matched) */}
+        <div className="hidden lg:flex lg:w-1/2 bg-[#1e3a8a] relative p-16 flex-col justify-between text-white">
+          <div className="absolute inset-0 bg-black/20 z-0"></div>
+          <div 
+            className="absolute inset-0 opacity-40 z-0" 
+            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80')", backgroundSize: 'cover' }}
+          ></div>
 
-        {/* Right Side - Form Body */}
-        <div className="md:w-2/3 p-8 md:p-12">
-          <div className="bg-[#1a8a5a] text-white p-4 mb-8 rounded-t-md">
-             <h3 className="text-xl font-bold uppercase tracking-wide">স্টুডেন্ট সাইন ইন</h3>
+          <div className="relative z-10">
+            <span className="bg-white/20 px-4 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm border border-white/10">
+              🏠 বাংলাদেশের #১ হোস্টেল প্ল্যাটফর্ম
+            </span>
+            <h1 className="text-5xl font-black mt-8 leading-[1.1] tracking-tight">
+              আপনার হোস্টেল জীবন হোক <br />
+              <span className="text-blue-300">আরও গোছানো এবং সহজ</span>
+            </h1>
+            <p className="mt-6 text-blue-100/80 text-lg max-w-md font-medium leading-relaxed">
+              মালিকদের জন্য স্মার্ট ম্যানেজমেন্ট, বোর্ডারদের জন্য নিরাপদ আবাসন — সবই এক জায়গায়।
+            </p>
+          </div>
+
+          <div className="relative z-10 space-y-6 mb-10">
+            {[
+              { icon: "🔐", text: "নিরাপদ ও এনক্রিপ্টেড লগ-ইন" },
+              { icon: "⚡", text: "তাৎক্ষণিক হোস্টেল ম্যানেজমেন্ট" },
+              { icon: "📱", text: "মোবাইলেও সমান সুবিধা" }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-4 group cursor-default">
+                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-md group-hover:bg-white/20 transition-all">
+                  {item.icon}
+                </div>
+                <span className="font-bold text-sm tracking-wide">{item.text}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="relative z-10 flex gap-12 pt-8 border-t border-white/10">
+            <div><p className="text-2xl font-black">৫০০+</p><p className="text-[10px] uppercase font-bold text-blue-300">হোটেল</p></div>
+            <div><p className="text-2xl font-black">১০ হাজার+</p><p className="text-[10px] uppercase font-bold text-blue-300">বোর্ডার</p></div>
+            <div><p className="text-2xl font-black">৯৮%</p><p className="text-[10px] uppercase font-bold text-blue-300">সন্তুষ্টি</p></div>
           </div>
           
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div className="form-control">
-              <label className="label text-sm font-bold text-gray-500 uppercase">ইমেইল ঠিকানা</label>
-              <input
-                name="email"
-                type="email"
-                placeholder="example@mail.com"
-                required
-                className="input h-10 mt-1 input-bordered w-full focus:border-[#001f3f] focus:ring-1 focus:ring-[#001f3f] rounded-sm pl-3 bg-gray-50 text-sm transition-all"
-              />
+          <p className="relative z-10 text-[10px] opacity-40 font-medium">© ২০২৬ Chatrabash.com · সর্বস্বত্ব সংরক্ষিত</p>
+        </div>
+
+        {/* Right Side - Form Body (Same as Figma) */}
+        <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-8 md:p-20">
+          <div className="w-full max-w-md">
+            
+            {/* Header */}
+            <div className="mb-10 text-center lg:text-left">
+              <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-100 mb-6 mx-auto lg:mx-0">
+                <Key size={28} />
+              </div>
+              <h2 className="text-3xl font-black text-slate-800 tracking-tight">প্রবেশ করুন</h2>
+              <p className="text-slate-400 font-medium text-sm mt-1">আপনার অ্যাকাউন্টে লগ-ইন করুন</p>
             </div>
 
-            {/* Password Field with Eye Toggle */}
-            <div className="form-control">
-              <div className="flex justify-between items-center">
-                <label className="label text-sm font-bold text-gray-500 uppercase">পাসওয়ার্ড</label>
-                <Link to="/forgot-password" size="sm" className="text-[10px] text-blue-600 hover:underline uppercase font-bold">পাসওয়ার্ড ভুলে গেছেন?</Link>
+           
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[12px] font-black text-slate-400 uppercase tracking-[0.15em] ml-1">ইমেইল এড্রেস</label>
+                <div className="relative">
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="example@email.com"
+                    required
+                    className="w-full h-14 bg-slate-50 border-none rounded-2xl px-6 text-sm outline-none focus:ring-2 ring-blue-500 transition-all font-medium text-slate-700"
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <input
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="********"
-                  required
-                  className="input h-10 mt-1 input-bordered w-full focus:border-[#001f3f] focus:ring-1 focus:ring-[#001f3f] rounded-sm pl-3 pr-10 bg-gray-50 text-sm transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
 
-            <div className="pt-4">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center ml-1">
+                  <label className="text-[12px] font-black text-slate-400 uppercase tracking-[0.15em]">পাসওয়ার্ড</label>
+                </div>
+                <div className="relative">
+                  <input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="আপনার পাসওয়ার্ড"
+                    required
+                    className="w-full h-14 bg-slate-50 border-none rounded-2xl px-6 text-sm outline-none focus:ring-2 ring-blue-500 transition-all font-medium text-slate-700"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-5 top-4 text-slate-300 hover:text-slate-500 transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between px-1">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 rounded border-slate-200 text-blue-600 focus:ring-blue-500" />
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">আমাকে মনে রাখুন</span>
+                </label>
+                <Link to="/forgot-password" size="sm" className="text-[11px] text-blue-600 hover:underline uppercase font-black tracking-wide">
+                  পাসওয়ার্ড ভুলে গেছেন?
+                </Link>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full bg-[#001f3f] hover:bg-[#002d5c] text-white py-3 rounded-sm font-bold uppercase tracking-widest transition-all shadow-md active:scale-[0.98] ${
-                  loading ? "opacity-70 cursor-not-allowed" : ""
-                }`}
+                className="w-full h-14 bg-blue-700 hover:bg-blue-800 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-blue-100 transition-all active:scale-95 disabled:opacity-50"
               >
-                {loading ? "প্রসেসিং..." : "লগইন করুন"}
+                {loading ? "প্রসেসিং..." : (
+                  <>
+                    প্রবেশ করুন <ArrowRight size={18} />
+                  </>
+                )}
               </button>
-            </div>
-          </form>
+            </form>
 
-          <p className="mt-8 text-center text-xs text-gray-500 font-semibold uppercase">
-            নতুন ব্যবহারকারী?{" "}
-            <Link to="/signUp" className="text-blue-700 hover:underline ml-1">অ্যাকাউন্ট তৈরি করুন</Link>
-          </p>
+            <div className="my-10 flex items-center gap-4">
+              <div className="h-px bg-slate-400 flex-1"></div>
+              <span className="text-[12px] font-semibold text-slate-400 uppercase tracking-[0.2em]">অথবা</span>
+              <div className="h-px bg-slate-400 flex-1 "></div>
+            </div>
+
+            <p className="text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+              অ্যাকাউন্ট নেই? <Link to="/signUp" className="text-blue-700 hover:underline ml-1 font-black">রেজিস্ট্রেশন করুন</Link>
+            </p>
+            
+            <div className="mt-10 flex justify-center border-t border-slate-50 pt-8">
+              <span className="flex items-center gap-2 text-[10px] font-medium text-slate-400 uppercase">
+                🔒 আপনার তথ্য SSL এনক্রিপশন দ্বারা সুরক্ষিত
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

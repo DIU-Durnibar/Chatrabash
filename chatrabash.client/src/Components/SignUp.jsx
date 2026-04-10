@@ -87,15 +87,14 @@ const SignUp = () => {
     e.preventDefault();
     setLoading(true);
 
-    // API Payload structure অনুযায়ী ডাটা গুছিয়ে নেওয়া
     const payload = {
       displayName: formData.displayName,
       username: formData.username,
       email: formData.email,
       password: formData.password,
-      hostelId: formData.hostelId, // GUID string
-      preferredRoomId: formData.preferredRoomId || null, // Optional
-      preferenceNote: formData.preferenceNote || "" // Optional
+      hostelId: formData.hostelId, 
+      preferredRoomId: formData.preferredRoomId || null,
+      preferenceNote: formData.preferenceNote || "" 
     };
 
     try {
@@ -109,7 +108,7 @@ const SignUp = () => {
 
       if (result.success) {
         alert("অভিনন্দন! রেজিস্ট্রেশন সফল হয়েছে। ম্যানেজারের অনুমোদনের জন্য অপেক্ষা করুন।");
-        navigate("/signIn");
+        navigate("/");
       } else {
         alert(result.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে। ডাটা চেক করুন।");
       }
@@ -121,12 +120,11 @@ const SignUp = () => {
     }
   };
 
-  // হোস্টেল লিস্ট থেকে সিলেক্টেড হোস্টেলের নাম খুঁজে বের করা
   const selectedHostelName = hostels.find(h => h.id === formData.hostelId)?.name || "সিলেক্ট করা হয়নি";
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] flex items-center justify-center p-4 md:p-10 font-sans text-slate-900">
-      <div className="w-full max-w-4xl bg-white shadow-xl rounded-[2.5rem] overflow-hidden border border-slate-100 transition-all">
+    <div className="min-h-screen bg-[#f1f5f9] flex items-center justify-center p-3 md:p-10 font-sans text-slate-900">
+      <div className="w-11/12 mx-auto bg-white shadow-xl rounded-lg overflow-hidden border border-slate-100 transition-all">
         
         {/* Header Section */}
         <div className="bg-white px-8 md:px-16 pt-12 pb-8 text-center md:text-left">
@@ -248,12 +246,14 @@ const SignUp = () => {
             <p className="text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
               ইতিমধ্যে অ্যাকাউন্ট আছে? <Link to="/signIn" className="text-blue-600 hover:underline ml-1">লগ-ইন করুন</Link>
             </p>
+
             <div className="h-px w-8 bg-slate-200" />
-            <Link to="/" className="flex items-center gap-2 text-slate-400 hover:text-blue-600 font-black text-[10px] uppercase transition-all group">
-              <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+            <Link to="/" className=" gap-2 text-blue-900 hover:text-blue-600 font-black text-[16px] uppercase transition-all group flex">
+              <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
               হোমে ফিরে যান
             </Link>
           </div>
+
         </div>
       </div>
     </div>
