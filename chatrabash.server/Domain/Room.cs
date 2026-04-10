@@ -27,5 +27,9 @@ public class Room
         
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    /// <summary>Per-seat monthly room hire (ভাড়া) — used for billing seat rent.</summary>
     public decimal MonthlyRent { get; set; }
+
+    /// <summary>Optional total living cost estimate (ভাড়া+খাবার+অন্যান্য) for marketing; falls back to MonthlyRent in UI when null.</summary>
+    public decimal? EstimatedMonthlyCost { get; set; }
 }

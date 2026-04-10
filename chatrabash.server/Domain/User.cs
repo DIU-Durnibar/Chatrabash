@@ -15,6 +15,9 @@ public class User : IdentityUser
     public string? PreferenceNote { get; set; }  
     public string? AllocatedRoomId { get; set; } 
     public string ProfilePictureUrl { get; set; } = string.Empty;
-
+    public string? Institution { get; set; }
+    public string? BloodGroup { get; set; }
+    public string? EmergencyContact { get; set; }
+    public string? Gender { get; set; }
 }
 
