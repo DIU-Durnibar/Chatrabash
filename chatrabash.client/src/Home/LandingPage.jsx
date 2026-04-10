@@ -279,6 +279,58 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* --- Management Features --- */}
+      <section className="py-20 bg-white px-4">
+        <div className="text-center mb-16" data-aos="fade-up">
+          <span className="text-blue-700 font-semibold bg-blue-50 px-4 py-1 rounded-full text-xs">ম্যানেজমেন্ট ফিচারসমূহ</span>
+          <h2 className="text-3xl font-bold mt-4 text-slate-800 uppercase tracking-wide">আপনার হোস্টেল বিজনেসকে আরও সহজ করুন</h2>
+          <p className="text-slate-500 mt-2 max-w-xl mx-auto">ছাত্রাবাসের শক্তিশালী ফিচারগুলো ব্যবহার করে আপনার হোস্টেল পরিচালনায় সময় ও অর্থ দুটোই বাঁচান</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-11/12 mx-auto">
+          <div className="flex items-center gap-6 p-8 rounded-2xl bg-blue-50 border border-blue-100" data-aos="zoom-in-right">
+            <div className="bg-blue-900 p-4 rounded-xl text-white">
+              <CheckCircle />
+            </div>
+            <div>
+              <h4 className="font-bold text-xl mb-1">সহজ হিসাব-নিকাশ</h4>
+              <p className="text-slate-500 text-sm">মাসিক ভাড়া, পেমেন্ট ইতিহাস ও বকেয়া হিসাব ডিজিটালি ট্র্যাক করুন।</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6 p-8 rounded-2xl bg-green-50 border border-green-100" data-aos="zoom-in-left">
+            <div className="bg-green-600 p-4 rounded-xl text-white">
+              <CheckCircle />
+            </div>
+            <div>
+              <h4 className="font-bold text-xl mb-1">রিয়েল-টাইম মিল স্ট্যাটাস</h4>
+              <p className="text-slate-500 text-sm">কোন বর্ডার কোনদিন মিল নেবেন তা আগেই জানুন এবং খরচ কমান।</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6 p-8 rounded-2xl bg-purple-50 border border-purple-100" data-aos="zoom-in-right">
+            <div className="bg-purple-600 p-4 rounded-xl text-white">
+              <CheckCircle />
+            </div>
+            <div>
+              <h4 className="font-bold text-xl mb-1">বর্ডার ম্যানেজমেন্ট</h4>
+              <p className="text-slate-500 text-sm">নতুন ভর্তি, ছাড়পত্র ও বর্ডারদের সমস্ত তথ্য এক ড্যাশবোর্ডে।</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6 p-8 rounded-2xl bg-orange-50 border border-orange-100" data-aos="zoom-in-left">
+            <div className="bg-orange-600 p-4 rounded-xl text-white">
+              <CheckCircle />
+            </div>
+            <div>
+              <h4 className="font-bold text-xl mb-1">রিপোর্ট ও অ্যানালিটিক্স</h4>
+              <p className="text-slate-500 text-sm">মাসিক আয়-ব্যয়ের বিস্তারিত রিপোর্ট ও গ্রাফিকাল চার্ট দেখুন।</p>
+            </div>
+          </div>
+        </div>
+        
+      </section>
+
       
     </div>
   );
