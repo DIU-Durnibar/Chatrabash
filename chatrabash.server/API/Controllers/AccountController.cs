@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using API.Services;
+using API.DTOs;
 using System.Security.Claims;
 
 namespace API.Controllers;
@@ -16,13 +17,15 @@ public class AccountController : BaseController
     private readonly AppDbContext _context;
     private readonly TokenService _tokenService; 
     private readonly UserManager<User> _userManager;
+    private readonly ActivityLogger _activity;
 
-    public AccountController(SignInManager<User> signInManager, AppDbContext context, TokenService tokenService, UserManager<User> userManager)
+    public AccountController(SignInManager<User> signInManager, AppDbContext context, TokenService tokenService, UserManager<User> userManager, ActivityLogger activity)
     {
         _signInManager = signInManager;
         _context = context;
         _tokenService = tokenService; 
         _userManager = userManager;
+        _activity = activity;
     }
 
     [AllowAnonymous] 
@@ -37,6 +40,7 @@ public class AccountController : BaseController
              return ErrorResponse("Username is already taken");
         }
 
+        var pic = string.IsNullOrWhiteSpace(registerDto.ProfilePictureUrl) ? "/default-avatar.svg" : registerDto.ProfilePictureUrl;
         var user = new User
         {
             DisplayName = registerDto.DisplayName,
@@ -46,7 +50,12 @@ public class AccountController : BaseController
             IsApproved = false,
             PreferredRoomId = registerDto.PreferredRoomId,
             PreferenceNote = registerDto.PreferenceNote,
-            ProfilePictureUrl = registerDto.ProfilePictureUrl
+            ProfilePictureUrl = pic,
+            Institution = registerDto.Institution,
+            BloodGroup = registerDto.BloodGroup,
+            EmergencyContact = registerDto.EmergencyContact,
+            Gender = registerDto.Gender,
+            PhoneNumber = registerDto.PhoneNumber
         };
 
         var result = await _signInManager.UserManager.CreateAsync(user, registerDto.Password);
@@ -54,6 +63,7 @@ public class AccountController : BaseController
         if (result.Succeeded)
         {
             await _signInManager.UserManager.AddToRoleAsync(user, "Boarder");
+            await _activity.LogAsync(user.Id, user.Email, "Boarder", "BoarderRegistered", "Auth", registerDto.HostelId, user.Id, null);
             return SuccessResponse("Registration successful! Please wait for Hostel Manager's approval.");
         }
 
@@ -71,16 +81,26 @@ public class AccountController : BaseController
     {
         var user = await _signInManager.UserManager.FindByEmailAsync(loginDto.Email);
 
-        if (user == null) 
+        if (user == null)
+        {
+            await _activity.LogAsync(null, loginDto.Email, "Unknown", "LoginFailed", "Auth", null, null, "invalid email");
             return ErrorResponse("Invalid email", StatusCodes.Status401Unauthorized);
+        }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, lockoutOnFailure: false);
 
         if (!result.Succeeded)
+        {
+            await _activity.LogAsync(user.Id, user.Email, "User", "LoginFailed", "Auth", user.HostelId, null, "bad password");
             return ErrorResponse("Invalid password", StatusCodes.Status401Unauthorized);
+        }
 
         if (!user.IsApproved) 
             return ErrorResponse("Account not approved yet. Contact your Hostel Manager.", StatusCodes.Status401Unauthorized);
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var primaryRole = roles.FirstOrDefault() ?? "User";
+        await _activity.LogAsync(user.Id, user.Email, primaryRole, "Login", "Auth", user.HostelId, null, null);
 
         var userDto = new UserDto
         {
@@ -89,7 +109,13 @@ public class AccountController : BaseController
             UserName = user.UserName ?? "",
             HostelId = user.HostelId ?? "",
             Token = await _tokenService.CreateToken(user), 
-            ProfilePictureUrl = user.ProfilePictureUrl
+            ProfilePictureUrl = string.IsNullOrEmpty(user.ProfilePictureUrl) ? "/default-avatar.svg" : user.ProfilePictureUrl,
+            PhoneNumber = user.PhoneNumber,
+            Bio = user.Bio,
+            Institution = user.Institution,
+            BloodGroup = user.BloodGroup,
+            EmergencyContact = user.EmergencyContact,
+            Gender = user.Gender
         };
         
         return SuccessResponse("Login successful", userDto);
@@ -101,6 +127,53 @@ public class AccountController : BaseController
     {
         var user = await _signInManager.UserManager.FindByNameAsync(username);
         return SuccessResponse("Username check completed", new { isAvailable = user == null }); 
+    }
+
+    [Authorize]
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId!);
+        if (user == null) return ErrorResponse("User not found.", StatusCodes.Status404NotFound);
+        return SuccessResponse("Profile loaded.", new
+        {
+            user.Id,
+            user.DisplayName,
+            user.Email,
+            user.UserName,
+            user.PhoneNumber,
+            user.HostelId,
+            ProfilePictureUrl = string.IsNullOrEmpty(user.ProfilePictureUrl) ? "/default-avatar.svg" : user.ProfilePictureUrl,
+            user.Bio,
+            user.Institution,
+            user.BloodGroup,
+            user.EmergencyContact,
+            user.Gender
+        });
+    }
+
+    [Authorize]
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId!);
+        if (user == null) return ErrorResponse("User not found.", StatusCodes.Status404NotFound);
+
+        if (!string.IsNullOrWhiteSpace(dto.DisplayName)) user.DisplayName = dto.DisplayName;
+        if (dto.PhoneNumber != null) user.PhoneNumber = dto.PhoneNumber;
+        if (dto.Bio != null) user.Bio = dto.Bio;
+        if (dto.Institution != null) user.Institution = dto.Institution;
+        if (dto.BloodGroup != null) user.BloodGroup = dto.BloodGroup;
+        if (dto.EmergencyContact != null) user.EmergencyContact = dto.EmergencyContact;
+        if (dto.Gender != null) user.Gender = dto.Gender;
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var role = roles.FirstOrDefault() ?? "User";
+        await _userManager.UpdateAsync(user);
+        await _activity.LogAsync(user.Id, user.Email, role, "ProfileUpdated", "Profile", user.HostelId, null, null);
+        return SuccessResponse("Profile updated.");
     }
 
     [Authorize] 

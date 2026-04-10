@@ -60,6 +60,7 @@ public partial class Program
         });
 
         builder.Services.AddScoped<API.Services.TokenService>();
+        builder.Services.AddScoped<API.Services.ActivityLogger>();
         
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"] ?? "super_secret_key_which_is_at_least_64_characters_long_for_security"));
 
