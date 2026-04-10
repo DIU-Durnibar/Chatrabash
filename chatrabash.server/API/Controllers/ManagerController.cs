@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using Persistence;
 using API.DTOs;
-using Microsoft.AspNetCore.Http; 
+using Microsoft.AspNetCore.Http;
+using API.Services;
 
 namespace API.Controllers;
 
@@ -16,12 +17,14 @@ namespace API.Controllers;
 public class ManagerController : BaseController 
 {
     private readonly UserManager<User> _userManager;
-    private readonly AppDbContext _context; 
+    private readonly AppDbContext _context;
+    private readonly ActivityLogger _activity;
 
-    public ManagerController(UserManager<User> userManager, AppDbContext context)
+    public ManagerController(UserManager<User> userManager, AppDbContext context, ActivityLogger activity)
     {
         _userManager = userManager;
         _context = context;
+        _activity = activity;
     }
 
     [HttpGet("pending-users")]
@@ -80,6 +83,10 @@ public class ManagerController : BaseController
         if (result.Succeeded)
         {
             await _context.SaveChangesAsync();
+            var mgrId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var mgr = await _userManager.FindByIdAsync(mgrId!);
+            await _activity.LogAsync(mgrId, mgr?.Email, "Manager", "BoarderApproved", "User", managerHostelId, userId,
+                $"room={room.RoomNumber}");
             return SuccessResponse($"{user.UserName} has been approved and assigned to room {room.RoomNumber}.");
         }
 
@@ -105,6 +112,8 @@ public class ManagerController : BaseController
                 r.FloorNo,
                 r.SeatCapacity,
                 r.SeatAvailable,
+                r.MonthlyRent,
+                r.EstimatedMonthlyCost,
                 r.IsAcAvailable,
                 r.IsAttachedBathroomAvailable,
                 r.IsBalconyAvailable,
@@ -129,6 +138,7 @@ public class ManagerController : BaseController
             SeatCapacity = roomDto.SeatCapacity,
             SeatAvailable = roomDto.SeatCapacity, 
             MonthlyRent = roomDto.MonthlyRent,
+            EstimatedMonthlyCost = roomDto.EstimatedMonthlyCost,
             IsAttachedBathroomAvailable = roomDto.IsAttachedBathroomAvailable,
             IsBalconyAvailable = roomDto.IsBalconyAvailable,
             IsAcAvailable = roomDto.IsAcAvailable,
@@ -138,6 +148,10 @@ public class ManagerController : BaseController
 
         _context.Rooms.Add(newRoom);
         await _context.SaveChangesAsync();
+
+        var mgrId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var mgr = await _userManager.FindByIdAsync(mgrId!);
+        await _activity.LogAsync(mgrId, mgr?.Email, "Manager", "RoomAdded", "Room", managerHostelId, null, newRoom.RoomNumber);
 
         return SuccessResponse($"Room {newRoom.RoomNumber} added successfully.");
     }
@@ -159,6 +173,7 @@ public class ManagerController : BaseController
         room.RoomNumber = roomDto.RoomNumber!;
         room.FloorNo = roomDto.FloorNo;
         room.MonthlyRent = roomDto.MonthlyRent;
+        room.EstimatedMonthlyCost = roomDto.EstimatedMonthlyCost;
         room.IsAttachedBathroomAvailable = roomDto.IsAttachedBathroomAvailable;
         room.IsBalconyAvailable = roomDto.IsBalconyAvailable;
         room.IsAcAvailable = roomDto.IsAcAvailable;
@@ -173,6 +188,175 @@ public class ManagerController : BaseController
 
         await _context.SaveChangesAsync();
 
+        var mgrId2 = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var mgr2 = await _userManager.FindByIdAsync(mgrId2!);
+        await _activity.LogAsync(mgrId2, mgr2?.Email, "Manager", "RoomUpdated", "Room", managerHostelId, null, room.RoomNumber);
+
         return SuccessResponse($"Room {room.RoomNumber} updated successfully.");
+    }
+
+    [HttpGet("activity-logs")]
+    public async Task<IActionResult> GetHostelActivityLogs([FromQuery] int page = 1, [FromQuery] int pageSize = 50)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 200);
+
+        var boarderIds = await _userManager.Users.AsNoTracking()
+            .Where(u => u.HostelId == managerHostelId)
+            .Select(u => u.Id)
+            .ToListAsync();
+
+        var q = _context.ActivityLogs.AsNoTracking()
+            .Where(l =>
+                l.HostelId == managerHostelId
+                || (l.TargetUserId != null && boarderIds.Contains(l.TargetUserId))
+                || (l.ActorUserId != null && boarderIds.Contains(l.ActorUserId)))
+            .OrderByDescending(l => l.CreatedAt);
+
+        var total = await q.CountAsync();
+        var items = await q.Skip((page - 1) * pageSize).Take(pageSize)
+            .Select(l => new
+            {
+                l.Id,
+                l.CreatedAt,
+                l.ActorEmail,
+                l.ActorRole,
+                l.Action,
+                l.Category,
+                l.HostelId,
+                l.TargetUserId,
+                l.Details
+            })
+            .ToListAsync();
+
+        return SuccessResponse("Hostel activity logs loaded.", new { total, page, pageSize, items });
+    }
+
+    [HttpPost("mock-platform-payment")]
+    public async Task<IActionResult> MockPlatformPayment([FromBody] MockManagerPlatformPaymentDto dto)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return ErrorResponse("Unauthorized.", StatusCodes.Status401Unauthorized);
+
+        if (dto.Month is < 1 or > 12)
+            return ErrorResponse("Invalid month.");
+
+        var hostel = await _context.Hostels
+            .Include(h => h.SubscriptionPackage)
+            .FirstOrDefaultAsync(h => h.Id == managerHostelId && h.ManagerId == userId);
+        if (hostel == null)
+            return ErrorResponse("Hostel not found or you are not the assigned manager.", StatusCodes.Status403Forbidden);
+
+        var amount = hostel.SubscriptionPackage?.MonthlyPrice ?? 0;
+        if (amount <= 0)
+            return ErrorResponse("Your subscription package has no monthly platform fee.");
+
+        var dup = await _context.ManagerPlatformPayments.AnyAsync(p =>
+            p.HostelId == managerHostelId && p.Year == dto.Year && p.Month == dto.Month);
+        if (dup)
+            return ErrorResponse("Platform fee for this month is already recorded.");
+
+        var trx = "MOCK_PLAT_" + Guid.NewGuid().ToString("N")[..12].ToUpperInvariant();
+        _context.ManagerPlatformPayments.Add(new ManagerPlatformPayment
+        {
+            HostelId = managerHostelId,
+            ManagerUserId = userId,
+            Year = dto.Year,
+            Month = dto.Month,
+            Amount = amount,
+            SubscriptionPackageId = hostel.SubscriptionPackageId,
+            Status = "Paid",
+            PaymentMethod = "Mock_" + dto.PaymentMethod,
+            TransactionId = trx
+        });
+        await _context.SaveChangesAsync();
+
+        var mgr = await _userManager.FindByIdAsync(userId);
+        await _activity.LogAsync(userId, mgr?.Email, "Manager", "PlatformFeePaid", "Payment", managerHostelId, null,
+            $"amount={amount},trx={trx},{dto.Year}-{dto.Month:00}");
+
+        return SuccessResponse("Mock platform payment successful.", new { transactionId = trx, amount });
+    }
+
+    [HttpPost("hostel-photos")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadHostelPhoto(IFormFile file, [FromForm] bool setAsMain = false)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var hostel = await _context.Hostels.FirstOrDefaultAsync(h => h.Id == managerHostelId && h.ManagerId == userId);
+        if (hostel == null)
+            return ErrorResponse("Hostel not found or you are not the assigned manager.", StatusCodes.Status403Forbidden);
+
+        if (file == null || file.Length == 0)
+            return ErrorResponse("No file uploaded.");
+
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (ext is not ".jpg" and not ".jpeg" and not ".png" and not ".webp")
+            return ErrorResponse("Only JPG, PNG, or WEBP images are allowed.");
+
+        var folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "hostels", managerHostelId);
+        Directory.CreateDirectory(folder);
+        var name = $"{Guid.NewGuid():N}{ext}";
+        var fullPath = Path.Combine(folder, name);
+        await using (var stream = new FileStream(fullPath, FileMode.Create))
+            await file.CopyToAsync(stream);
+
+        var url = $"/uploads/hostels/{managerHostelId}/{name}";
+
+        if (setAsMain)
+        {
+            var existing = await _context.HostelPhotos.Where(p => p.HostelId == managerHostelId).ToListAsync();
+            foreach (var p in existing)
+                p.IsMain = false;
+        }
+
+        var anyPhoto = await _context.HostelPhotos.AnyAsync(p => p.HostelId == managerHostelId);
+        _context.HostelPhotos.Add(new HostelPhoto
+        {
+            Url = url,
+            IsMain = setAsMain || !anyPhoto,
+            HostelId = managerHostelId
+        });
+        await _context.SaveChangesAsync();
+
+        var mgr = await _userManager.FindByIdAsync(userId!);
+        await _activity.LogAsync(userId, mgr?.Email, "Manager", "HostelPhotoUploaded", "Hostel", managerHostelId, null, url);
+
+        return SuccessResponse("Photo uploaded.", new { url });
+    }
+
+    [HttpGet("hostel-photos")]
+    public async Task<IActionResult> ListHostelPhotos()
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var ok = await _context.Hostels.AnyAsync(h => h.Id == managerHostelId && h.ManagerId == userId);
+        if (!ok)
+            return ErrorResponse("Forbidden.", StatusCodes.Status403Forbidden);
+
+        var photos = await _context.HostelPhotos.AsNoTracking()
+            .Where(p => p.HostelId == managerHostelId)
+            .OrderByDescending(p => p.IsMain)
+            .ThenBy(p => p.Id)
+            .Select(p => new { p.Id, p.Url, p.IsMain })
+            .ToListAsync();
+
+        return SuccessResponse("Photos loaded.", photos);
     }
 }
