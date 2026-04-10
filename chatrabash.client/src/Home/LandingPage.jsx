@@ -189,6 +189,96 @@ const LandingPage = () => {
 </div>
       </section>
 
+      {/* --- Featured Hostels --- */}
+      <section className="pt-10 pb-20 bg-slate-50 px-4">
+        <div className="w-11/12 mx-auto">
+          <div className="flex items-end justify-between mb-12">
+            <div data-aos="fade-right">
+              <span className="text-blue-700 font-semibold bg-blue-100 px-3 py-1 rounded text-xs uppercase">জনপ্রিয় হোস্টেল</span>
+              <h2 className="text-3xl font-bold mt-4 text-slate-800">আপনার এলাকার জনপ্রিয় হোস্টেলসমূহ</h2>
+              <p className="text-slate-500 mt-1 text-sm">ভেরিফাইড ও রেটিং-নিশ্চিত হোস্টেলের তালিকা</p>
+            </div>
+            <button className="text-blue-700 font-bold flex items-center gap-1 hover:underline group" data-aos="fade-left">
+              সব হোস্টেল দেখুন <ArrowRight size={18} className="group-hover:translate-x-1 transition" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Card 1 */}
+            <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition duration-300" data-aos="fade-up">
+              <div className="relative h-56">
+                <img src="https://images.pexels.com/photos/633269/pexels-photo-633269.jpeg" alt="Hostel" className="w-full h-full object-cover" />
+                <span className="absolute top-4 left-4 bg-blue-700 text-white text-xs px-3 py-1 rounded-full font-medium">সেরা পছন্দ</span>
+                <span className="absolute top-4 right-4 bg-white/90 backdrop-blur text-green-700 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1">● ভেরিফাইড</span>
+              </div>
+              <div className="p-6">
+                <h4 className="text-xl font-bold text-slate-800 mb-2">স্টুডেন্ট কেয়ার হোস্টেল</h4>
+                <div className="flex items-center text-slate-400 text-sm gap-1 mb-4">
+                  <MapPin size={14} /> ধানমন্ডি, ঢাকা
+                </div>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {['ওয়াইফাই', 'মিল সুবিধা', 'নিরাপত্তা'].map(tag => (
+                    <span key={tag} className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded border border-blue-100 font-medium">{tag}</span>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between border-t pt-4">
+                  <div className="text-blue-900 font-extrabold text-xl">৳৩,৫০০<span className="text-slate-400 text-xs font-normal">/মাস</span></div>
+                  <button className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition">বিস্তারিত</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition duration-300" data-aos="fade-up" data-aos-delay="100">
+              <div className="relative h-56">
+                <img src="https://images.pexels.com/photos/1454806/pexels-photo-1454806.jpeg" alt="Hostel" className="w-full h-full object-cover" />
+                <span className="absolute top-4 left-4 bg-green-600 text-white text-xs px-3 py-1 rounded-full font-medium">সাশ্রয়ী</span>
+                <span className="absolute top-4 right-4 bg-white/90 backdrop-blur text-green-700 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1">● ভেরিফাইড</span>
+              </div>
+              <div className="p-6">
+                <h4 className="text-xl font-bold text-slate-800 mb-2">আল-আমিন বোর্ডিং হাউস</h4>
+                <div className="flex items-center text-slate-400 text-sm gap-1 mb-4">
+                  <MapPin size={14} /> মিরপুর-১০, ঢাকা
+                </div>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {['ওয়াইফাই', 'লাইব্রেরি', 'পার্কিং'].map(tag => (
+                    <span key={tag} className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded border border-blue-100 font-medium">{tag}</span>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between border-t pt-4">
+                  <div className="text-blue-900 font-extrabold text-xl">৳২,৮০০<span className="text-slate-400 text-xs font-normal">/মাস</span></div>
+                  <button className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition">বিস্তারিত</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition duration-300" data-aos="fade-up" data-aos-delay="200">
+              <div className="relative h-56">
+                <img src="https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg" alt="Hostel" className="w-full h-full object-cover" />
+                <span className="absolute top-4 left-4 bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-medium">প্রিমিয়াম</span>
+                <span className="absolute top-4 right-4 bg-white/90 backdrop-blur text-green-700 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1">● ভেরিফাইড</span>
+              </div>
+              <div className="p-6">
+                <h4 className="text-xl font-bold text-slate-800 mb-2">ভার্সিটি হোস্টেল কমপ্লেক্স</h4>
+                <div className="flex items-center text-slate-400 text-sm gap-1 mb-4">
+                  <MapPin size={14} /> মোহাম্মদপুর, ঢাকা
+                </div>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {['AC রুম', 'জিম', 'ক্যান্টিন'].map(tag => (
+                    <span key={tag} className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded border border-blue-100 font-medium">{tag}</span>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between border-t pt-4">
+                  <div className="text-blue-900 font-extrabold text-xl">৳৪,২০০<span className="text-slate-400 text-xs font-normal">/মাস</span></div>
+                  <button className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition">বিস্তারিত</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       
     </div>
   );
