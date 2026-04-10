@@ -331,6 +331,62 @@ const LandingPage = () => {
         
       </section>
 
+      {/* --- CTA Section --- */}
+     <section className="py-16 bg-blue-900 text-center px-4 relative overflow-hidden">
+
+  <div className="absolute top-0 left-0 w-48 h-48 bg-blue-800 rounded-full -ml-24 -mt-24 blur-3xl opacity-50"></div>
+  <div className="absolute bottom-0 right-0 w-48 h-48 bg-blue-700 rounded-full -mr-24 -mb-24 blur-3xl opacity-50"></div>
+  
+  <div className="relative z-10" data-aos="zoom-in">
+    <span className="text-blue-200 text-xs font-medium tracking-wide uppercase">
+      আজই শুরু করুন — সম্পূর্ণ বিনামূল্যে
+    </span>
+    
+    <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-3 mb-4 leading-tight">
+      হোস্টেল ম্যানেজমেন্টের নতুন যুগে স্বাগতম
+    </h2>
+    
+    <p className="text-blue-100 mb-8 max-w-md mx-auto opacity-80 text-sm">
+      হাজারো হোস্টেল মালিক ও স্টুডেন্ট ইতোমধ্যে ছাত্রাবাস ব্যবহার করছেন। আপনিও যোগ দিন।
+    </p>
+    
+    {/* Compact Buttons */}
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <button className="bg-white text-blue-900 px-8 py-3 rounded-lg font-bold shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center leading-tight">
+        <span className="text-[10px] font-normal uppercase opacity-70">মালিকদের জন্য</span>
+        <span className="flex items-center gap-2">বিনামূল্যে শুরু করুন <ArrowRight size={16} /></span>
+      </button>
+      
+      <button className="bg-blue-800/40 backdrop-blur-md text-white border border-blue-400/30 px-8 py-3 rounded-lg font-bold hover:bg-blue-800 transition-all duration-300 flex flex-col items-center leading-tight ">
+        <span className="text-[10px] font-normal uppercase opacity-70">বর্ডারদের জন্য</span>
+        <span className="flex items-center gap-2">হোস্টেল খুঁজুন <ArrowRight size={16} /></span>
+      </button>
+    </div>
+
+    <hr className='w-11/12 mx-auto text-blue-700 mt-5'/>
+
+    
+    <div className="mt-12 flex justify-center gap-8 md:gap-16 text-white border-blue-800 w-fit mx-auto">
+      <div className="text-center">
+        <div className="text-2xl font-black">৫০০+</div>
+        <div className="text-blue-300 text-[10px] uppercase tracking-tighter">হোস্টেল নিবন্ধিত</div>
+      </div>
+      <div className="text-center border-x border-blue-800 px-8 md:px-16">
+        <div className="text-2xl font-black">১০,০০০+</div>
+        <div className="text-blue-300 text-[10px] uppercase tracking-tighter">সক্রিয় বর্ডার</div>
+      </div>
+      <div className="text-center">
+        <div className="text-2xl font-black">৯৮%</div>
+        <div className="text-blue-300 text-[10px] uppercase tracking-tighter">সন্তুষ্ট ব্যবহারকারী</div>
+      </div>
+    </div>
+  </div>
+     </section>
+
+
+
+
+      {/* --- Footer --- */}
       
     </div>
   );
