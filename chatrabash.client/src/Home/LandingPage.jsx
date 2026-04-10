@@ -1,39 +1,76 @@
-// HomePage.jsx
-import { Link } from "react-router-dom";
+import React, { useState,useEffect } from 'react';
+import { 
+  Search, 
+  MapPin, 
+  CheckCircle, 
+  ArrowRight, 
+  Phone, 
+  Mail
+} from 'lucide-react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const LandingPage = () => {
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+  const [activeTab, setActiveTab] = useState('registration');
+
   return (
-    <div className="relative w-full h-screen">
-      {/* Background Image */}
-      <img
-        src="https://images.pexels.com/photos/15517312/pexels-photo-15517312.jpeg?_gl=1*4zttlb*_ga*Nzk5MDc5Nzk1LjE3Njk5NzUxMDQ.*_ga_8JE65Q40S6*czE3Njk5NzUxMDQkbzEkZzEkdDE3Njk5NzU1MzIkajU5JGwwJGgw"
-        alt="Hostel Hero"
-        className="w-full h-full object-cover"
-      />
+    <div className="font-sans text-slate-900 overflow-x-hidden">
 
-      <div className="absolute inset-0 bg-linear-to-b from-blue-900/70 via-blue-800/40 to-transparent"></div>
 
-      <div className="absolute inset-0 flex flex-col justify-center items-center text-white px-6 text-center">
-        <h1 className="text-5xl md:text-7xl font-bold mb-3">Welcome to Chatrabash-ছাত্রাবাস </h1>
-        <p className="text-xl md:text-2xl mb-5">
-          Manage your hostels, students, and staff seamlessly.
-        </p>
-        <div className="flex flex-col md:flex-row gap-4">
 
-        <Link
-          to="/home"
-          className="relative inline-block px-8 py-4 rounded-full text-lg font-semibold text-white
-                     bg-linear-to-r from-blue-500 via-blue-600 to-blue-700
-                     shadow-lg shadow-blue-500/50
-                     transform transition duration-300 hover:scale-105 hover:shadow-xl
-                     active:scale-95"
-        >
-          Get Started
-          <span className="absolute inset-0 rounded-full bg-white/10 opacity-0 hover:opacity-20 transition duration-300"></span>
-        </Link>
-          
+
+      {/* --- Navbar --- */}
+      <nav className="flex items-center justify-between px-20 py-4 bg-white sticky top-0 z-50 shadow-sm">
+
+        
+        <div className="flex items-center gap-2">
+          <div className="bg-blue-700 p-1.5 rounded-lg">
+            <span className="text-white font-bold text-xl">ছা</span>
+          </div>
+          <span className="text-blue-900 font-bold text-2xl">ছাত্রাবাস</span>
         </div>
-      </div>
+        <div className="hidden md:flex items-center gap-8 text-slate-600 font-medium">
+          <a href="#" className="hover:text-blue-700 transition">হোস্টেল খুঁজুন</a>
+          <a href="#" className="hover:text-blue-700 transition">কিভাবে কাজ করে</a>
+          <a href="#" className="hover:text-blue-700 transition">সাহায্য</a>
+        </div>
+
+
+        {/* Login/Registration Toggle Buttons */}
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setActiveTab('login')}
+            className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 border ${
+              activeTab === 'login' 
+                ? 'bg-blue-700 text-white border-blue-700' // Focused State
+                : 'bg-transparent text-blue-700 border-blue-700' // Unfocused State
+            } hover:bg-blue-500 hover:text-white`} // Light blue hover for both
+          >
+            লগ-ইন
+          </button>
+
+          <button 
+            onClick={() => setActiveTab('registration')}
+            className={`px-6 py-2 rounded-md font-semibold transition-all duration-300 border ${
+              activeTab === 'registration'
+                ? 'bg-blue-700 text-white border-blue-700' // Focused State
+                : 'bg-transparent text-blue-700 border-blue-700' // Unfocused State
+            } hover:bg-blue-500 hover:text-white`} // Light blue hover for both
+          >
+            রেজিস্ট্রেশন
+          </button>
+        </div>
+
+        
+      </nav>
+
+
     </div>
   );
 };
