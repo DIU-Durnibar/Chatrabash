@@ -13,4 +13,6 @@ public class RegisterHostelDto
     public string ManagerEmail { get; set; } = string.Empty;
     public string ManagerPhone { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
+    /// <summary>Required when selected package has MonthlyPrice &gt; 0 (mock gateway transaction id).</summary>
+    public string? PackagePaymentTransactionId { get; set; }
 }
