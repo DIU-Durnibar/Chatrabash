@@ -11,11 +11,32 @@ import AllHostel from "../Manager's End/Pages/AllHostel";
 import CreateRoom from "../Manager's End/Pages/CreateRoom";
 import HostelRooms from "../Manager's End/Pages/HostelRooms";
 import UpdateRoom from "../Manager's End/Pages/UpdateRoom";
+import HostelKhujun from "../Home/LandingPage/HostelKhujun";
+import kivabeKajKore from "../Home/LandingPage/kivabeKajKore";
+import LandingPage from "../Home/LandingPage";
 
 const Routes = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout></MainLayout>,
+    children:[
+    {
+    index:true,
+    Component:LandingPage,
+    },
+    {
+    path:"availablehostels",
+    Component: HostelKhujun
+    },
+    {
+    path:"how-it-works",
+    Component: kivabeKajKore
+    },
+    {
+    path:"help",
+    Component: kivabeKajKore
+    },
+    ]
   },
   {
     path:"/home",
@@ -62,7 +83,7 @@ const Routes = createBrowserRouter([
   {
    path:"/home/studentDashboard",
         Component:StudentDashboard
-  },
+  }
 ]);
 
 export default Routes
