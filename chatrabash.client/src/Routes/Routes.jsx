@@ -14,6 +14,7 @@ import UpdateRoom from "../Manager's End/Pages/UpdateRoom";
 import HostelKhujun from "../Home/LandingPage/HostelKhujun";
 import kivabeKajKore from "../Home/LandingPage/kivabeKajKore";
 import LandingPage from "../Home/LandingPage";
+import Help from "../Home/LandingPage/Help";
 
 const Routes = createBrowserRouter([
   {
@@ -34,7 +35,7 @@ const Routes = createBrowserRouter([
     },
     {
     path:"help",
-    Component: kivabeKajKore
+    Component: Help
     },
     ]
   },

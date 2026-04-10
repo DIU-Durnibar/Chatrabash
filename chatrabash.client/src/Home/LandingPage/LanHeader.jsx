@@ -21,6 +21,21 @@ const LanHeader = () => {
 
 
         <div className="hidden md:flex items-center gap-4 text-slate-600 font-medium">
+
+  <NavLink
+    to="/"
+    className={({ isActive }) =>
+      `px-5 py-2 rounded-md transition-all duration-300 ${
+        isActive 
+          ? 'bg-blue-700 text-white shadow-md' // Focused/Active state
+          : 'hover:text-blue-700 hover:bg-blue-50' // Regular/Inactive state
+      }`
+    }
+  >
+    হোম
+  </NavLink>
+
+
   <NavLink
     to="/availablehostels"
     className={({ isActive }) =>
