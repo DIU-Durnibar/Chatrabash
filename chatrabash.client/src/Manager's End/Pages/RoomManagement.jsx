@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Bed, Bath, Wind, Monitor, Edit2, Trash2 } from 'lucide-react';
-import CreateRoom from './CreateRoom'; // Modal Component
+import { Plus, Search, Bed, Bath, Wind, Monitor, Edit2, Trash2 } from 'lucide-react';
+import CreateRoom from './CreateRoom'; 
 import UpdateRoom from './UpdateRoom';
 
 const RoomManagement = () => {
   const [rooms, setRooms] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState(""); // সার্চের জন্য নতুন স্টেট
   const token = localStorage.getItem("token");
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedRoomId, setSelectedRoomId] = useState(null);
@@ -32,6 +33,10 @@ const RoomManagement = () => {
 
   useEffect(() => { fetchRooms(); }, []);
 
+  const filteredRooms = rooms.filter((room) =>
+    room.roomNumber.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       {/* Header Section */}
@@ -51,17 +56,20 @@ const RoomManagement = () => {
       <div className="flex flex-wrap items-center justify-between gap-4 border-slate-50">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-          <input type="text" placeholder="রুম নম্বর খুঁজুন..." className="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-white shadow-sm text-sm focus:ring-2 focus:ring-blue-500" />
+          <input 
+            type="text" 
+            placeholder="রুম নম্বর খুঁজুন..." 
+            className="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-white shadow-sm text-sm focus:ring-2 focus:ring-blue-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} 
+          />
         </div>
         <div className="flex gap-2">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold">সব রুম</button>
-          <button className="px-4 py-2 bg-white text-slate-500 rounded-xl text-xs font-bold border border-slate-100">AC</button>
-          <button className="px-4 py-2 bg-white text-slate-500 rounded-xl text-xs font-bold border border-slate-100">Non-AC</button>
+          <button onClick={() => setSearchTerm("")} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold">সব রুম</button>
         </div>
       </div>
 
-
-
+      {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-xl border border-slate-50 flex items-center gap-4">
           <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center"><Bed size={24}/></div>
@@ -69,79 +77,81 @@ const RoomManagement = () => {
         </div>
       </div>
 
-
-
+      {/* Room Grid Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {rooms.map((room) => (
-          <div key={room.id} className="bg-white rounded-[32px] border border-slate-50 shadow-sm hover:shadow-xl transition-all duration-500 group overflow-hidden">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center"><Bed size={24}/></div>
-                  <div>
-                    <h3 className="font-black text-slate-800 text-lg">রুম {room.roomNumber}</h3>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase">{room.floorNo}ম তলা</p>
+        {filteredRooms.length > 0 ? (
+          filteredRooms.map((room) => (
+            <div key={room.id} className="bg-white rounded-[32px] border border-slate-50 shadow-sm hover:shadow-xl transition-all duration-500 group overflow-hidden">
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center"><Bed size={24}/></div>
+                    <div>
+                      <h3 className="font-black text-slate-800 text-lg">রুম {room.roomNumber}</h3>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">{room.floorNo}ম তলা</p>
+                    </div>
+                  </div>
+                  <div className={`px-3 py-1 rounded-lg text-[10px] font-black ${room.isAcAvailable ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
+                    {room.isAcAvailable ? 'AC' : 'Non-AC'}
                   </div>
                 </div>
-                <div className={`px-3 py-1 rounded-lg text-[10px] font-black ${room.isAcAvailable ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
-                  {room.isAcAvailable ? 'AC' : 'Non-AC'}
+
+                {/* Progress Bar */}
+                <div className="space-y-2 mb-6">
+                   <div className="flex justify-between text-[10px] font-black uppercase">
+                      <span className="text-slate-400">সিট: {room.seatCapacity}টি</span>
+                      <span className={room.seatAvailable === 0 ? 'text-red-500' : 'text-emerald-500'}>
+                          {room.seatAvailable === 0 ? 'পূর্ণ' : `${room.seatAvailable}টি খালি`}
+                      </span>
+                   </div>
+                   <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                      <div className="bg-blue-600 h-full transition-all" style={{ width: `${((room.seatCapacity - room.seatAvailable) / room.seatCapacity) * 100}%` }}></div>
+                   </div>
+                </div>
+
+                {/* Amenities */}
+                <div className="flex flex-wrap gap-3 mb-6">
+                  <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold ${room.isAcAvailable ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-300'}`}>
+                    <Wind size={14} strokeWidth={2.5} />
+                    <span>এসি</span>
+                  </div>
+                  <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold ${room.isAttachedBathroomAvailable ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-50 text-slate-300'}`}>
+                    <Bath size={14} strokeWidth={2.5} />
+                    <span>সংযুক্ত বাথরুম</span>
+                  </div>
+                  <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold ${room.isBalconyAvailable ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-300'}`}>
+                    <Monitor size={14} strokeWidth={2.5} />
+                    <span>বারান্দা</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+                   <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${room.isActive ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
+                      <span className="text-[10px] font-black text-slate-400 uppercase">{room.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}</span>
+                   </div>
+                   <div className="flex gap-2">
+                     <button 
+                        onClick={() => handleUpdateClick(room.id)}
+                        className="p-2 text-blue-950 hover:bg-blue-50 rounded-lg transition-colors flex justify-center items-center gap-1 bg-blue-200 text-xs"
+                      >
+                        আপডেট <Edit2 size={16}/>
+                      </button>
+                   </div>
                 </div>
               </div>
-
-              {/* Progress Bar */}
-              <div className="space-y-2 mb-6">
-                 <div className="flex justify-between text-[10px] font-black uppercase">
-                    <span className="text-slate-400">সিট: {room.seatCapacity}টি</span>
-                    <span className={room.seatAvailable === 0 ? 'text-red-500' : 'text-emerald-500'}>
-                        {room.seatAvailable === 0 ? 'পূর্ণ' : `${room.seatAvailable}টি খালি`}
-                    </span>
-                 </div>
-                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div className="bg-blue-600 h-full transition-all" style={{ width: `${((room.seatCapacity - room.seatAvailable) / room.seatCapacity) * 100}%` }}></div>
-                 </div>
-              </div>
-
-              {/* Amenities */}
-<div className="flex flex-wrap gap-3 mb-6">
-  <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold ${room.isAcAvailable ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-300'}`}>
-    <Wind size={14} strokeWidth={2.5} />
-    <span>এসি</span>
-  </div>
-
-  <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold ${room.isAttachedBathroomAvailable ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-50 text-slate-300'}`}>
-    <Bath size={14} strokeWidth={2.5} />
-    <span>সংযুক্ত বাথরুম</span>
-  </div>
-
-  <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold ${room.isBalconyAvailable ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-300'}`}>
-    <Monitor size={14} strokeWidth={2.5} />
-    <span>বারান্দা</span>
-  </div>
-</div>
-
-              <div className="flex items-center justify-between pt-6 border-t border-slate-50">
-                 <div className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${room.isActive ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
-                    <span className="text-[10px] font-black text-slate-400 uppercase">{room.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}</span>
-                 </div>
-                 <div className="flex gap-2">
-                   <button 
-        onClick={() => handleUpdateClick(room.id)}
-        className="p-2 text-blue-950 hover:bg-blue-50 rounded-lg transition-colors flex justify-center items-center gap-1 bg-blue-200 text-xs"
-      >
-        আপডেট <Edit2 size={16}/>
-      </button>
-                    <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={16}/></button>
-                 </div>
-              </div>
             </div>
+          ))
+        ) : (
+          <div className="col-span-full py-20 text-center bg-white rounded-[32px] border border-dashed border-slate-200">
+            <Search className="mx-auto text-slate-200 mb-4" size={48} />
+            <p className="text-slate-500 font-bold">রুম খালি নেই</p>
           </div>
-        ))}
+        )}
       </div>
 
-      {/* Create Room Modal */}
+      {/* Modals */}
       {isModalOpen && <CreateRoom isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} refresh={fetchRooms} />}
-
       {isUpdateModalOpen && (
         <UpdateRoom
           isOpen={isUpdateModalOpen} 
