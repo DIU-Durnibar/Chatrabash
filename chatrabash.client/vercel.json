@@ -2,16 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://hasibhasnain-001-site1.ktempurl.com/api/:path*"
-    },
-    {
       "source": "/uploads/:path*",
-      "destination": "https://hasibhasnain-001-site1.ktempurl.com/uploads/:path*"
+      "destination": "/api/uploads-proxy/:path*"
     },
     {
       "source": "/default-avatar.svg",
-      "destination": "https://hasibhasnain-001-site1.ktempurl.com/default-avatar.svg"
+      "destination": "/api/avatar-proxy"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
