@@ -57,6 +57,12 @@ public class BoarderController : BaseController
                 .ToListAsync();
         }
 
+        var bills = await _context.MonthlyBills.AsNoTracking()
+            .Where(b => b.UserId == userId)
+            .Select(b => new { Due = b.TotalAmount - b.PaidAmount })
+            .ToListAsync();
+        var totalDue = bills.Sum(b => b.Due);
+
         var dashboardData = new
         {
             Profile = new 
@@ -80,6 +86,11 @@ public class BoarderController : BaseController
                 AcAvailable = allocatedRoom.IsAcAvailable,
                 AttachedBath = allocatedRoom.IsAttachedBathroomAvailable == true,
                 RoomMates = roomMates
+            },
+            BillingSummary = new
+            {
+                TotalDue = totalDue,
+                OpenBillCount = bills.Count(b => b.Due > 0)
             }
         };
 

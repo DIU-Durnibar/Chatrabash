@@ -1,116 +1,123 @@
-import React, { useState, useEffect } from "react";
-import { HiOutlineOfficeBuilding, HiOutlineCheckCircle, HiOutlineXCircle, HiEye, HiClipboardCopy, HiPencilAlt } from "react-icons/hi";
+import { useEffect, useState } from "react";
+import { Building2, CheckCircle2, ClipboardCopy, Eye, EyeOff, Pencil } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { apiGet } from "../../lib/api";
+import ManagerPageFrame from "../../layouts/ManagerPageFrame";
 
-const HostelRooms = () => {
+export default function HostelRooms() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [visibleRoomIds, setVisibleRoomIds] = useState({}); 
-  const token = localStorage.getItem("token");
+  const [visible, setVisible] = useState({});
 
   useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await fetch("http://localhost:5091/api/manager/rooms", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const result = await response.json();
-        if (result.success) setRooms(result.data);
-      } catch (error) {
-        console.error("Error fetching rooms:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRooms();
-  }, [token]);
+    (async () => {
+      const { ok, json } = await apiGet("/api/manager/rooms");
+      if (ok && json?.success) setRooms(json.data || []);
+      setLoading(false);
+    })();
+  }, []);
 
-  const toggleRoomId = (roomId) => {
-    setVisibleRoomIds(prev => ({
-      ...prev,
-      [roomId]: !prev[roomId]
-    }));
-  };
+  const toggleId = (id) => setVisible((p) => ({ ...p, [id]: !p[id] }));
 
-  const copyToClipboard = (id) => {
+  const copy = (id) => {
     navigator.clipboard.writeText(id);
-    alert("রুম আইডি কপি করা হয়েছে!");
+    alert("রুম আইডি কপি হয়েছে");
   };
 
-  if (loading) return <div className="p-10 text-center font-bold text-blue-900">রুম ডাটা লোড হচ্ছে...</div>;
+  if (loading) {
+    return (
+      <ManagerPageFrame title="রুম ম্যানেজমেন্ট" subtitle="সব রুম, ভাড়া ও আনুমানিক ব্যয়">
+        <p className="text-center font-medium text-[var(--cb-primary)]">লোড হচ্ছে...</p>
+      </ManagerPageFrame>
+    );
+  }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen font-sans">
-      <div className="max-w-6xl mx-auto">
-        <header className="mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-[#001f3f] flex items-center gap-2">
-              <HiOutlineOfficeBuilding /> হোস্টেল রুম ইনভেন্টরি
-            </h2>
-            <p className="text-2xl text-green-700 uppercase tracking-wider mt-1 pt-4 font-bold">Chatrabash Super Hostel</p>
-          </div>
-        </header>
-
-        <div className="bg-white shadow-sm rounded-sm overflow-hidden border border-gray-200">
-          <table className="table w-full border-collapse">
-            <thead className="bg-[#001f3f] text-white uppercase text-[11px] tracking-widest">
+    <ManagerPageFrame
+      title="হোস্টেল রুম ইনভেন্টরি"
+      subtitle="প্রতিটি রুমের মাসিক রুম ভাড়া (সিট প্রতি) ও আনুমানিক মোট মাসিক ব্যয়"
+      actions={
+        <NavLink
+          to="/home/create-room"
+          className="rounded-xl bg-[var(--cb-primary)] px-4 py-2 text-sm font-bold text-white shadow-sm hover:opacity-95"
+        >
+          + নতুন রুম
+        </NavLink>
+      }
+    >
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[880px] text-left text-sm">
+            <thead className="bg-[var(--cb-sidebar)] text-xs font-bold uppercase tracking-wide text-white">
               <tr>
-                <th className="p-4 text-left">ফ্লোর</th>
-                <th className="p-4 text-left">রুম ও আইডি</th>
-                <th className="p-4 text-center">সিট ক্ষমতা</th>
-                <th className="p-4 text-center">ফাঁকা সিট</th>
-                <th className="p-4 text-center">এসি সুবিধা</th>
-                <th className="p-4 text-center">অ্যাকশন</th>
+                <th className="px-4 py-3">ফ্লোর</th>
+                <th className="px-4 py-3">রুম</th>
+                <th className="px-4 py-3 text-right">রুম ভাড়া / সিট</th>
+                <th className="px-4 py-3 text-right">আনুমানিক মাসিক</th>
+                <th className="px-4 py-3 text-center">সিট</th>
+                <th className="px-4 py-3 text-center">এসি</th>
+                <th className="px-4 py-3 text-center">অ্যাকশন</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm text-black">
+            <tbody className="divide-y divide-slate-100">
               {rooms.map((room) => (
-                <tr key={room.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="p-4 font-bold text-gray-500">{room.floorNo} তলা</td>
-                  <td className="p-4">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-blue-700 font-extrabold text-base">রুম: {room.roomNumber}</span>
-                      {visibleRoomIds[room.id] && (
-                        <div className="flex items-center gap-2 animate-fade-in">
-                          <code className="bg-gray-100 px-2 py-0.5 rounded text-[10px] text-gray-600 border border-gray-200">
-                            {room.id}
-                          </code>
-                          <button onClick={() => copyToClipboard(room.id)} title="আইডি কপি করুন">
-                            <HiClipboardCopy className="text-blue-500 hover:text-blue-700 cursor-pointer" size={14} />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-4 text-center font-semibold">{room.seatCapacity} জন</td>
-                  <td className="p-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${room.seatAvailable > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                      {room.seatAvailable} টি বাকি
-                    </span>
-                  </td>
-                  <td className="p-4 text-center">
-                    {room.isAcAvailable ? (
-                      <span className="text-green-600 font-bold flex justify-center items-center gap-1"><HiOutlineCheckCircle /> আছে</span>
-                    ) : (
-                      <span className="text-gray-500 flex justify-center items-center gap-1"><HiOutlineXCircle /> নেই</span>
+                <tr key={room.id} className="hover:bg-slate-50/80">
+                  <td className="px-4 py-3 font-medium text-slate-600">{room.floorNo} তলা</td>
+                  <td className="px-4 py-3">
+                    <p className="font-bold text-[var(--cb-primary)]">রুম {room.roomNumber}</p>
+                    {visible[room.id] && (
+                      <code className="mt-1 inline-block rounded-lg bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
+                        {room.id}
+                      </code>
                     )}
                   </td>
-                  <td className="p-4 text-center">
-                    <div className="flex flex-col gap-2 items-center">
-                      {/* আইডি দেখার বাটন */}
-                      <button 
-                        onClick={() => toggleRoomId(room.id)}
-                        className="text-blue-600 hover:text-blue-800 text-[10px] flex items-center gap-1 transition-colors"
+                  <td className="px-4 py-3 text-right font-semibold text-slate-800">
+                    ৳{Number(room.monthlyRent || 0).toLocaleString("bn-BD")}
+                  </td>
+                  <td className="px-4 py-3 text-right text-[var(--cb-secondary)]">
+                    ৳
+                    {Number(room.estimatedMonthlyCost ?? room.monthlyRent ?? 0).toLocaleString("bn-BD")}
+                    {!room.estimatedMonthlyCost && (
+                      <span className="ml-1 text-[10px] font-normal text-slate-400">(ভাড়া=আনুমানিক)</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                        room.seatAvailable > 0 ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      খালি {room.seatAvailable}/{room.seatCapacity}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {room.isAcAvailable ? (
+                      <span className="inline-flex items-center justify-center gap-1 text-emerald-600">
+                        <CheckCircle2 className="h-4 w-4" /> আছে
+                      </span>
+                    ) : (
+                      <span className="text-slate-400">নেই</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+                      <button
+                        type="button"
+                        onClick={() => toggleId(room.id)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--cb-primary)] hover:underline"
                       >
-                        <HiEye size={12} /> {visibleRoomIds[room.id] ? "আইডি লুকান" : "আইডি দেখুন"}
+                        {visible[room.id] ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                        {visible[room.id] ? "আইডি লুকান" : "আইডি"}
                       </button>
-
-                      {/* নেভি ব্লু আপডেট বাটন */}
-                      <NavLink 
-                        to={`/home/update-rooms/${room.id}`} 
-                        className="bg-[#001f3f] hover:bg-[#00152b] text-white px-4 py-1.5 rounded-sm text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95 shadow-sm"
+                      <button type="button" onClick={() => copy(room.id)} className="text-slate-500 hover:text-[var(--cb-primary)]">
+                        <ClipboardCopy className="h-4 w-4" />
+                      </button>
+                      <NavLink
+                        to={`/home/update-rooms/${room.id}`}
+                        className="inline-flex items-center gap-1 rounded-lg bg-[var(--cb-sidebar)] px-3 py-1.5 text-xs font-bold text-white hover:opacity-95"
                       >
-                        <HiPencilAlt size={12} /> আপডেট
+                        <Pencil className="h-3.5 w-3.5" />
+                        এডিট
                       </NavLink>
                     </div>
                   </td>
@@ -120,8 +127,12 @@ const HostelRooms = () => {
           </table>
         </div>
       </div>
-    </div>
+      {rooms.length === 0 && (
+        <p className="mt-6 text-center text-slate-500">
+          <Building2 className="mx-auto mb-2 h-10 w-10 text-slate-300" />
+          কোনো রুম যোগ করা হয়নি।
+        </p>
+      )}
+    </ManagerPageFrame>
   );
-};
-
-export default HostelRooms;
+}

@@ -20,12 +20,21 @@ public class PublicController : BaseController
     public async Task<IActionResult> GetLandingStats()
     {
         var totalHostels = await _context.Hostels.CountAsync(h => h.IsActive);
-        var totalBoarders = await _context.Users.CountAsync(u => u.HostelId != null && u.IsApproved);
-        
-        return SuccessResponse("Stats fetched.", new {
-            hostels = totalHostels + 100,
-            boarders = totalBoarders + 500,
-            growth = "২৫%"
+        var totalBoarders = await _context.Users.CountAsync(u => !string.IsNullOrEmpty(u.HostelId) && u.IsApproved);
+        var reviewCount = await _context.HostelReviews.CountAsync();
+
+        double? averageRating = null;
+        if (reviewCount > 0)
+        {
+            averageRating = await _context.HostelReviews.AverageAsync(r => (double)r.Rating);
+        }
+
+        return SuccessResponse("Stats fetched.", new
+        {
+            hostels = totalHostels,
+            boarders = totalBoarders,
+            reviewCount,
+            averageRating = averageRating.HasValue ? Math.Round(averageRating.Value, 1) : (double?)null,
         });
     }
 
@@ -34,7 +43,7 @@ public class PublicController : BaseController
     {
         var featured = await _context.Hostels
             .Include(h => h.Upazila)
-            .Include(h => h.Rooms.Where(r => r.IsActive))
+            .Include(h => h.Photos)
             .Where(h => h.IsActive && h.IsFeatured) 
             .Take(3) 
             .Select(h => new 
@@ -42,11 +51,19 @@ public class PublicController : BaseController
                 Id = h.Id,
                 Name = h.Name,
                 Location = h.AreaDescription + (h.Upazila != null ? $", {h.Upazila.Name}" : ""),
-                StartingPrice = h.Rooms.Any() ? h.Rooms.Min(r => r.MonthlyRent) : 0,
+                StartingPrice = _context.Rooms
+                    .Where(r => r.HostelId == h.Id && r.IsActive)
+                    .Select(r => (decimal?)r.MonthlyRent)
+                    .Min() ?? 0,
                 Rating = h.Rating,
                 ReviewCount = h.ReviewCount,
-                HasAc = h.Rooms.Any(r => r.IsAcAvailable),
-                HasAttachedBath = h.Rooms.Any(r => r.IsAttachedBathroomAvailable)
+                HasAc = _context.Rooms.Any(r => r.HostelId == h.Id && r.IsActive && r.IsAcAvailable),
+                HasAttachedBath = _context.Rooms.Any(r => r.HostelId == h.Id && r.IsActive && r.IsAttachedBathroomAvailable),
+                MainPhotoUrl = h.Photos
+                    .OrderByDescending(p => p.IsMain)
+                    .ThenBy(p => p.Id)
+                    .Select(p => p.Url)
+                    .FirstOrDefault()
             }).ToListAsync();
 
         return SuccessResponse("Featured hostels loaded.", featured);

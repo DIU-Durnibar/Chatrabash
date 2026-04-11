@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import BrandLogo from "../Components/BrandLogo";
 
 const dummyStudents = [
   {
@@ -35,7 +36,9 @@ const StudentDashboard = () => {
 
       {/* Sidebar */}
       <aside className="w-64 bg-blue-700 text-white min-h-screen p-6 hidden md:block">
-        <h1 className="text-2xl font-bold mb-8">Chatrabash</h1>
+        <div className="mb-8 rounded-xl bg-white p-2 shadow-sm">
+          <BrandLogo to="/home" imgClassName="max-w-full" />
+        </div>
         <nav className="flex flex-col space-y-4">
           {["হোম", "ছাত্র ব্যবস্থাপনা", "হোস্টেল তথ্য", "রিপোর্ট", "সেটিংস"].map((item, i) => (
             <button

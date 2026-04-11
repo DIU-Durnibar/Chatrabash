@@ -1,16 +1,19 @@
-import { createBrowserRouter} from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import MainLayout from "../MainLayout/MainLayout";
-import HomeLayout from "../MainLayout/HomeLayout";
+import PublicChromeLayout from "../layouts/PublicChromeLayout";
+import AppShellLayout from "../layouts/AppShellLayout";
+import ProtectedRoute from "./ProtectedRoute";
+import HomeIndex from "./HomeIndex";
 import SignIn from "../Components/SignIn";
-import StudentDashboard from "../Dashboards/StudentDashboard";
 import SignUp from "../Components/SignUp";
-import AvailableHostels from "../Pages/AvailableHostels";
-import HomePage from "../Home/HomePage";
+import HostelExplorePage from "../Pages/HostelExplorePage";
+import HostelDetailPage from "../Pages/HostelDetailPage";
 import PendingUsers from "../Manager's End/Pages/PendingUsers";
 import AllHostel from "../Manager's End/Pages/AllHostel";
 import CreateRoom from "../Manager's End/Pages/CreateRoom";
 import HostelRooms from "../Manager's End/Pages/HostelRooms";
 import UpdateRoom from "../Manager's End/Pages/UpdateRoom";
+<<<<<<< Updated upstream
 import HostelKhujun from "../Home/LandingPage/HostelKhujun";
 import kivabeKajKore from "../Home/LandingPage/kivabeKajKore";
 import LandingPage from "../Home/LandingPage";
@@ -20,44 +23,71 @@ import AdminDashboard from "../Saas Features/Manager/AdminDashboard";
 import AdminLayout from "../Saas Features/Manager/AdminLayout";
 import Dashboard from "../Manager's End/Pages/Dashboard";
 import RoomManagement from "../Manager's End/Pages/RoomManagement";
+=======
+import ManagerBillingPage from "../Pages/dashboard/ManagerBillingPage";
+import BoarderOverviewPage from "../Pages/dashboard/BoarderOverviewPage";
+import BoarderBillsPage from "../Pages/dashboard/BoarderBillsPage";
+import PlaceholderPage from "../Pages/PlaceholderPage";
+import HostelRegisterPage from "../Pages/HostelRegisterPage";
+import AdminDashboardPage from "../Pages/admin/AdminDashboardPage";
+import AdminHostelsPage from "../Pages/admin/AdminHostelsPage";
+import AdminLogsPage from "../Pages/admin/AdminLogsPage";
+import AdminManagerPaymentsPage from "../Pages/admin/AdminManagerPaymentsPage";
+import AdminSettingsPage from "../Pages/admin/AdminSettingsPage";
+import ManagerLogsPage from "../Pages/dashboard/ManagerLogsPage";
+import ManagerBoardersPage from "../Pages/dashboard/ManagerBoardersPage";
+import ManagerSettingsPage from "../Pages/dashboard/ManagerSettingsPage";
+import BoarderSettingsPage from "../Pages/dashboard/BoarderSettingsPage";
+>>>>>>> Stashed changes
 
 const Routes = createBrowserRouter([
-
-
-
-  // for public access
+  { path: "/", element: <MainLayout /> },
+  { path: "/register-hostel", Component: HostelRegisterPage },
   {
-    path: "/",
-    element: <MainLayout></MainLayout>,
-    children:[
-    {
-    index:true,
-    Component:LandingPage,
-    },
-    {
-    path:"availablehostels",
-    Component: HostelKhujun
-    },
-    {
-    path:"how-it-works",
-    Component: kivabeKajKore
-    },
-    {
-    path:"help",
-    Component: Help
-    },
-    {
-    path:"/signIn",
-    Component:SignIn
+    path: "/explore",
+    element: <PublicChromeLayout />,
+    children: [{ index: true, Component: HostelExplorePage }],
   },
   {
-    path:"/signUp",
-    Component:SignUp
+    path: "/hostels/:id",
+    element: <PublicChromeLayout />,
+    children: [{ index: true, Component: HostelDetailPage }],
   },
   {
-    path:"/hostel-registration",
-    Component:HostelRegistration
+    path: "/home",
+    element: (
+      <ProtectedRoute>
+        <AppShellLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, Component: HomeIndex },
+      { path: "availablehostels", element: <Navigate to="/explore" replace /> },
+      { path: "Pending-users", Component: PendingUsers },
+      { path: "all-hostels", Component: AllHostel },
+      { path: "create-room", Component: CreateRoom },
+      { path: "rooms", Component: HostelRooms },
+      { path: "update-rooms/:id", Component: UpdateRoom },
+      { path: "boarders", Component: ManagerBoardersPage },
+      { path: "billing", Component: ManagerBillingPage },
+      { path: "manager-logs", Component: ManagerLogsPage },
+      { path: "manager-settings", Component: ManagerSettingsPage },
+      { path: "admin", Component: AdminDashboardPage },
+      { path: "admin/hostels", Component: AdminHostelsPage },
+      { path: "admin/logs", Component: AdminLogsPage },
+      { path: "admin/manager-payments", Component: AdminManagerPaymentsPage },
+      { path: "admin/settings", Component: AdminSettingsPage },
+      { path: "boarder", Component: BoarderOverviewPage },
+      { path: "boarder/bills", Component: BoarderBillsPage },
+      {
+        path: "boarder/complaints",
+        element: <PlaceholderPage title="অভিযোগ বক্স" hint="টিকিটিং সিস্টেম API সংযোগের পর এখানে দেখাবে।" />,
+      },
+      { path: "boarder/settings", Component: BoarderSettingsPage },
+      { path: "studentDashboard", element: <Navigate to="/home/boarder" replace /> },
+    ],
   },
+<<<<<<< Updated upstream
     ]
   },
 
@@ -113,6 +143,10 @@ const Routes = createBrowserRouter([
         Component:StudentDashboard
   },
   
+=======
+  { path: "/signIn", Component: SignIn },
+  { path: "/signUp", Component: SignUp },
+>>>>>>> Stashed changes
 ]);
 
-export default Routes
+export default Routes;

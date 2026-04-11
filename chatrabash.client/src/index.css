@@ -1,1 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap");
+
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Hind Siliguri", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+:root {
+  /* Brand from ছাত্রাবাস.কম wordmark */
+  --cb-primary: #2d529d;
+  --cb-secondary: #0097a7;
+  --cb-accent: #9b8bb9;
+  --cb-primary-dark: #1f3d78;
+  --cb-sidebar: #1a3058;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: "Hind Siliguri", system-ui, sans-serif;
+}
+
+html {
+  font-family: "Hind Siliguri", system-ui, sans-serif;
+}

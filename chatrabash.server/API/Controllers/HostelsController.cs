@@ -30,7 +30,10 @@ public class HostelsController : BaseController
                 Id = h.Id,
                 Name = h.Name,
                 ManagerName = h.Manager != null ? h.Manager.DisplayName : "N/A",
-                ManagerPhone = h.Manager != null ? h.Manager.PhoneNumber : "N/A"
+                ManagerPhone = h.Manager != null ? h.Manager.PhoneNumber : "N/A",
+                ManagerProfilePictureUrl = h.Manager != null && !string.IsNullOrEmpty(h.Manager.ProfilePictureUrl)
+                    ? h.Manager.ProfilePictureUrl
+                    : "/default-avatar.svg"
             })
             .ToListAsync();
 
@@ -40,9 +43,10 @@ public class HostelsController : BaseController
     [HttpGet("search")]
     public async Task<IActionResult> SearchHostels([FromQuery] HostelSearchDto searchParams)
     {
+        // Use all active rooms for pricing/amenities; vacancy is summed separately (not only rooms with free seats).
         var query = _context.Hostels
             .Include(h => h.Upazila)
-            .Include(h => h.Rooms.Where(r => r.IsActive && r.SeatAvailable > 0))
+            .Include(h => h.Photos)
             .Where(h => h.IsActive)
             .AsQueryable();
 
@@ -72,15 +76,26 @@ public class HostelsController : BaseController
             Id = h.Id,
             Name = h.Name,
             Location = h.AreaDescription + (h.Upazila != null ? $", {h.Upazila.Name}" : ""),
-            StartingPrice = h.Rooms.Any() ? h.Rooms.Min(r => r.MonthlyRent) : 0,
-            EstimatedMonthlyFrom = h.Rooms.Any()
-                ? h.Rooms.Min(r => r.EstimatedMonthlyCost ?? r.MonthlyRent)
-                : 0,
-            AvailableSeats = h.Rooms.Sum(r => r.SeatAvailable),
-            HasAc = h.Rooms.Any(r => r.IsAcAvailable),
-            HasAttachedBath = h.Rooms.Any(r => r.IsAttachedBathroomAvailable),
+            StartingPrice = _context.Rooms
+                .Where(r => r.HostelId == h.Id && r.IsActive)
+                .Select(r => (decimal?)r.MonthlyRent)
+                .Min() ?? 0,
+            EstimatedMonthlyFrom = _context.Rooms
+                .Where(r => r.HostelId == h.Id && r.IsActive)
+                .Select(r => (decimal?)(r.EstimatedMonthlyCost ?? r.MonthlyRent))
+                .Min() ?? 0,
+            AvailableSeats = _context.Rooms
+                .Where(r => r.HostelId == h.Id && r.IsActive)
+                .Sum(r => r.SeatAvailable),
+            HasAc = _context.Rooms.Any(r => r.HostelId == h.Id && r.IsActive && r.IsAcAvailable),
+            HasAttachedBath = _context.Rooms.Any(r => r.HostelId == h.Id && r.IsActive && r.IsAttachedBathroomAvailable),
             h.Rating,
-            h.ReviewCount
+            h.ReviewCount,
+            MainPhotoUrl = h.Photos
+                .OrderByDescending(p => p.IsMain)
+                .ThenBy(p => p.Id)
+                .Select(p => p.Url)
+                .FirstOrDefault()
         }).ToListAsync();
 
         return SuccessResponse($"{result.Count} hostels found.", result);
@@ -109,7 +124,8 @@ public class HostelsController : BaseController
                 r.Rating,
                 r.Comment,
                 r.CreatedAt,
-                Author = u.DisplayName ?? u.UserName ?? "বোর্ডার"
+                Author = u.DisplayName ?? u.UserName ?? "বোর্ডার",
+                AuthorProfilePictureUrl = string.IsNullOrEmpty(u.ProfilePictureUrl) ? "/default-avatar.svg" : u.ProfilePictureUrl
             })
             .ToListAsync();
 
@@ -129,7 +145,10 @@ public class HostelsController : BaseController
             ManagerInfo = new 
             {
                 Name = hostel.Manager?.DisplayName ?? "N/A",
-                Phone = hostel.Manager?.PhoneNumber ?? "N/A"
+                Phone = hostel.Manager?.PhoneNumber ?? "N/A",
+                ProfilePictureUrl = string.IsNullOrEmpty(hostel.Manager?.ProfilePictureUrl)
+                    ? "/default-avatar.svg"
+                    : hostel.Manager!.ProfilePictureUrl
             },
             StartingPrice = hostel.Rooms.Any() ? hostel.Rooms.Min(r => r.MonthlyRent) : 0,
             EstimatedMonthlyFrom = hostel.Rooms.Any()
@@ -179,12 +198,19 @@ public class HostelsController : BaseController
         var userIds = slice.Select(r => r.UserId).Distinct().ToList();
         var users = await _context.Users.AsNoTracking().Where(u => userIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id);
 
-        var items = slice.Select(r => new
+        var items = slice.Select(r =>
         {
-            r.Rating,
-            r.Comment,
-            r.CreatedAt,
-            Author = users.TryGetValue(r.UserId, out var u) ? (u.DisplayName ?? u.UserName ?? "বোর্ডার") : "বোর্ডার"
+            _ = users.TryGetValue(r.UserId, out var u);
+            return new
+            {
+                r.Rating,
+                r.Comment,
+                r.CreatedAt,
+                Author = u != null ? (u.DisplayName ?? u.UserName ?? "বোর্ডার") : "বোর্ডার",
+                AuthorProfilePictureUrl = u != null && !string.IsNullOrEmpty(u.ProfilePictureUrl)
+                    ? u.ProfilePictureUrl
+                    : "/default-avatar.svg"
+            };
         }).ToList();
 
         return SuccessResponse("Reviews loaded.", new { total, page, pageSize, items });

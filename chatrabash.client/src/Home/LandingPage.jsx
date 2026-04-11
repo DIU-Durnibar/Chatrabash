@@ -1,347 +1,360 @@
-import React, { useEffect } from 'react';
-import { 
-  Search, 
-  MapPin, 
-  CheckCircle, 
-  ArrowRight, 
-  Phone, 
-  Mail
-} from 'lucide-react';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  MapPin,
+  Search,
+  Shield,
+  Zap,
+  Smartphone,
+  Building2,
+  Users,
+  Check,
+  ArrowRight,
+} from "lucide-react";
+import PublicNav from "../Components/public/PublicNav";
+import PublicFooter from "../Components/public/PublicFooter";
+import BrandHeroStack from "../Components/BrandHeroStack";
+import { apiGet } from "../lib/api";
+import { publicUrl } from "../lib/assets";
 
-const LandingPage = () => {
+const quickAreas = ["বনানী", "মিরপুর", "ধানমন্ডি", "উত্তরা", "গুলশান"];
+
+export default function LandingPage() {
+  const [stats, setStats] = useState({
+    hostels: 0,
+    boarders: 0,
+    reviewCount: 0,
+    averageRating: null,
+  });
+  const [featured, setFeatured] = useState([]);
+  const [searchQ, setSearchQ] = useState("");
+
   useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: true,
-    });
+    (async () => {
+      const s = await apiGet("/api/public/landing-stats");
+      if (s.ok && s.json?.success && s.json.data) {
+        const d = s.json.data;
+        setStats({
+          hostels: Number(d.hostels) || 0,
+          boarders: Number(d.boarders) || 0,
+          reviewCount: Number(d.reviewCount) || 0,
+          averageRating: d.averageRating != null ? Number(d.averageRating) : null,
+        });
+      }
+      const f = await apiGet("/api/public/featured-hostels");
+      if (f.ok && f.json?.success && Array.isArray(f.json.data)) {
+        setFeatured(f.json.data);
+      }
+    })();
   }, []);
 
+  const goSearch = (e) => {
+    e.preventDefault();
+    const q = searchQ.trim();
+    const url = q ? `/explore?q=${encodeURIComponent(q)}` : "/explore";
+    window.location.href = url;
+  };
+
   return (
-    <div className="font-sans text-slate-900 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <PublicNav />
 
-
-      {/* --- Hero Section --- */}
-      <section className="pt-24 px-4 text-center bg-linear-to-b from-blue-50 to-white">
-        <div data-aos="fade-up">
-          <span className="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-medium border border-green-200">
-            ● বাংলাদেশের প্রথম হোস্টেল ম্যানেজমেন্ট প্ল্যাটফর্ম
-          </span>
-          <h1 className="text-4xl md:text-6xl font-extrabold mt-8 text-slate-900 leading-tight">
-            এক প্ল্যাটফর্মে হোস্টেল <span className="text-blue-700">ম্যানেজমেন্ট</span> এবং <br /> সিট <span className="text-blue-700">বুকিং</span>
+      <section className="relative overflow-hidden bg-gradient-to-br from-[var(--cb-sidebar)] via-[var(--cb-primary)] to-[var(--cb-secondary)] px-4 py-14 text-white md:px-6 md:py-20">
+        <div className="pointer-events-none absolute inset-0 opacity-20">
+          <div className="absolute -right-20 top-10 h-72 w-72 rounded-full bg-emerald-400/30 blur-3xl" />
+          <div className="absolute -left-10 bottom-0 h-64 w-64 rounded-full bg-blue-300/20 blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-6xl">
+          <div className="mb-6">
+            <BrandHeroStack variant="light" />
+          </div>
+          <h1 className="mb-4 max-w-3xl text-3xl font-extrabold leading-tight md:text-5xl">
+            এক প্ল্যাটফর্মে হোস্টেল ম্যানেজমেন্ট এবং সিট বুকিং
           </h1>
-          <p className="mt-6 text-slate-500 text-lg max-w-2xl mx-auto">
-            হোস্টেল মালিকদের জন্য স্মার্ট সল্যুশন এবং ছাত্রছাত্রীদের জন্য নিরাপদ আবাসন খোঁজার বিশ্বস্ত মাধ্যম
+          <p className="mb-8 max-w-2xl text-sm leading-relaxed text-blue-100 md:text-lg">
+            মালিকদের জন্য স্মার্ট ম্যানেজমেন্ট, বোর্ডারদের জন্য নিরাপদ আবাসন — সবই এক জায়গায়।
           </p>
-        </div>
 
-       
-
-        {/* Hero Bottom Cards */}
-        <div className="mt-28 grid grid-cols-1 md:grid-cols-2 gap-6 w-11/12 mx-auto">
-
-  {/* Card 1: Hostel Owner */}
-  <div className="relative group overflow-hidden rounded-md h-72 shadow-lg" data-aos="fade-right">
-    <img 
-      src="https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg" 
-      alt="Hostel Owner" 
-      className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
-    />
-
-    <div className="absolute inset-0 bg-linear-to-t from-blue-900/90 via-blue-900/40 to-transparent"></div>
-    
-    <div className="absolute inset-0 flex flex-col justify-end p-8 text-left text-white">
-      <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded w-fit text-xs mb-2 border border-white/30">
-        🏢 হোস্টেল মালিক
-      </span>
-      <h3 className="text-2xl font-bold leading-tight">सहজে ম্যানেজ করুন আপনার হোস্টেল</h3>
-    </div>
-  </div>
-
-  {/* Card 2: Border */}
-  <div className="relative group overflow-hidden rounded-md h-72 shadow-lg" data-aos="fade-left">
-    <img 
-      src="https://images.pexels.com/photos/35531303/pexels-photo-35531303.jpeg?_gl=1*kkls5w*_ga*NDIzNjc2NDE1LjE3NTkyNDU1NzE.*_ga_8JE65Q40S6*czE3NzU4MzgwNDUkbzQkZzEkdDE3NzU4MzgyNDgkajE2JGwwJGgw" 
-      alt="Student" 
-      className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
-    />
-    <div className="absolute inset-0 bg-linear-to-t from-blue-900/90 via-blue-900/40 to-transparent"></div>
-    
-    <div className="absolute inset-0 flex flex-col justify-end p-8 text-left text-white">
-      <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded w-fit text-xs mb-2 border border-white/30">
-        📖 বোর্ডার
-      </span>
-      <h3 className="text-2xl font-bold leading-tight">আপনার পছন্দের সিট খুঁজে নিন</h3>
-    </div>
-  </div>
-        </div>
-        </section>
-
-      {/* --- Solution Section --- */}
-      <section className="py-20 bg-white">
-        <div className="text-center mb-16" data-aos="fade-up">
-          <span className="text-blue-700 font-semibold bg-blue-50 px-4 py-1 rounded-full text-sm">দুটি আলাদা সমাধান</span>
-          <h2 className="text-3xl font-bold mt-4 text-slate-800">আপনার প্রয়োজন অনুযায়ী শুরু করুন</h2>
-          <p className="text-slate-500 mt-2">মালিক হোন বা বর্ডার — ছাত্রাবাস আপনার জন্য সঠিক সমাধান নিয়ে এসেছে</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-11/12 mx-auto">
-
-
-  {/* Owner Box */}
-  <div className="bg-blue-50/50 p-8 rounded-2xl border border-blue-100 relative overflow-hidden flex flex-col justify-between" data-aos="fade-up">
-    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-200/30 rounded-full -mr-8 -mt-8"></div>
-    
-    <div>
-      <div className="bg-blue-900 w-10 h-10 rounded-lg flex items-center justify-center mb-4">
-        <CheckCircle size={20} className="text-white" />
-      </div>
-      <span className="bg-blue-800 text-white text-[10px] px-2.5 py-0.5 rounded-full font-medium">হোস্টেল মালিক</span>
-      <h3 className="text-xl font-bold mt-3 mb-2">আপনি কি হোস্টেল মালিক?</h3>
-      <p className="text-slate-600 text-sm mb-6 leading-relaxed">আপনার হোস্টেল পরিচালনাকে ডিজিটাল করুন — বিলিং, মিল, বর্ডার ম্যানেজমেন্ট সব এক জায়গায়।</p>
-      
-      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-8">
-        {['ডিজিটাল বিলিং', 'মিল ম্যানেজমেন্ট', 'বর্ডার রেকর্ড', 'রিপোর্ট ও অ্যানালিটিক্স'].map(list => (
-          <li key={list} className="flex items-center gap-2 text-slate-700 text-xs font-medium">
-            <CheckCircle size={14} className="text-blue-700 shrink-0" /> {list}
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <Link to="/hostel-registration">
-    <button className="bg-blue-800 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-blue-900 transition font-bold text-sm w-fit">
-      রেজিস্ট্রেশন করুন <ArrowRight size={16} />
-    </button>
-    </Link>
-  </div>
-
-  {/* Student Box */}
-  <div className="bg-green-50/50 p-8 rounded-2xl border border-green-100 relative overflow-hidden flex flex-col justify-between" data-aos="fade-up" data-aos-delay="200">
-    <div className="absolute top-0 right-0 w-24 h-24 bg-green-200/30 rounded-full -mr-8 -mt-8"></div>
-    
-    <div>
-      <div className="bg-green-600 w-10 h-10 rounded-lg flex items-center justify-center mb-4">
-        <CheckCircle size={20} className="text-white" />
-      </div>
-      <span className="bg-green-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-medium">স্টুডেন্ট বর্ডার</span>
-      <h3 className="text-xl font-bold mt-3 mb-2">সিট খুঁজছেন?</h3>
-      <p className="text-slate-600 text-sm mb-6 leading-relaxed">ভেরিফাইড হোস্টেল খুঁজুন, অনলাইনে বুক করুন এবং নিরাপদে ভাড়া পরিশোধ করুন।</p>
-      
-      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-8">
-        {['ভেরিফাইড হোস্টেল', 'ভাড়া পরিশোধ', 'রিভিউ সিস্টেম', 'সরাসরি যোগাযোগ'].map(list => (
-          <li key={list} className="flex items-center gap-2 text-slate-700 text-xs font-medium">
-            <CheckCircle size={14} className="text-green-600 shrink-0" /> {list}
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <button className="bg-green-600 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-green-700 transition font-bold text-sm w-fit">
-      সিট খুঁজুন <ArrowRight size={16} />
-    </button>
-  </div>
-</div>
-      </section>
-
-      {/* --- Featured Hostels --- */}
-      <section className="pt-10 pb-20 bg-slate-50 px-4">
-        <div className="w-11/12 mx-auto">
-          <div className="flex items-end justify-between mb-12">
-            <div data-aos="fade-right">
-              <span className="text-blue-700 font-semibold bg-blue-100 px-3 py-1 rounded text-xs uppercase">জনপ্রিয় হোস্টেল</span>
-              <h2 className="text-3xl font-bold mt-4 text-slate-800">আপনার এলাকার জনপ্রিয় হোস্টেলসমূহ</h2>
-              <p className="text-slate-500 mt-1 text-sm">ভেরিফাইড ও রেটিং-নিশ্চিত হোস্টেলের তালিকা</p>
+          <form onSubmit={goSearch} className="mb-4 max-w-2xl">
+            <div className="flex flex-col gap-2 rounded-2xl bg-white p-2 shadow-xl sm:flex-row sm:items-stretch">
+              <div className="flex flex-1 items-center gap-2 rounded-xl bg-slate-50 px-3 py-2">
+                <MapPin className="h-5 w-5 shrink-0 text-[var(--cb-primary)]" />
+                <input
+                  value={searchQ}
+                  onChange={(e) => setSearchQ(e.target.value)}
+                  placeholder="আপনার পছন্দের এলাকা/লোকেশন দিয়ে খুঁজুন..."
+                  className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                />
+              </div>
+              <button
+                type="submit"
+                className="flex items-center justify-center gap-2 rounded-xl bg-[var(--cb-primary)] px-6 py-3 text-sm font-bold text-white hover:opacity-95"
+              >
+                <Search className="h-4 w-4" />
+                খুঁজুন
+              </button>
             </div>
-            <button className="text-blue-700 font-bold flex items-center gap-1 hover:underline group" data-aos="fade-left">
-              সব হোস্টেল দেখুন <ArrowRight size={18} className="group-hover:translate-x-1 transition" />
-            </button>
+          </form>
+          <div className="flex flex-wrap gap-2">
+            {quickAreas.map((a) => (
+              <button
+                key={a}
+                type="button"
+                onClick={() => {
+                  setSearchQ(a);
+                  window.location.href = `/explore?q=${encodeURIComponent(a)}`;
+                }}
+                className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-medium hover:bg-white/15"
+              >
+                {a}
+              </button>
+            ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition duration-300" data-aos="fade-up">
-              <div className="relative h-56">
-                <img src="https://images.pexels.com/photos/633269/pexels-photo-633269.jpeg" alt="Hostel" className="w-full h-full object-cover" />
-                <span className="absolute top-4 left-4 bg-blue-700 text-white text-xs px-3 py-1 rounded-full font-medium">সেরা পছন্দ</span>
-                <span className="absolute top-4 right-4 bg-white/90 backdrop-blur text-green-700 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1">● ভেরিফাইড</span>
-              </div>
-              <div className="p-6">
-                <h4 className="text-xl font-bold text-slate-800 mb-2">স্টুডেন্ট কেয়ার হোস্টেল</h4>
-                <div className="flex items-center text-slate-400 text-sm gap-1 mb-4">
-                  <MapPin size={14} /> ধানমন্ডি, ঢাকা
-                </div>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {['ওয়াইফাই', 'মিল সুবিধা', 'নিরাপত্তা'].map(tag => (
-                    <span key={tag} className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded border border-blue-100 font-medium">{tag}</span>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between border-t pt-4">
-                  <div className="text-blue-900 font-extrabold text-xl">৳৩,৫০০<span className="text-slate-400 text-xs font-normal">/মাস</span></div>
-                  <button className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition">বিস্তারিত</button>
-                </div>
-              </div>
+          <div className="mt-12 grid gap-4 md:grid-cols-2">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+              <p className="text-sm font-semibold text-emerald-200">হোস্টেল মালিক</p>
+              <p className="mt-2 text-lg font-bold">সহজে ম্যানেজ করুন আপনার হোস্টেল</p>
+              <Link
+                to="/register-hostel"
+                className="mt-4 inline-block rounded-lg bg-white px-4 py-2 text-sm font-bold text-[var(--cb-primary)]"
+              >
+                মালিক হিসেবে রেজিস্ট্রেশন
+              </Link>
             </div>
-
-            {/* Card 2 */}
-            <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition duration-300" data-aos="fade-up" data-aos-delay="100">
-              <div className="relative h-56">
-                <img src="https://images.pexels.com/photos/1454806/pexels-photo-1454806.jpeg" alt="Hostel" className="w-full h-full object-cover" />
-                <span className="absolute top-4 left-4 bg-green-600 text-white text-xs px-3 py-1 rounded-full font-medium">সাশ্রয়ী</span>
-                <span className="absolute top-4 right-4 bg-white/90 backdrop-blur text-green-700 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1">● ভেরিফাইড</span>
-              </div>
-              <div className="p-6">
-                <h4 className="text-xl font-bold text-slate-800 mb-2">আল-আমিন বোর্ডিং হাউস</h4>
-                <div className="flex items-center text-slate-400 text-sm gap-1 mb-4">
-                  <MapPin size={14} /> মিরপুর-১০, ঢাকা
-                </div>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {['ওয়াইফাই', 'লাইব্রেরি', 'পার্কিং'].map(tag => (
-                    <span key={tag} className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded border border-blue-100 font-medium">{tag}</span>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between border-t pt-4">
-                  <div className="text-blue-900 font-extrabold text-xl">৳২,৮০০<span className="text-slate-400 text-xs font-normal">/মাস</span></div>
-                  <button className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition">বিস্তারিত</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition duration-300" data-aos="fade-up" data-aos-delay="200">
-              <div className="relative h-56">
-                <img src="https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg" alt="Hostel" className="w-full h-full object-cover" />
-                <span className="absolute top-4 left-4 bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-medium">প্রিমিয়াম</span>
-                <span className="absolute top-4 right-4 bg-white/90 backdrop-blur text-green-700 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1">● ভেরিফাইড</span>
-              </div>
-              <div className="p-6">
-                <h4 className="text-xl font-bold text-slate-800 mb-2">ভার্সিটি হোস্টেল কমপ্লেক্স</h4>
-                <div className="flex items-center text-slate-400 text-sm gap-1 mb-4">
-                  <MapPin size={14} /> মোহাম্মদপুর, ঢাকা
-                </div>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {['AC রুম', 'জিম', 'ক্যান্টিন'].map(tag => (
-                    <span key={tag} className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded border border-blue-100 font-medium">{tag}</span>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between border-t pt-4">
-                  <div className="text-blue-900 font-extrabold text-xl">৳৪,২০০<span className="text-slate-400 text-xs font-normal">/মাস</span></div>
-                  <button className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition">বিস্তারিত</button>
-                </div>
-              </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+              <p className="text-sm font-semibold text-amber-200">স্টুডেন্ট / পেয়িং গেস্ট</p>
+              <p className="mt-2 text-lg font-bold">পছন্দের এলাকার সিট খুঁজে নিন</p>
+              <Link
+                to="/explore"
+                className="mt-4 inline-block rounded-lg border border-white/40 px-4 py-2 text-sm font-bold text-white hover:bg-white/10"
+              >
+                সিট খুঁজুন
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- Management Features --- */}
-      <section className="py-20 bg-white px-4">
-        <div className="text-center mb-16" data-aos="fade-up">
-          <span className="text-blue-700 font-semibold bg-blue-50 px-4 py-1 rounded-full text-xs">ম্যানেজমেন্ট ফিচারসমূহ</span>
-          <h2 className="text-3xl font-bold mt-4 text-slate-800 uppercase tracking-wide">আপনার হোস্টেল বিজনেসকে আরও সহজ করুন</h2>
-          <p className="text-slate-500 mt-2 max-w-xl mx-auto">ছাত্রাবাসের শক্তিশালী ফিচারগুলো ব্যবহার করে আপনার হোস্টেল পরিচালনায় সময় ও অর্থ দুটোই বাঁচান</p>
+      <section id="how" className="border-y border-slate-200/80 bg-gradient-to-b from-slate-50 to-white py-16 md:py-20">
+        <div className="mx-auto max-w-6xl px-4 md:px-6">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <h2 className="text-2xl font-extrabold text-slate-900 md:text-3xl">আপনার প্রয়োজন অনুযায়ী শুরু করুন</h2>
+            <p className="mt-3 text-slate-600">হোস্টেল মালিক ও বোর্ডার — দুই পক্ষের জন্য আলাদা, পরিষ্কার পথ</p>
+          </div>
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+            <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-8 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-12px_rgba(45,82,157,0.18)]">
+              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cb-primary)] to-[var(--cb-primary-dark)] text-white shadow-md">
+                <Building2 className="h-7 w-7" strokeWidth={2} />
+              </div>
+              <h3 className="text-xl font-extrabold text-slate-900">হোস্টেল মালিক</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                বিল, রুম, বোর্ডার অনুরোধ — সব এক ড্যাশবোর্ডে। সময় বাঁচান, হিসাব পরিষ্কার রাখুন।
+              </p>
+              <ul className="mt-6 space-y-3 text-sm text-slate-700">
+                {[
+                  "ডিজিটাল বিলিং ও পেমেন্ট ট্র্যাকিং",
+                  "রুম ও সিট ম্যানেজমেন্ট",
+                  "নতুন বোর্ডারের অনুরোধ অনুমোদন",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[var(--cb-primary)]">
+                      <Check className="h-3.5 w-3.5 stroke-[3]" />
+                    </span>
+                    <span className="pt-0.5">{t}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/register-hostel"
+                className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--cb-primary)] px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-[var(--cb-primary-dark)]"
+              >
+                মালিক হিসেবে শুরু করুন
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </article>
+
+            <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-8 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-12px_rgba(0,151,167,0.15)]">
+              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cb-secondary)] to-teal-700 text-white shadow-md">
+                <Users className="h-7 w-7" strokeWidth={2} />
+              </div>
+              <h3 className="text-xl font-extrabold text-slate-900">বোর্ডার / স্টুডেন্ট</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                যাচাইকৃত হোস্টেল, লোকেশন ফিল্টার ও স্বচ্ছ বিল — নিরাপদ থাকুন, সিদ্ধান্ত নিন সহজে।
+              </p>
+              <ul className="mt-6 space-y-3 text-sm text-slate-700">
+                {[
+                  "যাচাইকৃত হোস্টেল লিস্ট",
+                  "লোকেশন ভিত্তিক খোঁজা",
+                  "বিল ও পেমেন্ট হিস্ট্রি",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-50 text-[var(--cb-secondary)]">
+                      <Check className="h-3.5 w-3.5 stroke-[3]" />
+                    </span>
+                    <span className="pt-0.5">{t}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/explore"
+                className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl border-2 border-[var(--cb-secondary)] bg-white px-5 py-3 text-sm font-bold text-[var(--cb-secondary)] shadow-sm transition hover:bg-teal-50"
+              >
+                সিট খুঁজুন
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </article>
+          </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-11/12 mx-auto">
-          <div className="flex items-center gap-6 p-8 rounded-2xl bg-blue-50 border border-blue-100" data-aos="zoom-in-right">
-            <div className="bg-blue-900 p-4 rounded-xl text-white">
-              <CheckCircle />
-            </div>
-            <div>
-              <h4 className="font-bold text-xl mb-1">সহজ হিসাব-নিকাশ</h4>
-              <p className="text-slate-500 text-sm">মাসিক ভাড়া, পেমেন্ট ইতিহাস ও বকেয়া হিসাব ডিজিটালি ট্র্যাক করুন।</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6 p-8 rounded-2xl bg-green-50 border border-green-100" data-aos="zoom-in-left">
-            <div className="bg-green-600 p-4 rounded-xl text-white">
-              <CheckCircle />
-            </div>
-            <div>
-              <h4 className="font-bold text-xl mb-1">রিয়েল-টাইম মিল স্ট্যাটাস</h4>
-              <p className="text-slate-500 text-sm">কোন বর্ডার কোনদিন মিল নেবেন তা আগেই জানুন এবং খরচ কমান।</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6 p-8 rounded-2xl bg-purple-50 border border-purple-100" data-aos="zoom-in-right">
-            <div className="bg-purple-600 p-4 rounded-xl text-white">
-              <CheckCircle />
-            </div>
-            <div>
-              <h4 className="font-bold text-xl mb-1">বর্ডার ম্যানেজমেন্ট</h4>
-              <p className="text-slate-500 text-sm">নতুন ভর্তি, ছাড়পত্র ও বর্ডারদের সমস্ত তথ্য এক ড্যাশবোর্ডে।</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6 p-8 rounded-2xl bg-orange-50 border border-orange-100" data-aos="zoom-in-left">
-            <div className="bg-orange-600 p-4 rounded-xl text-white">
-              <CheckCircle />
-            </div>
-            <div>
-              <h4 className="font-bold text-xl mb-1">রিপোর্ট ও অ্যানালিটিক্স</h4>
-              <p className="text-slate-500 text-sm">মাসিক আয়-ব্যয়ের বিস্তারিত রিপোর্ট ও গ্রাফিকাল চার্ট দেখুন।</p>
-            </div>
-          </div>
-        </div>
-        
       </section>
 
-      {/* --- CTA Section --- */}
-     <section className="py-16 bg-blue-900 text-center px-4 relative overflow-hidden">
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-6xl px-4 md:px-6">
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-slate-900">আপনার এলাকার জনপ্রিয় হোস্টেলসমূহ</h2>
+            <Link to="/explore" className="text-sm font-semibold text-[var(--cb-primary)]">
+              সব হোস্টেল দেখুন
+            </Link>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {featured.length === 0
+              ? [1, 2, 3].map((i) => (
+                  <div key={i} className="h-64 animate-pulse rounded-2xl bg-slate-100" />
+                ))
+              : featured.map((h) => (
+                  <article
+                    key={h.id}
+                    className="flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 shadow-sm"
+                  >
+                    <div className="relative h-40 overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300">
+                      {h.mainPhotoUrl ? (
+                        <img
+                          src={publicUrl(h.mainPhotoUrl)}
+                          alt=""
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                      ) : null}
+                    </div>
+                    <div className="flex flex-1 flex-col p-4">
+                      <h3 className="font-bold text-slate-900">{h.name}</h3>
+                      <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                        <MapPin className="h-3 w-3" />
+                        {h.location}
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {h.hasAc && (
+                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                            ওয়াইফাই / AC
+                          </span>
+                        )}
+                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                          মিল সুবিধা
+                        </span>
+                      </div>
+                      <div className="mt-auto flex items-center justify-between pt-4">
+                        <span className="text-lg font-bold text-[var(--cb-primary)]">
+                          ৳{Number(h.startingPrice).toLocaleString("bn-BD")}/মাস
+                        </span>
+                        <Link
+                          to={`/hostels/${h.id}`}
+                          className="rounded-lg bg-[var(--cb-primary)] px-3 py-1.5 text-xs font-bold text-white"
+                        >
+                          বিস্তারিত
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+          </div>
+        </div>
+      </section>
 
-  <div className="absolute top-0 left-0 w-48 h-48 bg-blue-800 rounded-full -ml-24 -mt-24 blur-3xl opacity-50"></div>
-  <div className="absolute bottom-0 right-0 w-48 h-48 bg-blue-700 rounded-full -mr-24 -mb-24 blur-3xl opacity-50"></div>
-  
-  <div className="relative z-10" data-aos="zoom-in">
-    <span className="text-blue-200 text-xs font-medium tracking-wide uppercase">
-      আজই শুরু করুন — সম্পূর্ণ বিনামূল্যে
-    </span>
-    
-    <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-3 mb-4 leading-tight">
-      হোস্টেল ম্যানেজমেন্টের নতুন যুগে স্বাগতম
-    </h2>
-    
-    <p className="text-blue-100 mb-8 max-w-md mx-auto opacity-80 text-sm">
-      হাজারো হোস্টেল মালিক ও স্টুডেন্ট ইতোমধ্যে ছাত্রাবাস ব্যবহার করছেন। আপনিও যোগ দিন।
-    </p>
-    
-    {/* Compact Buttons */}
-    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-      <button className="bg-white text-blue-900 px-8 py-3 rounded-lg font-bold shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center leading-tight">
-        <span className="text-[10px] font-normal uppercase opacity-70">মালিকদের জন্য</span>
-        <span className="flex items-center gap-2">বিনামূল্যে শুরু করুন <ArrowRight size={16} /></span>
-      </button>
-      
-      <button className="bg-blue-800/40 backdrop-blur-md text-white border border-blue-400/30 px-8 py-3 rounded-lg font-bold hover:bg-blue-800 transition-all duration-300 flex flex-col items-center leading-tight ">
-        <span className="text-[10px] font-normal uppercase opacity-70">বর্ডারদের জন্য</span>
-        <span className="flex items-center gap-2">হোস্টেল খুঁজুন <ArrowRight size={16} /></span>
-      </button>
-    </div>
+      <section className="mx-auto max-w-6xl px-4 py-16 md:px-6">
+        <h2 className="mb-8 text-center text-2xl font-bold text-slate-900">
+          আপনার হোস্টেল বিজনেসকে আরও সহজ করুন
+        </h2>
+        <div className="grid gap-6 sm:grid-cols-2">
+          {[
+            { t: "সহজ হিসাব-নিকাশ", d: "মাসিক বিল, বকেয়া ও আদায় এক নজরে।", c: "bg-blue-50 text-blue-700" },
+            { t: "নিরাপদ অ্যাক্সেস", d: "রোল ভিত্তিক লগইন ও অনুমোদন প্রক্রিয়া।", c: "bg-emerald-50 text-emerald-700" },
+            { t: "রুম ব্যবস্থাপনা", d: "সিট ক্যাপাসিটি ও রুম টাইপ ট্র্যাক করুন।", c: "bg-violet-50 text-violet-700" },
+            { t: "দ্রুত অনবোর্ডিং", d: "বোর্ডার রেজিস্ট্রেশন ও ম্যানেজার অনুমোদন।", c: "bg-amber-50 text-amber-700" },
+          ].map((x) => (
+            <div key={x.t} className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <div className={`mb-3 inline-flex rounded-xl p-3 ${x.c}`}>
+                <Shield className="h-6 w-6" />
+              </div>
+              <h3 className="font-bold text-slate-900">{x.t}</h3>
+              <p className="mt-2 text-sm text-slate-600">{x.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-    <hr className='w-11/12 mx-auto text-blue-700 mt-5'/>
+      <section className="bg-[var(--cb-primary)] px-4 py-16 text-white md:px-6">
+        <div className="mx-auto max-w-6xl text-center">
+          <h2 className="text-2xl font-bold md:text-3xl">হোস্টেল ম্যানেজমেন্টের নতুন যুগে স্বাগতম</h2>
+          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+            <Link
+              to="/register-hostel"
+              className="rounded-xl bg-white px-6 py-3 text-sm font-bold text-[var(--cb-primary)] shadow-lg"
+            >
+              হোস্টেল মালিকদের জন্য — রেজিস্ট্রেশন
+            </Link>
+            <Link
+              to="/explore"
+              className="rounded-xl border-2 border-white/60 px-6 py-3 text-sm font-bold text-white hover:bg-white/10"
+            >
+              স্টুডেন্টদের জন্য — সিট খুঁজুন
+            </Link>
+          </div>
+          <div className="mt-12 grid grid-cols-1 gap-8 text-center sm:grid-cols-3 sm:gap-4">
+            <div className="rounded-2xl bg-white/5 px-4 py-3 backdrop-blur-sm">
+              <p className="text-3xl font-extrabold tabular-nums">{stats.hostels.toLocaleString("bn-BD")}</p>
+              <p className="text-sm text-blue-200">সক্রিয় হোস্টেল</p>
+            </div>
+            <div className="rounded-2xl bg-white/5 px-4 py-3 backdrop-blur-sm">
+              <p className="text-3xl font-extrabold tabular-nums">{stats.boarders.toLocaleString("bn-BD")}</p>
+              <p className="text-sm text-blue-200">নিবন্ধিত বোর্ডার</p>
+            </div>
+            <div className="rounded-2xl bg-white/5 px-4 py-3 backdrop-blur-sm">
+              {stats.reviewCount > 0 && stats.averageRating != null ? (
+                <>
+                  <p className="text-3xl font-extrabold tabular-nums">
+                    {Number(stats.averageRating).toLocaleString("bn-BD", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                    /৫
+                  </p>
+                  <p className="text-sm text-blue-200">
+                    গড় রেটিং · {stats.reviewCount.toLocaleString("bn-BD")} রিভিউ
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-3xl font-extrabold tabular-nums">—</p>
+                  <p className="text-sm text-blue-200">রিভিউ ডেটাবেস থেকে গণনা হবে</p>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm text-blue-100">
+            <span className="flex items-center gap-2">
+              <Shield className="h-4 w-4" /> নিরাপদ ও এনক্রিপ্টেড লগ-ইন
+            </span>
+            <span className="flex items-center gap-2">
+              <Zap className="h-4 w-4" /> তাৎক্ষণিক ম্যানেজমেন্ট
+            </span>
+            <span className="flex items-center gap-2">
+              <Smartphone className="h-4 w-4" /> মোবাইল ফ্রেন্ডলি
+            </span>
+          </div>
+        </div>
+      </section>
 
-    
-    <div className="mt-12 flex justify-center gap-8 md:gap-16 text-white border-blue-800 w-fit mx-auto">
-      <div className="text-center">
-        <div className="text-2xl font-black">৫০০+</div>
-        <div className="text-blue-300 text-[10px] uppercase tracking-tighter">হোস্টেল নিবন্ধিত</div>
-      </div>
-      <div className="text-center border-x border-blue-800 px-8 md:px-16">
-        <div className="text-2xl font-black">১০,০০০+</div>
-        <div className="text-blue-300 text-[10px] uppercase tracking-tighter">সক্রিয় বর্ডার</div>
-      </div>
-      <div className="text-center">
-        <div className="text-2xl font-black">৯৮%</div>
-        <div className="text-blue-300 text-[10px] uppercase tracking-tighter">সন্তুষ্ট ব্যবহারকারী</div>
-      </div>
-    </div>
-  </div>
-     </section>
-
+      <PublicFooter />
     </div>
   );
-};
-
-export default LandingPage;
+}

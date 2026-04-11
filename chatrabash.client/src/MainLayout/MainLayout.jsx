@@ -1,14 +1,11 @@
-import { Outlet } from 'react-router-dom'
-import LanHeader from '../Home/LandingPage/LanHeader'
-import LanFooter from '../Home/LandingPage/LanFooter'
+import LandingPage from '../Home/LandingPage'
 
 const MainLayout = () => {
   return (
     <div className=''>
-        
-        <LanHeader></LanHeader>
-        <Outlet></Outlet>
-        <LanFooter></LanFooter>
+
+        <LandingPage></LandingPage>
+
     </div>
   )
 }

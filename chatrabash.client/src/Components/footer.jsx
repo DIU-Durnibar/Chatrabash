@@ -1,6 +1,7 @@
 // Footer.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import BrandLogo from "./BrandLogo";
 
 const Footer = () => {
   return (
@@ -9,15 +10,13 @@ const Footer = () => {
     
     {/* Left Section */}
     <div className="text-center md:text-left">
-      <h2 className="font-semibold text-lg text-blue-700">
-        Chatrabash-ছাত্রাবাস
-      </h2>
-      <p className="text-sm mt-1 max-w-md">
+      <BrandLogo to="/home" className="justify-center md:justify-start" imgClassName="max-w-[12rem]" />
+      <p className="text-sm mt-3 max-w-md">
         A smart SaaS hostel management system helping hostels manage
         student fees, billing, staff payments, and daily operations efficiently.
       </p>
       <p className="text-xs mt-2 text-gray-500">
-        © {new Date().getFullYear()} Chatrabash. All rights reserved.
+        © {new Date().getFullYear()} ছাত্রাবাস.কম। সর্বস্বত্ব সংরক্ষিত।
       </p>
     </div>
 

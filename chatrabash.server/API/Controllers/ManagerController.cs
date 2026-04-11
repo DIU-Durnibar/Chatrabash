@@ -43,7 +43,8 @@ public class ManagerController : BaseController
                 u.Email, 
                 u.UserName,
                 u.PreferredRoomId, 
-                u.PreferenceNote 
+                u.PreferenceNote,
+                ProfilePictureUrl = string.IsNullOrEmpty(u.ProfilePictureUrl) ? "/default-avatar.svg" : u.ProfilePictureUrl
             })
             .ToListAsync();
 
@@ -51,11 +52,16 @@ public class ManagerController : BaseController
     }
 
     [HttpPost("approve-user/{userId}")]
-    public async Task<IActionResult> ApproveUser(string userId, [FromBody] string allocatedRoomId)
+    public async Task<IActionResult> ApproveUser(string userId, [FromBody] ApproveUserRequestDto dto)
     {
         var managerHostelId = User.FindFirstValue("HostelId"); 
         if (string.IsNullOrEmpty(managerHostelId)) 
             return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+
+        if (dto == null || string.IsNullOrWhiteSpace(dto.AllocatedRoomId))
+            return ErrorResponse("Allocated room is required.");
+
+        var allocatedRoomId = dto.AllocatedRoomId.Trim();
 
         var user = await _userManager.FindByIdAsync(userId);
         
@@ -71,6 +77,9 @@ public class ManagerController : BaseController
         var room = await _context.Rooms.FindAsync(allocatedRoomId);
         if (room == null) 
             return ErrorResponse("Allocated room not found.", StatusCodes.Status404NotFound);
+
+        if (room.HostelId != managerHostelId)
+            return ErrorResponse("That room does not belong to your hostel.", StatusCodes.Status403Forbidden);
             
         if (room.SeatAvailable <= 0) 
             return ErrorResponse("No seats available in this room.");
@@ -358,5 +367,244 @@ public class ManagerController : BaseController
             .ToListAsync();
 
         return SuccessResponse("Photos loaded.", photos);
+    }
+
+    [HttpGet("boarders")]
+    public async Task<IActionResult> ListApprovedBoarders()
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+
+        var users = await _userManager.Users.AsNoTracking()
+            .Where(u => u.HostelId == managerHostelId && u.IsApproved)
+            .OrderBy(u => u.DisplayName)
+            .Select(u => new
+            {
+                u.Id,
+                u.DisplayName,
+                u.UserName,
+                u.Email,
+                u.PhoneNumber,
+                u.AllocatedRoomId,
+                ProfilePictureUrl = string.IsNullOrEmpty(u.ProfilePictureUrl) ? "/default-avatar.svg" : u.ProfilePictureUrl
+            })
+            .ToListAsync();
+
+        var roomIds = users.Select(u => u.AllocatedRoomId).Where(id => !string.IsNullOrEmpty(id)).Distinct().ToList()!;
+        var roomLookup = await _context.Rooms.AsNoTracking()
+            .Where(r => roomIds.Contains(r.Id))
+            .ToDictionaryAsync(r => r.Id, r => r.RoomNumber);
+
+        var rows = users.Select(u => new
+        {
+            u.Id,
+            u.DisplayName,
+            u.UserName,
+            u.Email,
+            u.PhoneNumber,
+            u.AllocatedRoomId,
+            u.ProfilePictureUrl,
+            RoomNumber = u.AllocatedRoomId != null && roomLookup.TryGetValue(u.AllocatedRoomId, out var rn) ? rn : (string?)null
+        }).ToList();
+
+        return SuccessResponse("Boarders loaded.", rows);
+    }
+
+    [HttpPost("boarders/{userId}/reallocate")]
+    public async Task<IActionResult> ReallocateBoarder(string userId, [FromBody] ReallocateBoarderDto dto)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+        if (dto == null || string.IsNullOrWhiteSpace(dto.NewRoomId))
+            return ErrorResponse("New room is required.");
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null || user.HostelId != managerHostelId || !user.IsApproved)
+            return ErrorResponse("Boarder not found in your hostel.", StatusCodes.Status404NotFound);
+
+        var newRoom = await _context.Rooms.FindAsync(dto.NewRoomId.Trim());
+        if (newRoom == null || newRoom.HostelId != managerHostelId)
+            return ErrorResponse("Invalid room for this hostel.", StatusCodes.Status400BadRequest);
+        if (newRoom.SeatAvailable <= 0)
+            return ErrorResponse("No seats available in the selected room.");
+
+        if (string.Equals(user.AllocatedRoomId, newRoom.Id, StringComparison.Ordinal))
+            return SuccessResponse("বোর্ডার ইতিমধ্যে এই রুমে আছে।");
+
+        if (!string.IsNullOrEmpty(user.AllocatedRoomId))
+        {
+            var oldRoom = await _context.Rooms.FindAsync(user.AllocatedRoomId);
+            if (oldRoom != null)
+            {
+                oldRoom.SeatAvailable += 1;
+            }
+        }
+
+        newRoom.SeatAvailable -= 1;
+        user.AllocatedRoomId = newRoom.Id;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            return ErrorResponse("Failed to update boarder.");
+
+        await _context.SaveChangesAsync();
+
+        var mgrId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var mgr = await _userManager.FindByIdAsync(mgrId!);
+        await _activity.LogAsync(mgrId, mgr?.Email, "Manager", "BoarderReallocated", "User", managerHostelId, userId,
+            $"room={newRoom.RoomNumber}");
+
+        return SuccessResponse($"বোর্ডারকে রুম {newRoom.RoomNumber} এ বরাদ্দ করা হয়েছে।");
+    }
+
+    [HttpPost("boarders/{userId}/remove-from-hostel")]
+    public async Task<IActionResult> RemoveBoarderFromHostel(string userId)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null || user.HostelId != managerHostelId)
+            return ErrorResponse("User not found in your hostel.", StatusCodes.Status404NotFound);
+
+        if (!string.IsNullOrEmpty(user.AllocatedRoomId))
+        {
+            var room = await _context.Rooms.FindAsync(user.AllocatedRoomId);
+            if (room != null && room.HostelId == managerHostelId)
+                room.SeatAvailable += 1;
+        }
+
+        user.IsApproved = false;
+        user.AllocatedRoomId = null;
+        user.PreferredRoomId = null;
+        user.HostelId = string.Empty;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            return ErrorResponse("Failed to remove boarder.");
+
+        await _context.SaveChangesAsync();
+
+        var mgrId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var mgr = await _userManager.FindByIdAsync(mgrId!);
+        await _activity.LogAsync(mgrId, mgr?.Email, "Manager", "BoarderRemovedFromHostel", "User", managerHostelId, userId, null);
+
+        return SuccessResponse("বোর্ডারকে হোস্টেল থেকে সরানো হয়েছে।");
+    }
+
+    [HttpPost("boarders/{userId}/extra-charge")]
+    public async Task<IActionResult> AddExtraChargeToBoarderBill(string userId, [FromBody] BoarderExtraChargeDto dto)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+        if (dto.Month is < 1 or > 12 || dto.Year < 2000 || dto.Year > 2100)
+            return ErrorResponse("Invalid month or year.");
+        if (dto.Amount <= 0)
+            return ErrorResponse("Amount must be greater than zero.");
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null || user.HostelId != managerHostelId || !user.IsApproved)
+            return ErrorResponse("Boarder not found in your hostel.", StatusCodes.Status404NotFound);
+
+        var bill = await _context.MonthlyBills
+            .FirstOrDefaultAsync(b => b.UserId == userId && b.HostelId == managerHostelId && b.Month == dto.Month && b.Year == dto.Year);
+
+        if (bill != null)
+        {
+            bill.AdditionalCharge += dto.Amount;
+            bill.TotalAmount += dto.Amount;
+            if (bill.PaidAmount < bill.TotalAmount && bill.Status == "Paid")
+                bill.Status = "Partial";
+            else if (bill.PaidAmount < bill.TotalAmount)
+                bill.Status = bill.PaidAmount > 0 ? "Partial" : "Unpaid";
+        }
+        else
+        {
+            decimal seatRent = 0;
+            if (!string.IsNullOrEmpty(user.AllocatedRoomId))
+            {
+                var room = await _context.Rooms.FindAsync(user.AllocatedRoomId);
+                if (room != null && room.HostelId == managerHostelId)
+                    seatRent = room.MonthlyRent;
+            }
+
+            bill = new MonthlyBill
+            {
+                UserId = userId,
+                HostelId = managerHostelId,
+                Month = dto.Month,
+                Year = dto.Year,
+                SeatRent = seatRent,
+                MealCharge = 0,
+                UtilityCharge = 0,
+                AdditionalCharge = dto.Amount,
+                TotalAmount = seatRent + dto.Amount,
+                PaidAmount = 0,
+                Status = "Unpaid"
+            };
+            _context.MonthlyBills.Add(bill);
+        }
+
+        await _context.SaveChangesAsync();
+
+        var mgrId2 = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var mgr2 = await _userManager.FindByIdAsync(mgrId2!);
+        await _activity.LogAsync(mgrId2, mgr2?.Email, "Manager", "BoarderExtraCharge", "Billing", managerHostelId, userId,
+            $"m={dto.Month},y={dto.Year},amt={dto.Amount}");
+
+        return SuccessResponse("অতিরিক্ত চার্জ বিলে যুক্ত হয়েছে। বোর্ডার ড্যাশবোর্ডে বকেয়া আপডেট হবে।");
+    }
+
+    [HttpPost("boarders/{userId}/generate-bill")]
+    public async Task<IActionResult> GenerateBillForBoarder(string userId, [FromBody] ManagerSingleBoarderBillDto dto)
+    {
+        var managerHostelId = User.FindFirstValue("HostelId");
+        if (string.IsNullOrEmpty(managerHostelId))
+            return ErrorResponse("Hostel ID missing in token.", StatusCodes.Status401Unauthorized);
+        if (dto.Month is < 1 or > 12)
+            return ErrorResponse("Invalid month.");
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null || user.HostelId != managerHostelId || !user.IsApproved || string.IsNullOrEmpty(user.AllocatedRoomId))
+            return ErrorResponse("Boarder not found or has no allocated room.", StatusCodes.Status404NotFound);
+
+        var exists = await _context.MonthlyBills.AnyAsync(b =>
+            b.UserId == userId && b.HostelId == managerHostelId && b.Month == dto.Month && b.Year == dto.Year);
+        if (exists)
+            return ErrorResponse("This month already has a bill for this boarder.");
+
+        var room = await _context.Rooms.FindAsync(user.AllocatedRoomId);
+        if (room == null || room.HostelId != managerHostelId)
+            return ErrorResponse("Room not found.");
+
+        var seatRent = room.MonthlyRent;
+        var total = seatRent + dto.UtilityCharge + dto.AdditionalCharge;
+        var bill = new MonthlyBill
+        {
+            UserId = userId,
+            HostelId = managerHostelId,
+            Month = dto.Month,
+            Year = dto.Year,
+            SeatRent = seatRent,
+            MealCharge = 0,
+            UtilityCharge = dto.UtilityCharge,
+            AdditionalCharge = dto.AdditionalCharge,
+            TotalAmount = total,
+            PaidAmount = 0,
+            Status = "Unpaid"
+        };
+        _context.MonthlyBills.Add(bill);
+        await _context.SaveChangesAsync();
+
+        var mgrId3 = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var mgr3 = await _userManager.FindByIdAsync(mgrId3!);
+        await _activity.LogAsync(mgrId3, mgr3?.Email, "Manager", "BoarderBillGenerated", "Billing", managerHostelId, userId,
+            $"m={dto.Month},y={dto.Year},total={total}");
+
+        return SuccessResponse("মাসিক বিল তৈরি হয়েছে।", new { bill.Id, bill.TotalAmount });
     }
 }
