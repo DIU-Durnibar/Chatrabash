@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Bed, Bath, Wind, Monitor, Edit2, Trash2 } from 'lucide-react';
-import CreateRoom from './CreateRoom'; 
+import { apiGet } from '../../lib/api';
+import CreateRoom from './CreateRoom';
 import UpdateRoom from './UpdateRoom';
 
 const RoomManagement = () => {
@@ -8,7 +9,6 @@ const RoomManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // সার্চের জন্য নতুন স্টেট
-  const token = localStorage.getItem("token");
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedRoomId, setSelectedRoomId] = useState(null);
 
@@ -19,11 +19,8 @@ const RoomManagement = () => {
 
   const fetchRooms = async () => {
     try {
-      const response = await fetch("http://localhost:5091/api/manager/rooms", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await response.json();
-      if (result.success) setRooms(result.data || []);
+      const { ok, json } = await apiGet("/api/manager/rooms");
+      if (ok && json?.success) setRooms(json.data || []);
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {

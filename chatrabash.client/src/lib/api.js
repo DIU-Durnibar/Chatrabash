@@ -1,6 +1,19 @@
-const rawBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:5091";
+/**
+ * - Dev: default http://localhost:5091
+ * - Prod on Vercel: use VITE_API_BASE_URL=same-origin so requests stay on the site origin;
+ *   vercel.json rewrites /api and /uploads to the real backend (avoids browser → ktempurl connection resets).
+ * - Prod direct API: set full URL e.g. https://api.example.com
+ */
+function resolveApiBase() {
+  const raw = (import.meta.env.VITE_API_BASE_URL ?? "").trim();
+  const noTrail = raw.replace(/\/$/, "");
+  if (noTrail === "same-origin" || noTrail === ".") return "";
+  if (noTrail) return noTrail;
+  if (import.meta.env.DEV) return "http://localhost:5091".replace(/\/$/, "");
+  return "";
+}
 
-export const API_BASE = rawBase.replace(/\/$/, "");
+export const API_BASE = resolveApiBase();
 
 export function apiUrl(path) {
   const p = path.startsWith("/") ? path : `/${path}`;
