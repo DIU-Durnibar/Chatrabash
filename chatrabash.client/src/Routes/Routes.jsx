@@ -19,6 +19,7 @@ import HostelRegistration from "../Saas Features/HostelRegistration";
 import AdminDashboard from "../Saas Features/Manager/AdminDashboard";
 import AdminLayout from "../Saas Features/Manager/AdminLayout";
 import Dashboard from "../Manager's End/Pages/Dashboard";
+import RoomManagement from "../Manager's End/Pages/RoomManagement";
 
 const Routes = createBrowserRouter([
 
@@ -85,13 +86,17 @@ const Routes = createBrowserRouter([
         Component: PendingUsers
       },
       {
+        path: "roommanagement", 
+        Component: RoomManagement
+      },
+      {
         path: "all-hostels", 
         Component: AllHostel
       },
-      {
-        path: "create-room", 
-        Component: CreateRoom
-      },
+      // {
+      //   path: "create-room", 
+      //   Component: CreateRoom
+      // },
       {
         path: "rooms", 
         Component: HostelRooms

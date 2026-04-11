@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { HiOutlineOfficeBuilding } from "react-icons/hi";
 
 const Navbar = () => {
-  // টোকেন আছে কি না চেক করা হচ্ছে
   const token = localStorage.getItem("token");
 
   return (
