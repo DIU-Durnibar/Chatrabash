@@ -13,17 +13,6 @@ import AllHostel from "../Manager's End/Pages/AllHostel";
 import CreateRoom from "../Manager's End/Pages/CreateRoom";
 import HostelRooms from "../Manager's End/Pages/HostelRooms";
 import UpdateRoom from "../Manager's End/Pages/UpdateRoom";
-<<<<<<< Updated upstream
-import HostelKhujun from "../Home/LandingPage/HostelKhujun";
-import kivabeKajKore from "../Home/LandingPage/kivabeKajKore";
-import LandingPage from "../Home/LandingPage";
-import Help from "../Home/LandingPage/Help";
-import HostelRegistration from "../Saas Features/HostelRegistration";
-import AdminDashboard from "../Saas Features/Manager/AdminDashboard";
-import AdminLayout from "../Saas Features/Manager/AdminLayout";
-import Dashboard from "../Manager's End/Pages/Dashboard";
-import RoomManagement from "../Manager's End/Pages/RoomManagement";
-=======
 import ManagerBillingPage from "../Pages/dashboard/ManagerBillingPage";
 import BoarderOverviewPage from "../Pages/dashboard/BoarderOverviewPage";
 import BoarderBillsPage from "../Pages/dashboard/BoarderBillsPage";
@@ -38,10 +27,11 @@ import ManagerLogsPage from "../Pages/dashboard/ManagerLogsPage";
 import ManagerBoardersPage from "../Pages/dashboard/ManagerBoardersPage";
 import ManagerSettingsPage from "../Pages/dashboard/ManagerSettingsPage";
 import BoarderSettingsPage from "../Pages/dashboard/BoarderSettingsPage";
->>>>>>> Stashed changes
 
 const Routes = createBrowserRouter([
   { path: "/", element: <MainLayout /> },
+  { path: "/signIn", Component: SignIn },
+  { path: "/signUp", Component: SignUp },
   { path: "/register-hostel", Component: HostelRegisterPage },
   {
     path: "/explore",
@@ -85,68 +75,9 @@ const Routes = createBrowserRouter([
       },
       { path: "boarder/settings", Component: BoarderSettingsPage },
       { path: "studentDashboard", element: <Navigate to="/home/boarder" replace /> },
+      { path: "roommanagement", element: <Navigate to="/home/rooms" replace /> },
     ],
   },
-<<<<<<< Updated upstream
-    ]
-  },
-
-
-
-
-  // for logged in User
-  {
-    path:"/home",
-    Component:HomeLayout,
-    children:[
-      {
-        index: true,
-        Component: Dashboard
-      },
-      {
-        path: "availablehostels", 
-        Component: AvailableHostels
-      },
-      // {
-      //   path: "dashboard", 
-      //   Component: Dashboard
-      // },
-      {
-        path: "Pending-users", 
-        Component: PendingUsers
-      },
-      {
-        path: "roommanagement", 
-        Component: RoomManagement
-      },
-      {
-        path: "all-hostels", 
-        Component: AllHostel
-      },
-      // {
-      //   path: "create-room", 
-      //   Component: CreateRoom
-      // },
-      {
-        path: "rooms", 
-        Component: HostelRooms
-      },
-      {
-        path: "update-rooms/:id",
-        Component: UpdateRoom
-      },
-    ]
-  },
-
-  {
-   path:"/home/studentDashboard",
-        Component:StudentDashboard
-  },
-  
-=======
-  { path: "/signIn", Component: SignIn },
-  { path: "/signUp", Component: SignUp },
->>>>>>> Stashed changes
 ]);
 
 export default Routes;

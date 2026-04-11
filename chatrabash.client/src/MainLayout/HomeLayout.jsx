@@ -1,39 +1,18 @@
-import React from 'react';
-import Footer from '../Components/Footer';
-import HomePage from '../Home/HomePage';
-import Navbar from '../Components/Navbar';
-import Sidebar from '../Components/Sidebar';
-import { Outlet } from 'react-router-dom';
+import { Outlet } from "react-router-dom";
+import AppSidebar from "../layouts/AppSidebar";
 
+/** @deprecated Prefer AppShellLayout via /home routes; kept for any legacy imports. */
 const HomeLayout = () => {
-    return (
-<<<<<<< Updated upstream
-      <div className="flex h-screen w-full bg-slate-50 overflow-hidden">
-        
-        <Sidebar />
-
-        <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          <div className="max-w-7xl mx-auto">
-             <Outlet />
-          </div>
-=======
-       <div className="flex flex-col h-screen overflow-hidden">
-      <Navbar />
-
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-          {/* <HomePage></HomePage> */}
-          <Outlet></Outlet>
-          <Footer></Footer>
->>>>>>> Stashed changes
-        </main>
-      </div>
+  return (
+    <div className="flex min-h-screen w-full bg-slate-50">
+      <AppSidebar />
+      <main className="flex-1 overflow-y-auto p-6 md:p-8">
+        <div className="mx-auto max-w-7xl">
+          <Outlet />
+        </div>
+      </main>
     </div>
-    );
+  );
 };
 
 export default HomeLayout;
-
-
