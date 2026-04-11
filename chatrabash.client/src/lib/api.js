@@ -1,16 +1,13 @@
-/**
- * - Dev: default http://localhost:5091
- * - Prod on Vercel: use VITE_API_BASE_URL=same-origin so requests stay on the site origin;
- *   vercel.json rewrites /api and /uploads to the real backend (avoids browser → ktempurl connection resets).
- * - Prod direct API: set full URL e.g. https://api.example.com
- */
+/** Production API host (SmarterASP / your deployed backend). No Vercel proxy — those caused repeated 502s. */
+const PRODUCTION_API_DEFAULT = "https://hasibhasnain-001-site1.ktempurl.com";
+
 function resolveApiBase() {
-  const raw = (import.meta.env.VITE_API_BASE_URL ?? "").trim();
-  const noTrail = raw.replace(/\/$/, "");
-  if (noTrail === "same-origin" || noTrail === ".") return "";
-  if (noTrail) return noTrail;
-  if (import.meta.env.DEV) return "http://localhost:5091".replace(/\/$/, "");
-  return "";
+  const raw = (import.meta.env.VITE_API_BASE_URL ?? "").trim().replace(/\/$/, "");
+  if (raw === "same-origin" || raw === "." || raw === "") {
+    if (import.meta.env.DEV) return "http://localhost:5091".replace(/\/$/, "");
+    return PRODUCTION_API_DEFAULT;
+  }
+  return raw;
 }
 
 export const API_BASE = resolveApiBase();
@@ -33,10 +30,13 @@ export async function apiFetch(path, options = {}) {
 
   const res = await fetch(apiUrl(path), { ...options, headers, body });
   const ct = res.headers.get("content-type") || "";
-  // SPA fallback (e.g. misconfigured Vercel rewrite) returns 200 + text/html instead of API JSON
   if (res.ok && ct.includes("text/html")) {
-    console.warn("[api] Got HTML instead of JSON — check Vercel /api proxy and rewrites:", path);
-    return { ok: false, status: res.status, json: { success: false, message: "API returned HTML (routing/proxy misconfiguration)." } };
+    console.warn("[api] Got HTML instead of JSON:", path);
+    return {
+      ok: false,
+      status: res.status,
+      json: { success: false, message: "API returned HTML (wrong URL or server error page)." },
+    };
   }
   const json = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, json };
