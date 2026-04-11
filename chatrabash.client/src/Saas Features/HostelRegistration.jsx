@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Home, User, CreditCard, ArrowRight, ArrowLeft, MapPin, PhoneCall } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const HostelRegistration = () => {
   const [step, setStep] = useState(1);
@@ -10,7 +11,7 @@ const HostelRegistration = () => {
   const [divisions, setDivisions] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [upazilas, setUpazilas] = useState([]);
-
+  
   // Form Data
   const [formData, setFormData] = useState({
     hostelName: "",
@@ -55,7 +56,9 @@ const HostelRegistration = () => {
         body: JSON.stringify(formData),
       });
       const result = await response.json();
-      if (result.success) setStep(4); 
+      if (result.success){
+         setStep(4);
+      }
       else alert(result.message);
     } catch (error) {
       alert("রেজিস্ট্রেশন ব্যর্থ হয়েছে!");
@@ -232,9 +235,11 @@ const HostelRegistration = () => {
           <div className="w-24 h-24 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8 text-5xl">✅</div>
           <h2 className="text-4xl font-black mb-4 tracking-tight">স্বাগতম Chatrabash-এ!</h2>
           <p className="text-slate-500 font-medium mb-10 max-w-sm mx-auto leading-relaxed text-sm">আপনার হোস্টেল রেজিস্ট্রেশন ও স্টার্টার প্যাকেজ সফলভাবে সম্পন্ন হয়েছে। শীঘ্রই আমাদের টিম আপনার সাথে যোগাযোগ করবে।</p>
-          <button onClick={() => window.location.href='/admin/dashboard'} className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-[25px] font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-100 transition-all flex items-center gap-3 mx-auto">
+          <Link to="/signIn">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-[25px] font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-100 transition-all flex items-center gap-3 mx-auto">
             এডমিন ড্যাশবোর্ডে যান <ArrowRight size={18} />
           </button>
+          </Link>
         </div>
       )}
     </div>

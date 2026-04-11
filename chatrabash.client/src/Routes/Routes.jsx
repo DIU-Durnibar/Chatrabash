@@ -16,8 +16,14 @@ import kivabeKajKore from "../Home/LandingPage/kivabeKajKore";
 import LandingPage from "../Home/LandingPage";
 import Help from "../Home/LandingPage/Help";
 import HostelRegistration from "../Saas Features/HostelRegistration";
+import AdminDashboard from "../Saas Features/Manager/AdminDashboard";
+import AdminLayout from "../Saas Features/Manager/AdminLayout";
 
 const Routes = createBrowserRouter([
+
+
+
+  // for public access
   {
     path: "/",
     element: <MainLayout></MainLayout>,
@@ -52,6 +58,11 @@ const Routes = createBrowserRouter([
   },
     ]
   },
+
+
+
+
+  // for logged in User
   {
     path:"/home",
     Component:HomeLayout,
@@ -86,10 +97,12 @@ const Routes = createBrowserRouter([
       },
     ]
   },
+
   {
    path:"/home/studentDashboard",
         Component:StudentDashboard
-  }
+  },
+  
 ]);
 
 export default Routes

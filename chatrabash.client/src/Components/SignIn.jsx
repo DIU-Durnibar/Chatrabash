@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Key, ArrowRight } from "lucide-react";
 
 const SignIn = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,7 +29,7 @@ const SignIn = () => {
         localStorage.setItem("userEmail", email);
         localStorage.setItem("user", JSON.stringify(result.data));
         alert("লগইন সফল হয়েছে!");
-        window.location.href = "/home";
+       navigate("/home");
       } else {
         alert(result.message || "ইমেইল বা পাসওয়ার্ড ভুল!");
       }
