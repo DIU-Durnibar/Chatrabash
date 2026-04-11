@@ -59,7 +59,6 @@ const Sidebar = () => {
   };
 
   return (
-    /* h-screen এবং h-full নিশ্চিত করা হয়েছে যাতে কোনো গ্যাপ না থাকে */
     <aside className="w-72 bg-[#1A233A] h-screen flex flex-col py-8 overflow-y-auto sticky top-0 left-0">
       {/* Logo Area */}
       <div className="px-8 mb-12">
@@ -80,7 +79,7 @@ const Sidebar = () => {
             <>
               <NavItem to="/home" icon={LayoutDashboard} label="ড্যাশবোর্ড" isActive={isActive} />
               <NavItem to="/home/Pending-users" icon={Users} label="অপেক্ষমান রিকোয়েস্ট" isActive={isActive} />
-              <NavItem to="/home/rooms" icon={BedDouble} label="রুম ম্যানেজমেন্ট" isActive={isActive} />
+              <NavItem to="/home/roommanagement" icon={BedDouble} label="রুম ম্যানেজমেন্ট" isActive={isActive} />
               <NavItem to="/home/billing" icon={Receipt} label="বিলিং ও পেমেন্ট" isActive={isActive} />
               <NavItem to="/home/settings" icon={Settings} label="সেটিংস" isActive={isActive} />
             </>

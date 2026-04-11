@@ -1,41 +1,29 @@
 import React, { useState } from "react";
-import { HiOutlinePlusCircle } from "react-icons/hi";
+import { X, Bed, CheckCircle2 } from "lucide-react";
 
-const CreateRoom = () => {
+const CreateRoom = ({ isOpen, onClose, refresh }) => {
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
 
   const [formData, setFormData] = useState({
-  roomNumber: "",
-  floorNo: "",
-  seatCapacity: "",
-  isAttachedBathroomAvailable: false,
-  isBalconyAvailable: false,
-  isAcAvailable: false,
-  isActive: true,
-});
-
+    roomNumber: "",
+    floorNo: "",
+    seatCapacity: "",
+    isAttachedBathroomAvailable: false,
+    isBalconyAvailable: false,
+    isAcAvailable: false,
+    isActive: true,
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!token) {
-      alert("আপনার সেশন শেষ হয়ে গেছে। দয়া করে আবার লগইন করুন।");
-      return;
-    }
-
     setLoading(true);
 
     const payload = {
-  roomNumber: formData.roomNumber,
-  floorNo: parseInt(formData.floorNo),
-  seatCapacity: parseInt(formData.seatCapacity),
-  isAttachedBathroomAvailable: formData.isAttachedBathroomAvailable == 1,
-  isBalconyAvailable: formData.isBalconyAvailable == 1,
-  isAcAvailable: formData.isAcAvailable, 
-  isActive: formData.isActive,  
-};
-
+      ...formData,
+      floorNo: parseInt(formData.floorNo),
+      seatCapacity: parseInt(formData.seatCapacity),
+    };
 
     try {
       const response = await fetch("http://localhost:5091/api/manager/rooms", {
@@ -47,146 +35,113 @@ const CreateRoom = () => {
         body: JSON.stringify(payload),
       });
 
-      
       const result = await response.json();
-
-      if (response.ok && result.success) {
-        alert(result.message || "রুম সফলভাবে তৈরি হয়েছে!");
-        setFormData({
-          roomNumber: "",
-          floorNo: "",
-          seatCapacity: "",
-          isAttachedBathroomAvailable: 0,
-          isBalconyAvailable: 0,
-          isAcAvailable: false,
-          isActive: true,
-        });
+      if (result.success) {
+        alert("রুম সফলভাবে তৈরি হয়েছে!");
+        refresh();
+        onClose();
       } else {
-        alert(result.message || "রুম তৈরি করা যায়নি। রুম নম্বরটি আগে থেকেই আছে কি না চেক করুন।");
+        alert(result.message || "এরর হয়েছে!");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("সার্ভার কানেকশন এরর!");
+      alert("সার্ভার এরর!");
     } finally {
       setLoading(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
-      <div className="w-full max-w-2xl bg-white shadow-xl rounded-sm overflow-hidden border border-gray-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+      {/* মেইন কন্টেইনারে flex flex-col এবং h-11/12 ব্যবহার করা হয়েছে */}
+      <div className="bg-white w-full max-w-lg rounded-[32px] h-11/12 flex flex-col overflow-hidden border border-slate-100 animate-in zoom-in-95 duration-300 shadow-2xl">
         
-        {/* হেডার */}
-        <div className="bg-[#001f3f] p-6 text-white flex items-center gap-3">
-          <HiOutlinePlusCircle size={30} />
-          <div>
-            <h2 className="text-xl font-bold uppercase tracking-wider pb-2">নতুন রুম যোগ করুন</h2>
-            <p className="text-xs text-blue-100 opacity-80">হোস্টেল ইনভেন্টরিতে নতুন রুমের তথ্য প্রদান করুন</p>
+        {/* Fixed Header */}
+        <div className="bg-gradient-to-r from-blue-900 to-blue-800 p-8 text-white relative flex-shrink-0">
+          <button onClick={onClose} className="absolute right-6 top-6 text-white/50 hover:text-white transition-colors">
+            <X size={24} />
+          </button>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md">
+              <Bed size={24} />
+            </div>
+            <div>
+              <h2 className="text-xl font-black tracking-tight">নতুন রুম যুক্ত করুন</h2>
+              <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mt-1">API 3.4 — Create / Update Room</p>
+            </div>
           </div>
         </div>
 
-        {/* ফর্ম বডি */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-6 text-black">
-          <div className="grid grid-cols-1 gap-6">
-            
-            {/* রুম নম্বর */}
-            <div className="form-control  justify-center items-center">
-              <label className="label text-xs font-bold text-gray-500 uppercase mr-3">রুম নম্বর</label>
-              <input
-                type="text"
-                placeholder="যেমন: ১০৫"
-                required
-                className="input input-bordered h-10 rounded-sm focus:border-[#001f3f] border border-gray-300 pl-3"
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase ml-1">রুম নম্বর *</label>
+              <input 
+                required type="text" placeholder="যেমন: ১০১, A-২"
+                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 text-sm font-bold"
                 value={formData.roomNumber}
-                onChange={(e) => setFormData({ ...formData, roomNumber: e.target.value })}
+                onChange={(e) => setFormData({...formData, roomNumber: e.target.value})}
               />
             </div>
-
-            {/* ফ্লোর নম্বর */}
-            <div className="form-control justify-center items-center">
-              <label className="label text-xs font-bold text-gray-500 uppercase mr-3">ফ্লোর নম্বর</label>
-              <input
-                type="number"
-                placeholder="যেমন: ১"
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase ml-1">তলা *</label>
+              <select 
                 required
-                className="input input-bordered h-10 rounded-sm focus:border-[#001f3f] border border-gray-300 pl-3"
+                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 text-sm font-bold appearance-none"
                 value={formData.floorNo}
-                onChange={(e) => setFormData({ ...formData, floorNo: e.target.value })}
-              />
-            </div>
-
-            {/* সিট ক্ষমতা */}
-            <div className="form-control justify-center items-center">
-              <label className="label text-xs font-bold text-gray-500 uppercase mr-3">সিট ক্ষমতা (Seat Capacity)</label>
-              <input
-                type="number"
-                placeholder="যেমন: ৪"
-                required
-                className="input input-bordered h-10 rounded-sm focus:border-[#001f3f] border border-gray-300 pl-3"
-                value={formData.seatCapacity}
-                onChange={(e) => setFormData({ ...formData, seatCapacity: e.target.value })}
-              />
-            </div>
-
-            {/* অ্যাটাচড বাথরুম */}
-            <div className="form-control justify-center items-center">
-              <label className="label text-xs font-bold text-gray-500 uppercase mr-3">অ্যাটাচড বাথরুম?</label>
-
-              <select
-                 value={formData.isAttachedBathroomAvailable}
-                 onChange={(e) =>
-                 setFormData({ ...formData,isAttachedBathroomAvailable: e.target.value === "true",})
-                 }>
-                   <option value="false">না</option>
-                   <option value="true">হ্যাঁ</option>
+                onChange={(e) => setFormData({...formData, floorNo: e.target.value})}
+              >
+                <option value="">সিলেক্ট করুন</option>
+                {[1,2,3,4,5,6,7,8,9,10].map(f => <option key={f} value={f}>{f}ম তলা</option>)}
               </select>
-
-
-
             </div>
           </div>
 
-          {/* চেক বক্স এরিয়া */}
-          <div className="flex flex-wrap gap-6 bg-slate-50 p-4 rounded-sm border border-slate-100">
-
-
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                className="checkbox checkbox-primary checkbox-sm"
-                checked={formData.isAcAvailable}
-                onChange={(e) => setFormData({ ...formData, isAcAvailable: e.target.checked })}
-              />
-              <span className="text-sm font-semibold">এসি (AC) সুবিধা</span>
-            </label>
-
-
-
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                className="checkbox checkbox-sm"
-                checked={formData.isActive}
-                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-              />
-              <span className="text-sm font-semibold text-green-700">রুমটি অ্যাক্টিভ করুন</span>
-            </label>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-slate-400 uppercase ml-1">সিট সংখ্যা *</label>
+            <input 
+              required type="number" placeholder="১-২০"
+              className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 text-sm font-bold"
+              value={formData.seatCapacity}
+              onChange={(e) => setFormData({...formData, seatCapacity: e.target.value})}
+            />
           </div>
 
-
-
-          <div className="pt-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full bg-[#1a8a5a] hover:bg-[#146e48] text-white py-3 rounded-sm font-bold uppercase tracking-widest transition-all shadow-md active:scale-[0.98] ${
-                loading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
-            >
-              {loading ? "সেভ হচ্ছে..." : "রুম তৈরি করুন"}
-            </button>
+          <div className="space-y-3">
+             <label className="text-[10px] font-black text-slate-400 uppercase ml-1">সুযোগ-সুবিধা (Amenities)</label>
+             <div className="space-y-2">
+                {[
+                  { label: "AC / এয়ার কন্ডিশনার", key: "isAcAvailable" },
+                  { label: "সংযুক্ত বাথরুম", key: "isAttachedBathroomAvailable" },
+                  { label: "বারান্দা", key: "isBalconyAvailable" },
+                  { label: "ওয়াইফাই (WiFi)", key: "isWifiAvailable" }, // এক্সট্রা কিছু সুবিধা ডিজাইন ম্যাপ করতে
+                  { label: "জেনারেল জেনারেটর", key: "isPowerBackupAvailable" }
+                ].map((item) => (
+                  <label key={item.key} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
+                    <span className="text-sm font-bold text-slate-600">{item.label}</span>
+                    <input 
+                      type="checkbox" className="w-5 h-5 rounded-full border-slate-300 text-blue-600 focus:ring-blue-500 transition-all"
+                      checked={formData[item.key] || false}
+                      onChange={(e) => setFormData({...formData, [item.key]: e.target.checked})}
+                    />
+                  </label>
+                ))}
+             </div>
           </div>
         </form>
+
+        {/* Fixed Footer Buttons */}
+        <div className="p-8 border-t border-slate-50 bg-white flex-shrink-0 flex gap-4">
+             <button type="button" onClick={onClose} className="flex-1 py-4 text-sm font-black text-slate-400 hover:text-slate-600 transition-colors">বাতিল করুন</button>
+             <button 
+              onClick={handleSubmit} // বাটনটি এখন ফর্মের বাইরে আসায় এক্সপ্লিসিটলি কল করা হয়েছে
+              disabled={loading}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-black text-sm shadow-xl shadow-blue-100 flex items-center justify-center gap-2 active:scale-95 transition-all"
+             >
+               <CheckCircle2 size={18} /> {loading ? "সেভ হচ্ছে..." : "রুম সেট করুন"}
+             </button>
+        </div>
       </div>
     </div>
   );
