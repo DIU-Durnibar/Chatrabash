@@ -18,6 +18,7 @@ import Help from "../Home/LandingPage/Help";
 import HostelRegistration from "../Saas Features/HostelRegistration";
 import AdminDashboard from "../Saas Features/Manager/AdminDashboard";
 import AdminLayout from "../Saas Features/Manager/AdminLayout";
+import Dashboard from "../Manager's End/Pages/Dashboard";
 
 const Routes = createBrowserRouter([
 
@@ -69,12 +70,16 @@ const Routes = createBrowserRouter([
     children:[
       {
         index: true,
-        Component: HomePage
+        Component: Dashboard
       },
       {
         path: "availablehostels", 
         Component: AvailableHostels
       },
+      // {
+      //   path: "dashboard", 
+      //   Component: Dashboard
+      // },
       {
         path: "Pending-users", 
         Component: PendingUsers
