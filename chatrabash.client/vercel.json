@@ -9,6 +9,9 @@
       "source": "/default-avatar.svg",
       "destination": "/api/avatar-proxy"
     },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!api/|assets/).*)",
+      "destination": "/index.html"
+    }
   ]
 }

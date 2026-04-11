@@ -1,8 +1,6 @@
 /**
- * Vercel Node.js proxy → ASP.NET backend (avoids Edge external rewrites returning 502).
- * Routes:
- *   /api/*           → BACKEND/api/*
- *   /api/uploads-proxy/* → BACKEND/uploads/* (see vercel.json rewrite from /uploads)
+ * Vercel Node.js proxy → ASP.NET backend.
+ * Parent repo has "type":"module"; this folder uses CommonJS so Vercel bundles the function reliably.
  */
 const DEFAULT_BACKEND = "https://hasibhasnain-001-site1.ktempurl.com";
 
@@ -18,7 +16,7 @@ async function readBody(req) {
   return Buffer.concat(chunks);
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const u = new URL(req.url, `http://${req.headers.host}`);
   const pathname = u.pathname;
   const search = u.search;
@@ -37,7 +35,7 @@ export default async function handler(req, res) {
   }
 
   const headers = new Headers();
-  const skip = new Set(["host", "connection", "content-length"]);
+  const skip = new Set(["host", "connection", "content-length", "transfer-encoding"]);
   for (const [k, v] of Object.entries(req.headers)) {
     if (skip.has(k.toLowerCase())) continue;
     if (v == null) continue;
@@ -75,9 +73,8 @@ export default async function handler(req, res) {
     console.error("[api proxy]", target, e);
     res.status(502).json({ error: "bad_gateway", message: String(e?.message || e), target });
   }
-}
+};
 
-/** Hobby plan: max 10s. Pro allows up to 60s / 300s. */
-export const config = {
+module.exports.config = {
   maxDuration: 10,
 };

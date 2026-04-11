@@ -32,6 +32,12 @@ export async function apiFetch(path, options = {}) {
   }
 
   const res = await fetch(apiUrl(path), { ...options, headers, body });
+  const ct = res.headers.get("content-type") || "";
+  // SPA fallback (e.g. misconfigured Vercel rewrite) returns 200 + text/html instead of API JSON
+  if (res.ok && ct.includes("text/html")) {
+    console.warn("[api] Got HTML instead of JSON — check Vercel /api proxy and rewrites:", path);
+    return { ok: false, status: res.status, json: { success: false, message: "API returned HTML (routing/proxy misconfiguration)." } };
+  }
   const json = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, json };
 }
