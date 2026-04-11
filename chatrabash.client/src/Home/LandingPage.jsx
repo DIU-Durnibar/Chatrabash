@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
   useEffect(() => {
@@ -87,6 +88,8 @@ const LandingPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-11/12 mx-auto">
+
+
   {/* Owner Box */}
   <div className="bg-blue-50/50 p-8 rounded-2xl border border-blue-100 relative overflow-hidden flex flex-col justify-between" data-aos="fade-up">
     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-200/30 rounded-full -mr-8 -mt-8"></div>
@@ -108,9 +111,11 @@ const LandingPage = () => {
       </ul>
     </div>
 
+    <Link to="/hostel-registration">
     <button className="bg-blue-800 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-blue-900 transition font-bold text-sm w-fit">
       রেজিস্ট্রেশন করুন <ArrowRight size={16} />
     </button>
+    </Link>
   </div>
 
   {/* Student Box */}

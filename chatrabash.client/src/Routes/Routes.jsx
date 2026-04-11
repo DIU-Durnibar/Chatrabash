@@ -15,6 +15,7 @@ import HostelKhujun from "../Home/LandingPage/HostelKhujun";
 import kivabeKajKore from "../Home/LandingPage/kivabeKajKore";
 import LandingPage from "../Home/LandingPage";
 import Help from "../Home/LandingPage/Help";
+import HostelRegistration from "../Saas Features/HostelRegistration";
 
 const Routes = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const Routes = createBrowserRouter([
   {
     path:"/signUp",
     Component:SignUp
+  },
+  {
+    path:"/hostel-registration",
+    Component:HostelRegistration
   },
     ]
   },
