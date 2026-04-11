@@ -83,9 +83,9 @@ public class ExceptionMiddleware(ILogger<ExceptionMiddleware> logger, IHostEnvir
             await context.Response.WriteAsJsonAsync(problemDetails);
         }
 
-        else 
+        else
         {
-            Console.WriteLine(exception); 
+            await Task.CompletedTask;
         }
     }
 }
