@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
@@ -28,6 +29,7 @@ public partial class Program
             });
         });
 
+        builder.Services.Configure<RouteOptions>(o => o.LowercaseUrls = true);
         builder.Services.AddControllers();
         builder.Services.AddDbContext<AppDbContext>(opt =>
         {

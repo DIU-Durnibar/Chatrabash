@@ -2,15 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/uploads/:path*",
-      "destination": "/api/uploads-proxy/:path*"
-    },
-    {
-      "source": "/default-avatar.svg",
-      "destination": "/api/avatar-proxy"
-    },
-    {
-      "source": "/((?!api/|assets/).*)",
+      "source": "/((?!api/|assets/|uploads/).*)",
       "destination": "/index.html"
     }
   ]
