@@ -210,7 +210,7 @@ This project is proudly developed as a Capstone Project for the B.Sc. in Softwar
 
 | S. M. Hasib Hasnain | Nusrat Jahan Raisa | Usama Akif Hossain Ador |
 | :---: | :---: | :---: |
-| **Backend** **Ui/Ux** | **Frontend** | **Frontend** **Testing** |
+| **Backend**, **Ui/Ux Design**, **Deployment** | **Frontend** | **Frontend**, **Testing** |
 | [![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/SMHasibHasnain) | [![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/NusratJahanRaisa) | [![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/usama-akif-hossain) |
 
 </div>
