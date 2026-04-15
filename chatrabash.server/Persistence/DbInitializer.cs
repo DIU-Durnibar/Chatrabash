@@ -117,7 +117,8 @@ public class DbInitializer
                 new Upazila { Name = "Mohammadpur", BengaliName = "মোহাম্মদপুর", DistrictId = dhakaDist.Id },
                 new Upazila { Name = "Badda", BengaliName = "বাড্ডা", DistrictId = dhakaDist.Id },
                 new Upazila { Name = "Ashulia", BengaliName = "আশুলিয়া", DistrictId = dhakaDist.Id },
-                new Upazila { Name = "Savar", BengaliName = "সাভার", DistrictId = dhakaDist.Id }
+                new Upazila { Name = "Savar", BengaliName = "সাভার", DistrictId = dhakaDist.Id },
+                new Upazila { Name = "Bashundhara", BengaliName = "বসুন্ধরা", DistrictId = dhakaDist.Id },
             });
 
             // Chattogram (Popular Locations)
