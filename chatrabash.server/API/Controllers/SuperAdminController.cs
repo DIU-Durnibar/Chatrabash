@@ -40,6 +40,7 @@ public class SuperAdminController : BaseController
         });
     }
 
+
     [HttpGet("hostels")]
     public async Task<IActionResult> GetAllHostels()
     {
@@ -59,6 +60,7 @@ public class SuperAdminController : BaseController
                 Name = h.Name,
                 h.AreaDescription,
                 Status = h.IsActive ? "Active" : "Suspended",
+                IsFeatured = h.IsFeatured, //Need Review
                 Package = h.SubscriptionPackage != null ? h.SubscriptionPackage.Name : "N/A",
                 MonthlyPackagePrice = h.SubscriptionPackage != null ? h.SubscriptionPackage.MonthlyPrice : (decimal?)null,
                 Division = h.Division != null ? h.Division.BengaliName : null,
@@ -151,7 +153,7 @@ public class SuperAdminController : BaseController
     }
 
     [HttpPatch("hostels/{hostelId}/status")]
-    public async Task<IActionResult> ToggleHostelStatus(string hostelId, [FromBody] bool isActive)
+    public async Task<IActionResult> ToggleHostelStatus(string hostelId, [FromQuery] bool isActive)
     {
         var hostel = await _context.Hostels.FindAsync(hostelId);
         if (hostel == null) return ErrorResponse("Hostel not found.");
@@ -159,12 +161,19 @@ public class SuperAdminController : BaseController
         hostel.IsActive = isActive;
         await _context.SaveChangesAsync();
 
-        var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var adminEmail = User.FindFirstValue(ClaimTypes.Email);
-        await _activity.LogAsync(adminId, adminEmail, "SuperAdmin", isActive ? "HostelActivated" : "HostelSuspended", "Hostel",
-            hostelId, null, hostel.Name);
+        return SuccessResponse($"Hostel successfully {(isActive ? "Activated" : "Suspended")}.");
+    }
 
-        string status = isActive ? "Activated" : "Suspended";
-        return SuccessResponse($"Hostel successfully {status}.");
+    [HttpPatch("hostels/{hostelId}/featured")]
+    public async Task<IActionResult> ToggleHostelFeaturedStatus(string hostelId, [FromQuery] bool isFeatured)
+    {
+        var hostel = await _context.Hostels.FindAsync(hostelId);
+        if (hostel == null) return ErrorResponse("Hostel not found.");
+
+        hostel.IsFeatured = isFeatured;
+        await _context.SaveChangesAsync();
+
+        return SuccessResponse($"Hostel successfully marked as {(isFeatured ? "Featured" : "Normal")}.");
     }
 }
+
