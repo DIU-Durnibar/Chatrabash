@@ -42,9 +42,9 @@ public class PublicController : BaseController
     public async Task<IActionResult> GetFeaturedHostels()
     {
         var featured = await _context.Hostels
+            .Where(h => h.IsActive && h.IsFeatured) 
             .Include(h => h.Upazila)
             .Include(h => h.Photos)
-            .Where(h => h.IsActive && h.IsFeatured) 
             .Take(3) 
             .Select(h => new 
             {
