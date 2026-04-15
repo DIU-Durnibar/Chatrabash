@@ -24,6 +24,7 @@ public class HostelsController : BaseController
     public async Task<IActionResult>  GetHostels()
     {
         var hostels = await _context.Hostels
+            .Where(h => h.IsActive) //Caution! Need to check later!
             .Include(h => h.Manager) 
             .Select(h => new 
             {
