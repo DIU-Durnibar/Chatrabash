@@ -19,39 +19,35 @@ export default function AdminHostelsPage() {
   }, []);
 
   const toggleStatus = async (id, next) => {
-    // Optimistic UI Update (ক্লিক করার সাথে সাথে UI চেঞ্জ হবে)
     setRows(prev => prev.map(h => h.id === id ? { ...h, status: next ? "Active" : "Suspended" } : h));
     
-    // URL-এর মাধ্যমে ডেটা পাঠাচ্ছি (বডিতে না)
     const res = await apiPatch(`/api/superadmin/hostels/${id}/status?isActive=${next}`);
     if (!res.ok || !res.json?.success) {
-      alert(res.json?.message || "স্ট্যাটাস আপডেট ব্যর্থ হয়েছে");
-      load(); // ফেইল করলে আগের ডাটা আবার আনবে
+      alert(res.json?.message || "স্ট্যাটাস আপডেট ব্যর্থ হয়েছে");
+      load(); 
     }
   };
 
   const toggleFeatured = async (id, next) => {
-    // Optimistic UI Update (ক্লিক করার সাথে সাথে UI চেঞ্জ হবে)
     setRows(prev => prev.map(h => h.id === id ? { ...h, isFeatured: next, isSponsored: next ? "Featured" : "Non Featured" } : h));
 
-    // URL-এর মাধ্যমে ডেটা পাঠাচ্ছি (বডিতে না)
     const res = await apiPatch(`/api/superadmin/hostels/${id}/featured?isFeatured=${next}`);
     if (!res.ok || !res.json?.success) {
-      alert(res.json?.message || "ফিচার্ড আপডেট ব্যর্থ হয়েছে");
-      load(); // ফেইল করলে আগের ডাটা আবার আনবে
+      alert(res.json?.message || "ফিচার্ড আপডেট ব্যর্থ হয়েছে");
+      load(); 
     }
   };
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white px-6 py-4">
+      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white px-4 py-4 sm:px-6">
         <h1 className="text-xl font-bold text-slate-900">সব হোস্টেল</h1>
-        <p className="text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500">
           ম্যানেজারের ইমেইল, ফোন, ঠিকানা ও আসন সংখ্যাসহ সম্পূর্ণ তালিকা — সারি খুলে বিস্তারিত দেখুন
         </p>
       </header>
       
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {loading ? (
           <p className="text-center font-medium text-[var(--cb-primary)]">লোড হচ্ছে...</p>
         ) : (
@@ -70,59 +66,60 @@ export default function AdminHostelsPage() {
                 >
                   <div
                     onClick={() => setOpenCardId(isOpen ? null : h.id)}
-                    className="flex cursor-pointer flex-wrap items-center justify-between gap-3 px-4 py-4"
+                    className="flex cursor-pointer flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <div className="flex min-w-0 flex-1 items-start gap-3">
-                      <UserAvatar url={h.managerProfilePictureUrl} className="h-12 w-12 border-slate-200" />
+                    {/* বাম দিকের ইনফো (মোবাইলে ফুল উইডথ) */}
+                    <div className="flex min-w-0 w-full flex-1 items-start gap-3 sm:w-auto">
+                      <UserAvatar url={h.managerProfilePictureUrl} className="h-12 w-12 shrink-0 border-slate-200" />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-bold text-slate-900">{h.name}</p>
+                          <p className="truncate font-bold text-slate-900">{h.name}</p>
                         </div>
                         <p className="mt-0.5 truncate text-xs text-slate-500">{h.location}</p>
                         <p className="mt-1 text-xs text-slate-600">
                           ম্যানেজার: <span className="font-semibold">{h.managerName}</span>
-                          {h.managerPhone ? ` · ${h.managerPhone}` : null}
+                          {h.managerPhone ? <span className="block sm:inline"> · {h.managerPhone}</span> : null}
                         </p>
                       </div>
                     </div>
                     
-                    <div className="flex shrink-0 flex-wrap items-center gap-2">
-                      {/* ফিচার্ড টগল বাটন */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          toggleFeatured(h.id, !isCurrentlyFeatured);
-                        }}
-                        className={`rounded-lg border px-3 py-1.5 text-xs font-bold transition-all ${
-                          isCurrentlyFeatured
-                            ? "border-amber-400 bg-amber-100 text-amber-800 hover:bg-amber-200"
-                            : "border-slate-300 bg-slate-50 text-slate-600 hover:bg-slate-100"
-                        }`}
-                      >
-                        {isCurrentlyFeatured ? "★ Featured" : "☆ Set Featured"}
-                      </button>
+                    {/* ডান দিকের বাটনগুলো (মোবাইলে নিচে চলে যাবে এবং দুই পাশে স্পেস নিবে) */}
+                    <div className="flex w-full shrink-0 items-center justify-between gap-2 sm:w-auto sm:justify-end">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFeatured(h.id, !isCurrentlyFeatured);
+                          }}
+                          className={`rounded-lg border px-3 py-1.5 text-xs font-bold transition-all ${
+                            isCurrentlyFeatured
+                              ? "border-amber-400 bg-amber-100 text-amber-800 hover:bg-amber-200"
+                              : "border-slate-300 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                          }`}
+                        >
+                          {isCurrentlyFeatured ? "★ Featured" : "☆ Set Featured"}
+                        </button>
 
-                      {/* স্ট্যাটাস বাটন */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          toggleStatus(h.id, !isCurrentlyActive);
-                        }}
-                        className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
-                          isCurrentlyActive 
-                            ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200" 
-                            : "bg-red-100 text-red-800 hover:bg-red-200"
-                        }`}
-                      >
-                        {h.status}
-                      </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleStatus(h.id, !isCurrentlyActive);
+                          }}
+                          className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
+                            isCurrentlyActive 
+                              ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200" 
+                              : "bg-red-100 text-red-800 hover:bg-red-200"
+                          }`}
+                        >
+                          {h.status}
+                        </button>
+                      </div>
 
-                      {/* অ্যারো আইকন */}
-                      <span className="ml-2 text-xs font-semibold text-[var(--cb-primary)]">
+                      <span className="text-xs font-semibold text-[var(--cb-primary)] sm:ml-2">
                         {isOpen ? "সংকুচিত ▴" : "বিস্তারিত ▾"}
                       </span>
                     </div>
@@ -131,14 +128,14 @@ export default function AdminHostelsPage() {
                   {/* বিস্তারিত অংশ */}
                   {isOpen && (
                     <div className="border-t border-slate-100 bg-slate-50/80 px-4 py-4 text-sm text-slate-700">
-                      <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <div>
                           <dt className="text-xs font-bold uppercase text-slate-400">ম্যানেজার ইমেইল</dt>
                           <dd className="mt-0.5 break-all font-medium">{h.managerEmail || "—"}</dd>
                         </div>
                         <div>
                           <dt className="text-xs font-bold uppercase text-slate-400">ম্যানেজার ইউজারনেম</dt>
-                          <dd className="mt-0.5 font-mono text-xs">{h.managerUserName || "—"}</dd>
+                          <dd className="mt-0.5 font-mono text-xs break-all">{h.managerUserName || "—"}</dd>
                         </div>
                         <div>
                           <dt className="text-xs font-bold uppercase text-slate-400">ম্যানেজার ফোন</dt>
@@ -159,7 +156,7 @@ export default function AdminHostelsPage() {
                           <dd className="mt-0.5">
                             {h.package}
                             {h.monthlyPackagePrice != null && (
-                              <span className="text-slate-500"> — ৳{Number(h.monthlyPackagePrice).toLocaleString("bn-BD")}/মাস</span>
+                              <span className="text-slate-500 block sm:inline"> — ৳{Number(h.monthlyPackagePrice).toLocaleString("bn-BD")}/মাস</span>
                             )}
                           </dd>
                         </div>
