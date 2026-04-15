@@ -20,7 +20,7 @@ public class DbInitializer
 
     public static async Task SeedData(AppDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
     {
-        // 1. Roles Seed (SuperAdmin যুক্ত করা হলো)
+        // 1. Roles Seed (SuperAdmin Added)
         if (!roleManager.Roles.Any())
         {
             await roleManager.CreateAsync(new IdentityRole("Manager"));
@@ -41,26 +41,135 @@ public class DbInitializer
             await context.SaveChangesAsync();
         }
 
-        // 3. Locations Seed (বিভাগ, জেলা, উপজেলা)
+        // 3. Locations Seed 
         if (!context.Divisions.Any())
         {
+            // --- Divisions ---
             var dhakaDiv = new Division { Name = "Dhaka", BengaliName = "ঢাকা" };
+            var chattogramDiv = new Division { Name = "Chattogram", BengaliName = "চট্টগ্রাম" };
             var rajshahiDiv = new Division { Name = "Rajshahi", BengaliName = "রাজশাহী" };
-            
-            await context.Divisions.AddRangeAsync(dhakaDiv, rajshahiDiv);
+            var khulnaDiv = new Division { Name = "Khulna", BengaliName = "খুলনা" };
+            var barishalDiv = new Division { Name = "Barishal", BengaliName = "বরিশাল" };
+            var sylhetDiv = new Division { Name = "Sylhet", BengaliName = "সিলেট" };
+            var rangpurDiv = new Division { Name = "Rangpur", BengaliName = "রংপুর" };
+            var mymensinghDiv = new Division { Name = "Mymensingh", BengaliName = "ময়মনসিংহ" };
+
+            await context.Divisions.AddRangeAsync(dhakaDiv, chattogramDiv, rajshahiDiv, khulnaDiv, barishalDiv, sylhetDiv, rangpurDiv, mymensinghDiv);
             await context.SaveChangesAsync();
 
+            // --- 20 Popular Districts ---
+            // Dhaka Division
             var dhakaDist = new District { Name = "Dhaka", BengaliName = "ঢাকা", DivisionId = dhakaDiv.Id };
-            var rajshahiDist = new District { Name = "Rajshahi", BengaliName = "রাজশাহী", DivisionId = rajshahiDiv.Id };
+            var gazipurDist = new District { Name = "Gazipur", BengaliName = "গাজীপুর", DivisionId = dhakaDiv.Id };
+            var narayanganjDist = new District { Name = "Narayanganj", BengaliName = "নারায়ণগঞ্জ", DivisionId = dhakaDiv.Id };
+            var tangailDist = new District { Name = "Tangail", BengaliName = "টাঙ্গাইল", DivisionId = dhakaDiv.Id };
             
-            await context.Districts.AddRangeAsync(dhakaDist, rajshahiDist);
+            // Chattogram Division
+            var chattogramDist = new District { Name = "Chattogram", BengaliName = "চট্টগ্রাম", DivisionId = chattogramDiv.Id };
+            var coxsBazarDist = new District { Name = "Cox's Bazar", BengaliName = "কক্সবাজার", DivisionId = chattogramDiv.Id };
+            var cumillaDist = new District { Name = "Cumilla", BengaliName = "কুমিল্লা", DivisionId = chattogramDiv.Id };
+            var noakhaliDist = new District { Name = "Noakhali", BengaliName = "নোয়াখালী", DivisionId = chattogramDiv.Id };
+
+            // Rajshahi Division
+            var rajshahiDist = new District { Name = "Rajshahi", BengaliName = "রাজশাহী", DivisionId = rajshahiDiv.Id };
+            var boguraDist = new District { Name = "Bogura", BengaliName = "বগুড়া", DivisionId = rajshahiDiv.Id };
+            var pabnaDist = new District { Name = "Pabna", BengaliName = "পাবনা", DivisionId = rajshahiDiv.Id };
+
+            // Sylhet Division
+            var sylhetDist = new District { Name = "Sylhet", BengaliName = "সিলেট", DivisionId = sylhetDiv.Id };
+            var moulvibazarDist = new District { Name = "Moulvibazar", BengaliName = "মৌলভীবাজার", DivisionId = sylhetDiv.Id };
+
+            // Khulna Division
+            var khulnaDist = new District { Name = "Khulna", BengaliName = "খুলনা", DivisionId = khulnaDiv.Id };
+            var jashoreDist = new District { Name = "Jashore", BengaliName = "যশোর", DivisionId = khulnaDiv.Id };
+
+            // Barishal Division
+            var barishalDist = new District { Name = "Barishal", BengaliName = "বরিশাল", DivisionId = barishalDiv.Id };
+
+            // Rangpur Division
+            var rangpurDist = new District { Name = "Rangpur", BengaliName = "রংপুর", DivisionId = rangpurDiv.Id };
+            var dinajpurDist = new District { Name = "Dinajpur", BengaliName = "দিনাজপুর", DivisionId = rangpurDiv.Id };
+
+            // Mymensingh Division
+            var mymensinghDist = new District { Name = "Mymensingh", BengaliName = "ময়মনসিংহ", DivisionId = mymensinghDiv.Id };
+            var jamalpurDist = new District { Name = "Jamalpur", BengaliName = "জামালপুর", DivisionId = mymensinghDiv.Id };
+
+            await context.Districts.AddRangeAsync(
+                dhakaDist, gazipurDist, narayanganjDist, tangailDist, 
+                chattogramDist, coxsBazarDist, cumillaDist, noakhaliDist, 
+                rajshahiDist, boguraDist, pabnaDist, 
+                sylhetDist, moulvibazarDist, 
+                khulnaDist, jashoreDist, barishalDist, 
+                rangpurDist, dinajpurDist, mymensinghDist, jamalpurDist
+            );
             await context.SaveChangesAsync();
 
-            var dhanmondi = new Upazila { Name = "Dhanmondi", BengaliName = "ধানমন্ডি", DistrictId = dhakaDist.Id };
-            var mirpur = new Upazila { Name = "Mirpur", BengaliName = "মিরপুর", DistrictId = dhakaDist.Id };
-            var boalia = new Upazila { Name = "Boalia", BengaliName = "বোয়ালিয়া", DistrictId = rajshahiDist.Id };
-            
-            await context.Upazilas.AddRangeAsync(dhanmondi, mirpur, boalia);
+            // --- Upazilas ---
+            var upazilas = new List<Upazila>();
+
+            // Dhaka (Popular Locations)
+            upazilas.AddRange(new[] {
+                new Upazila { Name = "Dhanmondi", BengaliName = "ধানমন্ডি", DistrictId = dhakaDist.Id },
+                new Upazila { Name = "Mirpur", BengaliName = "মিরপুর", DistrictId = dhakaDist.Id },
+                new Upazila { Name = "Gulshan", BengaliName = "গুলশান", DistrictId = dhakaDist.Id },
+                new Upazila { Name = "Banani", BengaliName = "বনানী", DistrictId = dhakaDist.Id },
+                new Upazila { Name = "Uttara", BengaliName = "উত্তরা", DistrictId = dhakaDist.Id },
+                new Upazila { Name = "Mohammadpur", BengaliName = "মোহাম্মদপুর", DistrictId = dhakaDist.Id },
+                new Upazila { Name = "Badda", BengaliName = "বাড্ডা", DistrictId = dhakaDist.Id },
+                new Upazila { Name = "Ashulia", BengaliName = "আশুলিয়া", DistrictId = dhakaDist.Id },
+                new Upazila { Name = "Savar", BengaliName = "সাভার", DistrictId = dhakaDist.Id }
+            });
+
+            // Chattogram (Popular Locations)
+            upazilas.AddRange(new[] {
+                new Upazila { Name = "Kotwali", BengaliName = "কোতোয়ালী", DistrictId = chattogramDist.Id },
+                new Upazila { Name = "Panchlaish", BengaliName = "পাঁচলাইশ", DistrictId = chattogramDist.Id },
+                new Upazila { Name = "Pahartali", BengaliName = "পাহাড়তলী", DistrictId = chattogramDist.Id },
+                new Upazila { Name = "Halishahar", BengaliName = "হালিশহর", DistrictId = chattogramDist.Id },
+                new Upazila { Name = "Patenga", BengaliName = "পতেঙ্গা", DistrictId = chattogramDist.Id },
+                new Upazila { Name = "Khulshi", BengaliName = "খুলশী", DistrictId = chattogramDist.Id }
+            });
+
+            // Rajshahi (Popular Locations)
+            upazilas.AddRange(new[] {
+                new Upazila { Name = "Boalia", BengaliName = "বোয়ালিয়া", DistrictId = rajshahiDist.Id },
+                new Upazila { Name = "Rajpara", BengaliName = "রাজপাড়া", DistrictId = rajshahiDist.Id },
+                new Upazila { Name = "Motihar", BengaliName = "মতিহার", DistrictId = rajshahiDist.Id },
+                new Upazila { Name = "Shah Makhdum", BengaliName = "শাহ মখদুম", DistrictId = rajshahiDist.Id },
+                new Upazila { Name = "Chandrima", BengaliName = "চন্দ্রিমা", DistrictId = rajshahiDist.Id }
+            });
+
+            // Bogura (Popular Locations)
+            upazilas.AddRange(new[] {
+                new Upazila { Name = "Bogura Sadar", BengaliName = "বগুড়া সদর", DistrictId = boguraDist.Id },
+                new Upazila { Name = "Shibganj", BengaliName = "শিবগঞ্জ", DistrictId = boguraDist.Id },
+                new Upazila { Name = "Sherpur", BengaliName = "শেরপুর", DistrictId = boguraDist.Id },
+                new Upazila { Name = "Dhunat", BengaliName = "ধুনট", DistrictId = boguraDist.Id },
+                new Upazila { Name = "Shajahanpur", BengaliName = "শাজাহানপুর", DistrictId = boguraDist.Id }
+            });
+
+            // Other Districts (Popular Upazilas)
+            upazilas.AddRange(new[] {
+                new Upazila { Name = "Gazipur Sadar", BengaliName = "গাজীপুর সদর", DistrictId = gazipurDist.Id },
+                new Upazila { Name = "Tongi", BengaliName = "টঙ্গী", DistrictId = gazipurDist.Id },
+                new Upazila { Name = "Narayanganj Sadar", BengaliName = "নারায়ণগঞ্জ সদর", DistrictId = narayanganjDist.Id },
+                new Upazila { Name = "Tangail Sadar", BengaliName = "টাঙ্গাইল সদর", DistrictId = tangailDist.Id },
+                new Upazila { Name = "Cox's Bazar Sadar", BengaliName = "কক্সবাজার সদর", DistrictId = coxsBazarDist.Id },
+                new Upazila { Name = "Cumilla Adarsha Sadar", BengaliName = "কুমিল্লা আদর্শ সদর", DistrictId = cumillaDist.Id },
+                new Upazila { Name = "Begumganj", BengaliName = "বেগমগঞ্জ", DistrictId = noakhaliDist.Id },
+                new Upazila { Name = "Pabna Sadar", BengaliName = "পাবনা সদর", DistrictId = pabnaDist.Id },
+                new Upazila { Name = "Sylhet Sadar", BengaliName = "সিলেট সদর", DistrictId = sylhetDist.Id },
+                new Upazila { Name = "Sreemangal", BengaliName = "শ্রীমঙ্গল", DistrictId = moulvibazarDist.Id },
+                new Upazila { Name = "Khulna Sadar", BengaliName = "খুলনা সদর", DistrictId = khulnaDist.Id },
+                new Upazila { Name = "Jashore Sadar", BengaliName = "যশোর সদর", DistrictId = jashoreDist.Id },
+                new Upazila { Name = "Barishal Sadar", BengaliName = "বরিশাল সদর", DistrictId = barishalDist.Id },
+                new Upazila { Name = "Rangpur Sadar", BengaliName = "রংপুর সদর", DistrictId = rangpurDist.Id },
+                new Upazila { Name = "Dinajpur Sadar", BengaliName = "দিনাজপুর সদর", DistrictId = dinajpurDist.Id },
+                new Upazila { Name = "Mymensingh Sadar", BengaliName = "ময়মনসিংহ সদর", DistrictId = mymensinghDist.Id },
+                new Upazila { Name = "Jamalpur Sadar", BengaliName = "জামালপুর সদর", DistrictId = jamalpurDist.Id }
+            });
+
+            await context.Upazilas.AddRangeAsync(upazilas);
             await context.SaveChangesAsync();
         }
 
@@ -68,7 +177,7 @@ public class DbInitializer
         var hostel2Id = "h2-guid-hostel-2";
         var khaledId = Guid.NewGuid().ToString();
 
-        // 4. Hostels Seed (নতুন ফিল্ডগুলোর সাথে)
+        // 4. Hostels Seed 
         if (!context.Hostels.Any())
         {
             var proPackage = await context.SubscriptionPackages.FirstOrDefaultAsync(p => p.Name.Contains("Professional"));
